@@ -1,0 +1,72 @@
+# ─── Dependencies ────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# ─── Build Output ────────────────────────────────────────────
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# ─── Environment & Secrets ───────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+
+# ─── Customer PII / Extracted Data ───────────────────────────
+data/wc_export/
+data/seed/
+*.tsv
+
+# ─── Database ────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+prisma/migrations/
+
+# ─── OS & Editor ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/settings.json
+.idea/
+
+# ─── Python ──────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ─── Logs ────────────────────────────────────────────────────
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# ─── Testing ─────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── Dangerous Production Scripts ─────────────────────────────
+# These scripts have SSH access to production WP Engine servers.
+# They must NEVER be run automatically by CI/CD or deployment.
+backup_v1/scripts/EMERGENCY_FIX_NOW.sh
+backup_v1/scripts/rapid_checkout_fix.sh
+
+# ─── Agent Memory ─────────────────────────────────────────────
+user_memory.json
+
+# ─── Misc ────────────────────────────────────────────────────
+*.tgz
+.vercel

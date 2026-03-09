@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "name": "mohawk-medibles-ai-directory",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/directory/(.*)",
+      "dest": "/directory/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400"
+      }
+    },
+    {
+      "src": "/api/directory/(.*)",
+      "dest": "/api/directory/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=60"
+      }
+    }
+  ],
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "https://mohawkmedibles.ca",
+    "AI_AGENT_ENABLED": "true",
+    "AI_CONTENT_GENERATION": "true"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_APP_URL": "https://mohawkmedibles.ca"
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/ai-automation",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/seo-optimization",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/abandoned-carts",
+      "schedule": "0 */2 * * *"
+    }
+  ]
+}

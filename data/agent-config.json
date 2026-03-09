@@ -1,0 +1,15 @@
+{
+    "systemPromptOverride": null,
+    "turboEnabled": true,
+    "ttsEnabled": true,
+    "maxResponseLength": 500,
+    "personasEnabled": {
+        "medagent": true,
+        "turtle": true,
+        "trickster": true
+    },
+    "blockedTopics": [],
+    "customGreeting": null,
+    "freeShippingThreshold": 150,
+    "complianceMode": "strict"
+}

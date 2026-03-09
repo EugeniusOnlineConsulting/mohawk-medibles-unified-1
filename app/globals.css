@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/* Tailwind v4: override dark: variant to use class selector (for next-themes) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Brand Colors */
+  --forest: #2D5016;
+  --earth: #8B4513;
+  --cream: #F5F5DC;
+  --leaf: #228B22;
+
+  /* Semantic Colors */
+  --background: var(--cream);
+  --foreground: var(--forest);
+
+  --primary: var(--forest);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--earth);
+  --secondary-foreground: #ffffff;
+
+  --accent: var(--leaf);
+  --accent-foreground: #ffffff;
+
+  --muted: #e5e5c0;
+  --muted-foreground: #3a4d30;
+
+  --card: #ffffff;
+  --card-foreground: var(--forest);
+
+  --border: #d4d4b8;
+  --input: #d4d4b8;
+  --ring: var(--leaf);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-brand-forest: var(--forest);
+  --color-brand-earth: var(--earth);
+  --color-brand-cream: var(--cream);
+  --color-brand-leaf: var(--leaf);
+
+  /* Short aliases so bg-forest, text-cream, etc. resolve */
+  --color-forest: var(--forest);
+  --color-earth: var(--earth);
+  --color-cream: var(--cream);
+  --color-leaf: var(--leaf);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-albert-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-heading {
+  font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+.dark {
+  --background: #0D1F0A;
+  /* Dark Forest — the signature green */
+  --foreground: #F5F5DC;
+
+  --primary: var(--leaf);
+  --primary-foreground: #ffffff;
+
+  --muted: #1a2f16;
+  --muted-foreground: #c8daca;
+
+  --card: #142910;
+  --card-foreground: #F5F5DC;
+
+  --border: #2D5016;
+  --input: #2D5016;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  @apply antialiased scroll-smooth;
+}
+
+/* Glassmorphism Utility */
+.glass {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl;
+}
+
+.glass-dark {
+  @apply bg-black/20 backdrop-blur-lg border border-white/10 shadow-xl;
+}
+
+/* Trust Ticker Scroll Animation */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}

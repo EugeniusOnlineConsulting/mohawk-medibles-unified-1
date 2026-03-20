@@ -76,7 +76,7 @@ export default function DeliveryLanding({
                         },
                         {
                             icon: Leaf,
-                            title: "339+ Products",
+                            title: "344+ Products",
                             desc: "Flower, edibles, concentrates, vapes & more",
                         },
                         {
@@ -111,7 +111,7 @@ export default function DeliveryLanding({
                         <p>
                             Every product on our shelf meets the <strong>Empire Standard™</strong> — our commitment
                             to independent verification for potency, purity, and safety. From craft flower and
-                            precisely dosed edibles to premium concentrates and vapes, our 339+ product catalog
+                            precisely dosed edibles to premium concentrates and vapes, our 344+ product catalog
                             gives you the selection you deserve.
                         </p>
                         <p>

@@ -1,21 +1,98 @@
 import { Metadata } from "next";
+import { getAllBlogPosts, getAllBlogCategories } from "@/data/blog/posts";
+import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 export const metadata: Metadata = {
-    title: "Cannabis Blog — Guides, Science & Education",
+    title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
     description:
-        "Expert cannabis guides, terpene science, dosing charts, and product education from Mohawk Medibles. Indigenous-owned dispensary sharing 10+ years of cultivation knowledge.",
+        "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
+    keywords: [
+        "cannabis blog",
+        "cannabis guides",
+        "THC dosing guide",
+        "terpene guide",
+        "indica vs sativa",
+        "cannabis education",
+        "Mohawk Medibles blog",
+        "cannabis news Canada",
+    ],
     openGraph: {
-        title: "Cannabis Blog | Mohawk Medibles",
+        title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
         description:
-            "Expert cannabis education: terpene guides, edible dosing, strain comparisons, and more. Science-backed content from Six Nations territory.",
-        url: "https://mohawkmedibles.ca/blog",
+            "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
+        url: "https://mohawkmedibles.co/blog",
         type: "website",
+        siteName: "Mohawk Medibles",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
+        description:
+            "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
     },
     alternates: {
-        canonical: "https://mohawkmedibles.ca/blog",
+        canonical: "https://mohawkmedibles.co/blog",
     },
 };
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
-    return children;
+    const allPosts = getAllBlogPosts();
+    const categories = getAllBlogCategories();
+
+    // CollectionPage schema for the blog listing — all data is static/trusted from our own data files
+    const collectionPageSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": "https://mohawkmedibles.co/blog/#collectionpage",
+        name: "Cannabis Blog | Guides, News & Education",
+        description:
+            "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
+        url: "https://mohawkmedibles.co/blog",
+        isPartOf: {
+            "@type": "WebSite",
+            "@id": "https://mohawkmedibles.co/#website",
+        },
+        publisher: {
+            "@id": "https://mohawkmedibles.co/#organization",
+        },
+        inLanguage: "en-CA",
+        about: categories.map((cat) => ({
+            "@type": "Thing",
+            name: cat,
+        })),
+        mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: allPosts.length,
+            itemListElement: allPosts.slice(0, 20).map((post, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: post.title,
+                url: `https://mohawkmedibles.co/blog/${post.slug}`,
+            })),
+        },
+    };
+
+    const breadcrumbJsonLd = breadcrumbSchema([
+        { name: "Home", url: "https://mohawkmedibles.co" },
+        { name: "Blog", url: "https://mohawkmedibles.co/blog" },
+    ]);
+
+    return (
+        <>
+            {/* JSON-LD injection — trusted static content from data/blog/posts.ts, not user input */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(collectionPageSchema),
+                }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify(breadcrumbJsonLd),
+                }}
+            />
+            {children}
+        </>
+    );
 }

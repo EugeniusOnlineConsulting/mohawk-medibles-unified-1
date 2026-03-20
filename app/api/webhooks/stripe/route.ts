@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
                 // ── 4. Calculate order totals ───────────────────
                 const subtotal = lineItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
                 const shipping = subtotal >= 100 ? 0 : 15;
-                const tax = +(subtotal * 0.13).toFixed(2); // Ontario HST
+                const tax = 0; // Tax-free — Indigenous sovereignty (Tyendinaga Mohawk Territory)
                 const orderTotal = amountTotal > 0 ? amountTotal : +(subtotal + shipping + tax).toFixed(2);
                 const orderNumber = generateOrderNumber();
 

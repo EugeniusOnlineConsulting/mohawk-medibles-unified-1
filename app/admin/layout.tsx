@@ -1,12 +1,14 @@
 /**
- * Admin Layout — Shared sidebar navigation + metadata
+ * Admin Layout — Shared sidebar navigation + tRPC provider + metadata
+ * Updated: Added TRPCProvider for command center features (POS, Inventory, BI, Team)
  */
 import { Metadata } from "next";
 import AdminShell from "@/components/admin/AdminShell";
+import { TRPCProvider } from "@/components/TRPCProvider";
 
 export const metadata: Metadata = {
-    title: "Admin Console | Mohawk Medibles",
-    description: "Manage orders, customers, inventory, and shipping.",
+    title: "Command Center | Mohawk Medibles",
+    description: "Manage orders, customers, inventory, POS, and shipping.",
     robots: "noindex, nofollow",
 };
 
@@ -15,5 +17,9 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <AdminShell>{children}</AdminShell>;
+    return (
+        <TRPCProvider>
+            <AdminShell>{children}</AdminShell>
+        </TRPCProvider>
+    );
 }

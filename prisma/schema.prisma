@@ -14,12 +14,16 @@ datasource db {
 
 model User {
     id            String    @id @default(cuid())
+    wcCustomerId  Int?      @unique  // WooCommerce customer ID
     email         String    @unique
     passwordHash  String
     name          String
     phone         String?
     role          Role      @default(CUSTOMER)
     avatar        String?
+    username      String?
+    ordersCount   Int       @default(0)
+    totalSpent    Float     @default(0)
     createdAt     DateTime  @default(now())
     updatedAt     DateTime  @updatedAt
     lastLogin     DateTime?
@@ -31,8 +35,24 @@ model User {
     supportTickets SupportTicket[]
     reviews       Review[]
 
+    // Merged relations (.cc + command center)
+    cartItems          CartItem[]
+    abandonedCarts     AbandonedCart[]
+    loyaltyPoints      LoyaltyPoint[]
+    referralsMade      Referral[]        @relation("ReferralsMade")
+    wishlistItems      WishlistItem[]
+    subscriptions      Subscription[]
+    couponUsages       CouponUsage[]
+    customerNotifications CustomerNotification[]
+    smsNotifications   SmsNotification[]
+    reviewRequests     ReviewRequest[]
+    twoFactorAuth      TwoFactorAuth?
+    passwordResetTokens PasswordResetToken[]
+    userPreference     UserPreference?
+
     @@index([email])
     @@index([role])
+    @@index([wcCustomerId])
 }
 
 model Session {
@@ -135,6 +155,18 @@ model Product {
     images      ProductImage[]
     reviews     Review[]
 
+    // Merged relations (.cc + command center)
+    cartItems              CartItem[]
+    flashSaleProducts      FlashSaleProduct[]
+    variants               ProductVariant[]
+    bulkPricingTiers       BulkPricingTier[]
+    backInStockSubscriptions BackInStockSubscription[]
+    subscriptions          Subscription[]
+    wishlistItems          WishlistItem[]
+    inventoryLogs          InventoryLog[]
+    restockAlerts          RestockAlert[]
+    reviewRequests         ReviewRequest[]
+
     @@index([category])
     @@index([slug])
     @@index([status])
@@ -189,6 +221,7 @@ enum ProductStatus {
 model Order {
     id              String      @id @default(cuid())
     wcOrderId       Int?        @unique  // WooCommerce order ID
+    wcOrderKey      String?     // WC order key (wc_order_xxx)
     orderNumber     String      @unique
     userId          String
     addressId       String?
@@ -199,11 +232,19 @@ model Order {
     discount        Float       @default(0)
     total           Float
     currency        String      @default("CAD")
-    paymentMethod   String?
+    paymentMethod   String?     // interac, cod, credit_card, bitcoin, etc.
+    paymentMethodTitle String?  // Human-readable: "Interac e-Transfer"
+    paymentReference  String?   // Transaction ID from gateway
     paymentStatus   PaymentStatus @default(PENDING)
     notes           String?
     customerNote    String?
     ipAddress       String?
+    billingData     String?     // JSON: WC billing address snapshot
+    shippingData    String?     // JSON: WC shipping address snapshot
+
+    // Source tracking (multi-tenant)
+    sourceTenant    String?     // Tenant slug: "mohawk-medibles", "unhinged-cannabis"
+    sourceDomain    String?     // Domain the order came from
 
     // ShipStation fields
     shipstationId   String?     @unique
@@ -387,6 +428,9 @@ model Coupon {
     active        Boolean      @default(true)
     createdAt     DateTime     @default(now())
     updatedAt     DateTime     @updatedAt
+
+    // Merged relation
+    usages CouponUsage[]
 
     @@index([code])
     @@index([active])
@@ -864,3 +908,1324 @@ model EntityRelation {
 // ═══════════════════════════════════════════════════════════
 // ═══ END AI DIRECTORY MODELS ═══════════════════════════════
 // ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+// ═══ MERGED FROM IAN'S MOHAWK-MEDIBLES (.cc) ══════════════
+// ═══════════════════════════════════════════════════════════
+
+// ─── Native Cart System ──────────────────────────────────
+
+model CartItem {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    productId Int
+    variantId Int?
+    quantity  Int      @default(1)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user    User    @relation(fields: [userId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([userId])
+    @@index([productId])
+}
+
+model AbandonedCart {
+    id               Int       @id @default(autoincrement())
+    userId           String
+    email            String?
+    cartSnapshot     Json?
+    cartTotal        Float     @default(0)
+    emailsSent       Int       @default(0)
+    lastEmailSentAt  DateTime?
+    recoveredAt      DateTime?
+    recoveredOrderId Int?
+    status           String    @default("active") // active, recovered, expired
+    createdAt        DateTime  @default(now())
+    updatedAt        DateTime  @updatedAt
+
+    user           User                @relation(fields: [userId], references: [id])
+    recoveryEmails CartRecoveryEmail[]
+
+    @@index([userId])
+    @@index([status])
+}
+
+model CartRecoveryEmail {
+    id              Int       @id @default(autoincrement())
+    abandonedCartId Int
+    userId          String
+    emailNumber     Int
+    subject         String
+    recipientEmail  String
+    discountCode    String?
+    discountPercent Int       @default(0)
+    cartTotal       Float
+    status          String    @default("sent") // sent, opened, clicked, converted
+    openedAt        DateTime?
+    clickedAt       DateTime?
+    convertedAt     DateTime?
+    sentAt          DateTime  @default(now())
+    subjectVariant  String?   @default("a")
+
+    abandonedCart AbandonedCart @relation(fields: [abandonedCartId], references: [id])
+
+    @@index([abandonedCartId])
+}
+
+model CartRecoverySettings {
+    id                         Int      @id @default(autoincrement())
+    isEnabled                  Boolean  @default(true)
+    email1Enabled              Boolean  @default(true)
+    email1DelayMinutes         Int      @default(60)
+    email1DiscountPercent      Int      @default(0)
+    email1Subject              String   @default("You left something behind!")
+    email2Enabled              Boolean  @default(true)
+    email2DelayMinutes         Int      @default(1440)
+    email2DiscountPercent      Int      @default(10)
+    email2Subject              String   @default("Your cart is waiting — here's 10% off!")
+    email3Enabled              Boolean  @default(true)
+    email3DelayMinutes         Int      @default(4320)
+    email3DiscountPercent      Int      @default(15)
+    email3Subject              String   @default("Last chance — 15% off your cart!")
+    maxEmailsPerCart           Int      @default(3)
+    cartExpiryDays             Int      @default(7)
+    autoGenerateDiscountCodes  Boolean  @default(true)
+    discountCodePrefix         String   @default("RECOVER")
+    discountCodeExpiryHours    Int      @default(48)
+    freeShippingOnRecovery     Boolean  @default(false)
+    updatedAt                  DateTime @updatedAt
+}
+
+// ─── Gift Cards ──────────────────────────────────────────
+
+model GiftCard {
+    id              Int       @id @default(autoincrement())
+    code            String    @unique
+    initialBalance  Float
+    currentBalance  Float
+    purchasedByUserId String?
+    recipientEmail  String?
+    recipientName   String?
+    senderName      String?
+    personalMessage String?   @db.Text
+    design          String    @default("classic")
+    status          String    @default("active") // active, used, expired, cancelled
+    expiresAt       DateTime?
+    emailSentAt     DateTime?
+    emailDeliveryStatus String? @default("pending")
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    transactions GiftCardTransaction[]
+
+    @@index([code])
+    @@index([status])
+}
+
+model GiftCardTransaction {
+    id           Int      @id @default(autoincrement())
+    giftCardId   Int
+    orderId      String?
+    amount       Float
+    balanceAfter Float
+    type         String   @default("redemption") // purchase, redemption, refund
+    description  String?
+    createdAt    DateTime @default(now())
+
+    giftCard GiftCard @relation(fields: [giftCardId], references: [id])
+
+    @@index([giftCardId])
+}
+
+// ─── Flash Sales ─────────────────────────────────────────
+
+model FlashSale {
+    id            Int       @id @default(autoincrement())
+    name          String
+    description   String?   @db.Text
+    discountType  String    @default("percentage") // percentage, fixed
+    discountValue Float
+    startTime     DateTime
+    endTime       DateTime
+    isActive      Boolean   @default(true)
+    bannerColor   String?   @default("#ef4444")
+    bannerText    String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    products FlashSaleProduct[]
+
+    @@index([isActive])
+    @@index([startTime, endTime])
+}
+
+model FlashSaleProduct {
+    id            Int   @id @default(autoincrement())
+    flashSaleId   Int
+    productId     Int
+    originalPrice Float
+    salePrice     Float
+
+    flashSale FlashSale @relation(fields: [flashSaleId], references: [id], onDelete: Cascade)
+    product   Product   @relation(fields: [productId], references: [id])
+
+    @@index([flashSaleId])
+    @@index([productId])
+}
+
+// ─── Brands ──────────────────────────────────────────────
+
+model Brand {
+    id        Int      @id @default(autoincrement())
+    name      String
+    slug      String   @unique
+    logo      String?
+    createdAt DateTime @default(now())
+
+    @@index([slug])
+}
+
+// ─── Product Variants ────────────────────────────────────
+
+model ProductVariant {
+    id             Int      @id @default(autoincrement())
+    wcId           Int?     @unique
+    productId      Int
+    name           String
+    sku            String?
+    price          Float
+    salePrice      Float?
+    stockQuantity  Int      @default(0)
+    image          String?
+    attributes     Json?
+    isActive       Boolean  @default(true)
+    sortOrder      Int      @default(0)
+    createdAt      DateTime @default(now())
+
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([productId])
+}
+
+// ─── Bulk Pricing ────────────────────────────────────────
+
+model BulkPricingTier {
+    id              Int      @id @default(autoincrement())
+    productId       Int
+    minQuantity     Int
+    maxQuantity     Int?
+    discountPercent Float
+    priceOverride   Float?
+    isActive        Boolean  @default(true)
+    createdAt       DateTime @default(now())
+
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([productId])
+}
+
+// ─── Loyalty Points ──────────────────────────────────────
+
+model LoyaltyPoint {
+    id          Int      @id @default(autoincrement())
+    userId      String
+    points      Int
+    type        String   // earn, redeem, bonus, expire
+    orderId     String?
+    description String
+    createdAt   DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+}
+
+// ─── Referrals ───────────────────────────────────────────
+
+model Referral {
+    id                    Int       @id @default(autoincrement())
+    referrerId            String
+    refereeId             String?
+    referralCode          String    @unique
+    status                String    @default("pending") // pending, completed, expired
+    referrerPointsAwarded Int       @default(0)
+    refereePointsAwarded  Int       @default(0)
+    refereeOrderId        String?
+    createdAt             DateTime  @default(now())
+    completedAt           DateTime?
+
+    referrer User @relation("ReferralsMade", fields: [referrerId], references: [id])
+
+    @@index([referralCode])
+    @@index([referrerId])
+}
+
+// ─── Wishlist ────────────────────────────────────────────
+
+model WishlistItem {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    productId Int
+    createdAt DateTime @default(now())
+
+    user    User    @relation(fields: [userId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+
+    @@unique([userId, productId])
+    @@index([userId])
+}
+
+// ─── Back In Stock Subscriptions ─────────────────────────
+
+model BackInStockSubscription {
+    id         Int       @id @default(autoincrement())
+    userId     String?
+    email      String
+    productId  Int
+    variantId  Int?
+    status     String    @default("active") // active, notified, cancelled
+    notifiedAt DateTime?
+    createdAt  DateTime  @default(now())
+
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([productId])
+    @@index([email])
+}
+
+// ─── Subscriptions (Auto-Reorder) ────────────────────────
+
+model Subscription {
+    id              Int       @id @default(autoincrement())
+    userId          String
+    productId       Int
+    variantId       Int?
+    quantity        Int       @default(1)
+    frequency       String    @default("monthly") // weekly, biweekly, monthly
+    status          String    @default("active") // active, paused, cancelled
+    nextOrderDate   DateTime
+    lastOrderDate   DateTime?
+    lastOrderId     String?
+    discountPercent Int       @default(10)
+    totalOrders     Int       @default(0)
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    user    User    @relation(fields: [userId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([userId])
+    @@index([status])
+}
+
+// ─── Shipping Zones ──────────────────────────────────────
+
+model ShippingZone {
+    id                    Int      @id @default(autoincrement())
+    name                  String
+    provinces             Json?
+    flatRate              Float
+    freeShippingThreshold Float?
+    isActive              Boolean  @default(true)
+    createdAt             DateTime @default(now())
+    updatedAt             DateTime @updatedAt
+}
+
+// ─── Tax Rates ───────────────────────────────────────────
+
+model TaxRate {
+    id           Int      @id @default(autoincrement())
+    province     String   @unique
+    provinceName String
+    gstRate      Float    @default(0)
+    pstRate      Float    @default(0)
+    hstRate      Float    @default(0)
+    isActive     Boolean  @default(true)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+// ─── Announcements ───────────────────────────────────────
+
+model Announcement {
+    id        Int      @id @default(autoincrement())
+    text      String
+    icon      String?
+    link      String?
+    isActive  Boolean  @default(true)
+    sortOrder Int      @default(0)
+    createdAt DateTime @default(now())
+}
+
+// ─── Promo Banners ───────────────────────────────────────
+
+model PromoBanner {
+    id         Int      @id @default(autoincrement())
+    title      String
+    subtitle   String?  @db.Text
+    image      String?
+    link       String?
+    buttonText String?
+    sortOrder  Int      @default(0)
+    isActive   Boolean  @default(true)
+    createdAt  DateTime @default(now())
+}
+
+// ─── Store Settings (KV) ─────────────────────────────────
+
+model StoreSetting {
+    id           Int      @id @default(autoincrement())
+    settingKey   String   @unique
+    settingValue String?  @db.Text
+    settingGroup String   @default("general")
+    updatedAt    DateTime @updatedAt
+
+    @@index([settingKey])
+}
+
+// ─── A/B Tests ───────────────────────────────────────────
+
+model ABTest {
+    id             Int       @id @default(autoincrement())
+    name           String
+    description    String?   @db.Text
+    element        String
+    variantA       String    @db.Text
+    variantB       String    @db.Text
+    trafficSplit   Int       @default(50)
+    status         String    @default("draft") // draft, running, completed
+    startDate      DateTime?
+    endDate        DateTime?
+    winnerVariant  String?
+    createdBy      String?
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+
+    results ABTestResult[]
+}
+
+model ABTestResult {
+    id              Int      @id @default(autoincrement())
+    testId          Int
+    variant         String
+    userId          String?
+    sessionId       String?
+    converted       Boolean  @default(false)
+    conversionValue Float?
+    createdAt       DateTime @default(now())
+
+    test ABTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+
+    @@index([testId])
+}
+
+// ─── Analytics Events ────────────────────────────────────
+
+model PageView {
+    id        Int      @id @default(autoincrement())
+    path      String
+    productId Int?
+    userId    String?
+    sessionId String?
+    referrer  String?  @db.Text
+    userAgent String?  @db.Text
+    createdAt DateTime @default(now())
+
+    @@index([path])
+    @@index([sessionId])
+    @@index([createdAt])
+}
+
+model VisitorSession {
+    id              Int       @id @default(autoincrement())
+    sessionId       String    @unique
+    userId          String?
+    ipAddress       String?
+    country         String?
+    region          String?
+    city            String?
+    userAgent       String?   @db.Text
+    device          String?
+    browser         String?
+    os              String?
+    referrer        String?   @db.Text
+    entryPage       String?
+    exitPage        String?
+    pageCount       Int       @default(1)
+    duration        Int       @default(0)
+    pagesViewed     Json?
+    productsViewed  Json?
+    addedToCart      Boolean   @default(false)
+    converted       Boolean   @default(false)
+    conversionValue Float?
+    startedAt       DateTime  @default(now())
+    endedAt         DateTime?
+
+    @@index([sessionId])
+    @@index([startedAt])
+}
+
+// ─── Inventory Log ───────────────────────────────────────
+
+model InventoryLog {
+    id               Int      @id @default(autoincrement())
+    productId        Int
+    variantId        Int?
+    previousQuantity Int
+    newQuantity      Int
+    changeAmount     Int
+    reason           String   @default("manual") // manual, order, restock, adjustment
+    orderId          String?
+    userId           String?
+    notes            String?  @db.Text
+    createdAt        DateTime @default(now())
+
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([productId])
+    @@index([createdAt])
+}
+
+// ─── Restock Alerts ──────────────────────────────────────
+
+model RestockAlert {
+    id            Int       @id @default(autoincrement())
+    productId     Int
+    variantId     Int?
+    productName   String
+    currentStock  Int
+    threshold     Int
+    severity      String    @default("warning") // warning, critical
+    status        String    @default("active") // active, acknowledged, resolved, snoozed
+    notifiedAt    DateTime?
+    acknowledgedAt DateTime?
+    resolvedAt    DateTime?
+    snoozedUntil  DateTime?
+    resolvedBy    String?
+    notes         String?   @db.Text
+    createdAt     DateTime  @default(now())
+
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([productId])
+    @@index([status])
+    @@index([severity])
+}
+
+// ─── Customer Notifications ──────────────────────────────
+
+model CustomerNotification {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    orderId   String?
+    type      String   // order_update, promotion, restock, review_request
+    title     String
+    content   String   @db.Text
+    emailHtml String?  @db.Text
+    isRead    Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+    @@index([type])
+}
+
+// ─── SMS Notifications ───────────────────────────────────
+
+model SmsNotification {
+    id                Int       @id @default(autoincrement())
+    orderId           String?
+    userId            String
+    phone             String
+    messageType       String
+    messageBody       String    @db.Text
+    status            String    @default("pending") // pending, sent, delivered, failed
+    providerMessageId String?
+    errorMessage      String?   @db.Text
+    createdAt         DateTime  @default(now())
+    sentAt            DateTime?
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+    @@index([status])
+}
+
+// ─── Order Email Logs ────────────────────────────────────
+
+model OrderEmailLog {
+    id             Int       @id @default(autoincrement())
+    orderId        String
+    emailType      String
+    subject        String
+    recipientEmail String
+    recipientName  String?
+    status         String    @default("sent")
+    sentBy         String    @default("system")
+    emailHtml      String?   @db.Text
+    metadata       Json?
+    trackingId     String?
+    language       String?   @default("en")
+    openCount      Int       @default(0)
+    clickCount     Int       @default(0)
+    firstOpenedAt  DateTime?
+    lastOpenedAt   DateTime?
+    sentAt         DateTime  @default(now())
+    createdAt      DateTime  @default(now())
+
+    @@index([orderId])
+    @@index([trackingId])
+}
+
+// ─── Review Requests ─────────────────────────────────────
+
+model ReviewRequest {
+    id        Int       @id @default(autoincrement())
+    userId    String
+    orderId   String
+    productId Int
+    status    String    @default("pending") // pending, sent, completed, skipped
+    sentAt    DateTime?
+    completedAt DateTime?
+    createdAt DateTime  @default(now())
+
+    user    User    @relation(fields: [userId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+
+    @@index([userId])
+    @@index([status])
+}
+
+// ─── Account Security ────────────────────────────────────
+
+model AccountLockout {
+    id             Int       @id @default(autoincrement())
+    email          String    @unique
+    failedAttempts Int       @default(0)
+    lastFailedAt   DateTime?
+    lockedUntil    DateTime?
+    updatedAt      DateTime  @updatedAt
+}
+
+model LoginAttempt {
+    id         Int      @id @default(autoincrement())
+    email      String
+    ipAddress  String?
+    userAgent  String?  @db.Text
+    success    Boolean  @default(false)
+    failReason String?
+    createdAt  DateTime @default(now())
+
+    @@index([email])
+    @@index([createdAt])
+}
+
+model TwoFactorAuth {
+    id          Int       @id @default(autoincrement())
+    userId      String    @unique
+    secret      String
+    isEnabled   Boolean   @default(false)
+    backupCodes Json?
+    verifiedAt  DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+}
+
+model PasswordResetToken {
+    id        Int       @id @default(autoincrement())
+    userId    String
+    tokenHash String    @unique
+    expiresAt DateTime
+    usedAt    DateTime?
+    createdAt DateTime  @default(now())
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+}
+
+// ─── Coupon Usage Tracking ───────────────────────────────
+
+model CouponUsage {
+    id        Int      @id @default(autoincrement())
+    couponId  Int
+    userId    String
+    orderId   String
+    createdAt DateTime @default(now())
+
+    coupon Coupon @relation(fields: [couponId], references: [id])
+    user   User   @relation(fields: [userId], references: [id])
+
+    @@index([couponId])
+    @@index([userId])
+}
+
+// ═══════════════════════════════════════════════════════════
+// ═══ MERGED FROM COMMAND CENTER ════════════════════════════
+// ═══════════════════════════════════════════════════════════
+
+// ─── POS System ──────────────────────────────────────────
+
+model PosEmployee {
+    id        Int      @id @default(autoincrement())
+    name      String
+    pin       String   // hashed
+    role      String   @default("cashier") // cashier, manager, admin
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    shifts           PosShift[]
+    cashDrawers      PosCashDrawer[]
+    transactions     PosTransaction[]
+}
+
+model PosShift {
+    id               Int       @id @default(autoincrement())
+    employeeId       Int
+    clockIn          DateTime  @default(now())
+    clockOut         DateTime?
+    totalSales       Float     @default(0)
+    transactionCount Int       @default(0)
+    notes            String?   @db.Text
+    status           String    @default("active") // active, completed
+
+    employee PosEmployee @relation(fields: [employeeId], references: [id])
+
+    @@index([employeeId])
+    @@index([status])
+}
+
+model PosTransaction {
+    id                    Int      @id @default(autoincrement())
+    txnId                 String   @unique
+    total                 Float
+    subtotal              Float    @default(0)
+    discountAmount        Float    @default(0)
+    discountType          String?
+    paymentMethod         String   // cash, debit, credit, split
+    cashGiven             Float?
+    changeDue             Float?
+    itemCount             Int      @default(0)
+    cashierId             Int?
+    customerId            String?
+    loyaltyPointsEarned   Int      @default(0)
+    loyaltyPointsRedeemed Int      @default(0)
+    notes                 String?  @db.Text
+    createdAt             DateTime @default(now())
+
+    cashier PosEmployee?         @relation(fields: [cashierId], references: [id])
+    items   PosTransactionItem[]
+
+    @@index([cashierId])
+    @@index([createdAt])
+}
+
+model PosTransactionItem {
+    id              Int    @id @default(autoincrement())
+    transactionId   Int
+    productId       Int?
+    productName     String
+    productCategory String
+    unitPrice       Float
+    quantity        Int    @default(1)
+    lineTotal       Float
+    discountAmount  Float  @default(0)
+
+    transaction PosTransaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+    @@index([transactionId])
+}
+
+model PosCashDrawer {
+    id             Int       @id @default(autoincrement())
+    employeeId     Int
+    openingFloat   Float
+    closingAmount  Float?
+    expectedAmount Float?
+    difference     Float?
+    status         String    @default("open") // open, closed
+    openedAt       DateTime  @default(now())
+    closedAt       DateTime?
+    notes          String?   @db.Text
+
+    employee PosEmployee @relation(fields: [employeeId], references: [id])
+
+    @@index([employeeId])
+    @@index([status])
+}
+
+model PosDiscount {
+    id          Int       @id @default(autoincrement())
+    name        String
+    type        String    // percentage, fixed, bogo
+    value       Float
+    categoryId  Int?
+    productId   Int?
+    minPurchase Float?
+    active      Boolean   @default(true)
+    startDate   DateTime?
+    endDate     DateTime?
+    createdAt   DateTime  @default(now())
+}
+
+model PosBundle {
+    id           Int      @id @default(autoincrement())
+    name         String
+    description  String?  @db.Text
+    bundlePrice  Float
+    items        Json     // [{productId, quantity}]
+    regularPrice Float
+    active       Boolean  @default(true)
+    imageUrl     String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+}
+
+model PosLocation {
+    id        Int      @id @default(autoincrement())
+    name      String
+    address   String?
+    phone     String?
+    isDefault Boolean  @default(false)
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    inventory PosLocationInventory[]
+}
+
+model PosLocationInventory {
+    id                Int      @id @default(autoincrement())
+    locationId        Int
+    productId         Int
+    stockQty          Int      @default(0)
+    lowStockThreshold Int      @default(10)
+    updatedAt         DateTime @updatedAt
+
+    location PosLocation @relation(fields: [locationId], references: [id])
+
+    @@unique([locationId, productId])
+    @@index([locationId])
+}
+
+// ─── Warehouse & Inventory Management ────────────────────
+
+model Warehouse {
+    id        Int      @id @default(autoincrement())
+    name      String
+    address   String?  @db.Text
+    city      String?
+    province  String?
+    country   String?  @default("CA")
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    inventory        WarehouseInventory[]
+    purchaseOrders   PurchaseOrder[]
+    salesOrders      SalesOrder[]
+    stockAdjustments StockAdjustment[]
+    transfersFrom    WarehouseTransfer[] @relation("TransferFrom")
+    transfersTo      WarehouseTransfer[] @relation("TransferTo")
+}
+
+model WarehouseInventory {
+    id          Int      @id @default(autoincrement())
+    warehouseId Int
+    productId   Int
+    quantity    Int      @default(0)
+    updatedAt   DateTime @updatedAt
+
+    warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+    @@unique([warehouseId, productId])
+    @@index([warehouseId])
+}
+
+model Vendor {
+    id        Int      @id @default(autoincrement())
+    name      String
+    email     String?
+    phone     String?
+    company   String?
+    address   String?  @db.Text
+    city      String?
+    province  String?
+    country   String?  @default("CA")
+    notes     String?  @db.Text
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    purchaseOrders     PurchaseOrder[]
+    returnAuthorizations ReturnAuthorization[]
+}
+
+model PurchaseOrder {
+    id            Int       @id @default(autoincrement())
+    orderNumber   String    @unique
+    vendorId      Int
+    warehouseId   Int
+    status        String    @default("draft") // draft, confirmed, partially_received, received, cancelled
+    orderDate     DateTime  @default(now())
+    expectedDate  DateTime?
+    receivedDate  DateTime?
+    totalAmount   Float?    @default(0)
+    notes         String?   @db.Text
+    createdBy     String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    vendor    Vendor    @relation(fields: [vendorId], references: [id])
+    warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+    items     PurchaseOrderItem[]
+
+    @@index([vendorId])
+    @@index([status])
+}
+
+model PurchaseOrderItem {
+    id               Int   @id @default(autoincrement())
+    purchaseOrderId  Int
+    productId        Int
+    quantity         Int
+    unitPrice        Float
+    totalPrice       Float
+    receivedQuantity Int   @default(0)
+
+    purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+    @@index([purchaseOrderId])
+}
+
+model SalesOrder {
+    id            Int       @id @default(autoincrement())
+    orderNumber   String    @unique
+    customerId    String
+    warehouseId   Int
+    status        String    @default("draft") // draft, confirmed, shipped, delivered, cancelled
+    orderDate     DateTime  @default(now())
+    shippedDate   DateTime?
+    deliveredDate DateTime?
+    totalAmount   Float?    @default(0)
+    notes         String?   @db.Text
+    createdBy     String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    warehouse Warehouse        @relation(fields: [warehouseId], references: [id])
+    items     SalesOrderItem[]
+
+    @@index([customerId])
+    @@index([status])
+}
+
+model SalesOrderItem {
+    id              Int   @id @default(autoincrement())
+    salesOrderId    Int
+    productId       Int
+    quantity        Int
+    unitPrice       Float
+    totalPrice      Float
+    shippedQuantity Int   @default(0)
+
+    salesOrder SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+
+    @@index([salesOrderId])
+}
+
+model StockAdjustment {
+    id              Int      @id @default(autoincrement())
+    productId       Int
+    warehouseId     Int
+    adjustmentType  String   // add, remove, transfer
+    quantity        Int
+    toWarehouseId   Int?
+    reason          String?  @db.Text
+    referenceNumber String?
+    createdBy       String?
+    createdAt       DateTime @default(now())
+
+    warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+
+    @@index([productId])
+    @@index([warehouseId])
+}
+
+model WarehouseTransfer {
+    id                Int       @id @default(autoincrement())
+    transferNumber    String    @unique
+    fromWarehouseId   Int
+    toWarehouseId     Int
+    status            String    @default("draft") // draft, pending, approved, in_transit, completed, rejected, cancelled
+    priority          String    @default("normal") // low, normal, high, urgent
+    requestedBy       String?
+    approvedBy        String?
+    completedBy       String?
+    requestedAt       DateTime?
+    approvedAt        DateTime?
+    shippedAt         DateTime?
+    completedAt       DateTime?
+    notes             String?   @db.Text
+    rejectionReason   String?   @db.Text
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    fromWarehouse Warehouse              @relation("TransferFrom", fields: [fromWarehouseId], references: [id])
+    toWarehouse   Warehouse              @relation("TransferTo", fields: [toWarehouseId], references: [id])
+    items         WarehouseTransferItem[]
+
+    @@index([fromWarehouseId])
+    @@index([toWarehouseId])
+    @@index([status])
+}
+
+model WarehouseTransferItem {
+    id                  Int  @id @default(autoincrement())
+    transferId          Int
+    productId           Int
+    requestedQuantity   Int
+    transferredQuantity Int  @default(0)
+
+    transfer WarehouseTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+
+    @@index([transferId])
+}
+
+model ReturnAuthorization {
+    id                Int       @id @default(autoincrement())
+    rmaNumber         String    @unique
+    purchaseOrderId   Int?
+    vendorId          Int
+    status            String    @default("draft") // draft, pending_approval, approved, shipped, completed, cancelled
+    returnType        String    @default("credit") // credit, replacement, repair, write_off
+    reason            String?   @db.Text
+    notes             String?   @db.Text
+    totalCreditAmount Float?    @default(0)
+    requestedBy       String?
+    approvedBy        String?
+    requestedAt       DateTime?
+    approvedAt        DateTime?
+    shippedAt         DateTime?
+    completedAt       DateTime?
+    trackingNumber    String?
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
+    vendor Vendor                    @relation(fields: [vendorId], references: [id])
+    items  ReturnAuthorizationItem[]
+
+    @@index([vendorId])
+    @@index([status])
+}
+
+model ReturnAuthorizationItem {
+    id           Int    @id @default(autoincrement())
+    rmaId        Int
+    productId    Int
+    quantity     Int
+    returnReason String @default("damaged") // damaged, defective, wrong_item, expired, quality_issue
+    condition    String @default("damaged")
+    resolution   String @default("pending") // credit, replacement, repair, write_off, pending
+    creditAmount Float? @default(0)
+    notes        String? @db.Text
+
+    rma ReturnAuthorization @relation(fields: [rmaId], references: [id], onDelete: Cascade)
+
+    @@index([rmaId])
+}
+
+// ─── Team & Roles ────────────────────────────────────────
+
+model CustomRole {
+    id          Int      @id @default(autoincrement())
+    name        String   @unique
+    description String?  @db.Text
+    permissions String   @db.Text // JSON array of permission strings
+    baseRole    String?  // inherit from built-in role
+    color       String?  @default("gray")
+    isActive    Boolean  @default(true)
+    createdBy   String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
+model RoleChangeHistory {
+    id        Int      @id @default(autoincrement())
+    userId    String
+    oldRole   String
+    newRole   String
+    changedBy String
+    reason    String?  @db.Text
+    createdAt DateTime @default(now())
+
+    @@index([userId])
+}
+
+// ─── BI / Reporting ──────────────────────────────────────
+
+model SiteMonitor {
+    id          Int      @id @default(autoincrement())
+    name        String
+    url         String?
+    description String?  @db.Text
+    category    String?
+    siteType    String   @default("ecommerce") // ecommerce, retail_store, hybrid, warehouse
+    color       String?  @default("#3b82f6")
+    logoUrl     String?
+    isActive    Boolean  @default(true)
+    createdBy   String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    snapshots MetricSnapshot[]
+    alerts    BiAlert[]
+}
+
+model MetricSnapshot {
+    id                  Int       @id @default(autoincrement())
+    siteId              Int
+    snapshotDate        DateTime
+    revenue             Float?
+    orders              Int?
+    avgOrderValue       Float?
+    visitors            Int?
+    pageViews           Int?
+    bounceRate          Float?
+    avgSessionDuration  Int?
+    conversionRate      Float?
+    organicTraffic      Int?
+    inStoreRevenue      Float?
+    transactions        Int?
+    avgTransactionValue Float?
+    footTraffic         Int?
+    itemsSold           Int?
+    customMetrics       Json?
+    source              String    @default("manual") // manual, csv, api
+    createdBy           String?
+    createdAt           DateTime  @default(now())
+    updatedAt           DateTime  @updatedAt
+
+    site SiteMonitor @relation(fields: [siteId], references: [id])
+
+    @@unique([siteId, snapshotDate, source])
+    @@index([siteId])
+    @@index([snapshotDate])
+}
+
+model BiAlert {
+    id              Int       @id @default(autoincrement())
+    siteId          Int?
+    metricName      String
+    condition       String    // above, below, change_pct
+    threshold       Float
+    isEnabled       Boolean   @default(true)
+    lastTriggeredAt DateTime?
+    createdBy       String?
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    site    SiteMonitor?   @relation(fields: [siteId], references: [id])
+    history BiAlertHistory[]
+
+    @@index([siteId])
+}
+
+model BiAlertHistory {
+    id             Int      @id @default(autoincrement())
+    alertId        Int
+    siteId         Int
+    metricName     String
+    metricValue    Float
+    thresholdValue Float
+    message        String?  @db.Text
+    isRead         Boolean  @default(false)
+    triggeredAt    DateTime @default(now())
+
+    alert BiAlert @relation(fields: [alertId], references: [id])
+
+    @@index([alertId])
+    @@index([triggeredAt])
+}
+
+model CustomDashboard {
+    id           Int      @id @default(autoincrement())
+    name         String
+    description  String?  @db.Text
+    layoutConfig Json?
+    isDefault    Boolean  @default(false)
+    createdBy    String?
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    widgets DashboardWidget[]
+}
+
+model DashboardWidget {
+    id           Int      @id @default(autoincrement())
+    dashboardId  Int
+    widgetType   String
+    title        String
+    gridPosition Json
+    config       Json
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    dashboard CustomDashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+
+    @@index([dashboardId])
+}
+
+// ─── App Settings (KV for command center) ────────────────
+
+model AppSetting {
+    id        Int      @id @default(autoincrement())
+    key       String   @unique
+    value     Json
+    updatedAt DateTime @updatedAt
+}
+
+// ─── Notification Preferences ────────────────────────────
+
+model NotificationPreference {
+    id        Int      @id @default(autoincrement())
+    key       String   @unique
+    enabled   Boolean  @default(true)
+    threshold Float?
+    updatedAt DateTime @updatedAt
+}
+
+// ─── User Preferences ────────────────────────────────────
+
+model UserPreference {
+    id              Int      @id @default(autoincrement())
+    userId          String   @unique
+    dashboardLayout String?  @db.Text // JSON string of widget order
+    updatedAt       DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+}
+
+// ─── Seasonal Patterns (Demand Forecasting) ──────────────
+
+model SeasonalPattern {
+    id               Int      @id @default(autoincrement())
+    name             String
+    description      String?  @db.Text
+    startMonth       Int
+    endMonth         Int
+    demandMultiplier Float
+    color            String?
+    isActive         Boolean  @default(true)
+    createdBy        String?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════
+// ═══ END MERGED MODELS ════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+
+// ─── WooCommerce Sync Log ──────────────────────────────────
+
+model SyncLog {
+    id          String   @id @default(cuid())
+    endpoint    String   // "products", "customers", "orders"
+    direction   String   @default("wc_to_app") // wc_to_app, app_to_wc
+    status      String   // "running", "completed", "failed"
+    recordsTotal    Int  @default(0)
+    recordsSynced   Int  @default(0)
+    recordsFailed   Int  @default(0)
+    lastPage        Int  @default(0)
+    lastModified    DateTime? // Track modified_after for incremental sync
+    error           String?
+    startedAt       DateTime @default(now())
+    completedAt     DateTime?
+
+    @@index([endpoint])
+    @@index([status])
+    @@index([startedAt])
+}
+
+// ─── Multi-Tenant / Niche Sites ─────────────────────────────
+
+model Tenant {
+    id              String   @id @default(cuid())
+    slug            String   @unique  // "mohawk-medibles", "unhinged-cannabis"
+    name            String             // "Mohawk Medibles"
+    domain          String   @unique  // Primary domain: "mohawkmedibles.co"
+    altDomains      String[] // Additional domains that resolve to this tenant
+    active          Boolean  @default(true)
+    isDefault       Boolean  @default(false) // The main Mohawk Medibles site
+
+    // ── Branding ────────────────────────────────────────────
+    logoUrl         String?
+    faviconUrl      String?
+    primaryColor    String   @default("#2D5016")
+    secondaryColor  String   @default("#F5E6C8")
+    accentColor     String   @default("#D4A574")
+    heroTitle       String?
+    heroSubtitle    String?
+    heroImage       String?
+    aboutText       String?
+
+    // ── Product Filters ─────────────────────────────────────
+    // Empty arrays = show all products (default tenant behavior)
+    categoryFilter  String[] // ["Edibles", "Vapes"] — filter by product category
+    subcategoryFilter String[] // finer grain
+    tagFilter       String[] // custom product tags
+    regionFilter    String[] // regional targeting keywords
+    priceMin        Float?
+    priceMax        Float?
+
+    // ── SEO ─────────────────────────────────────────────────
+    seoTitle        String?
+    seoDescription  String?
+    seoKeywords     String[]
+    ogImage         String?
+
+    // ── Checkout Config ─────────────────────────────────────
+    // Payment methods available on this tenant (subset of WC gateways)
+    // Empty = all WC payment methods available
+    paymentMethods  String[] // ["paygobillingcc", "digipay_etransfer_manual", "wcpg_crypto"]
+    checkoutRedirectUrl String? // After payment, redirect here (defaults to tenant domain)
+    etransferInstructions String? // Custom e-Transfer instructions per tenant
+
+    // ── Analytics ───────────────────────────────────────────
+    gaPropertyId    String?  // Separate GA4 property per tenant
+
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    // Relations
+    analytics       TenantAnalytics[]
+
+    @@index([domain])
+    @@index([active])
+}
+
+model TenantAnalytics {
+    id          String   @id @default(cuid())
+    tenantId    String
+    date        DateTime @db.Date // One row per tenant per day
+    pageViews   Int      @default(0)
+    uniqueVisitors Int   @default(0)
+    productViews Int     @default(0)
+    addToCarts  Int      @default(0)
+    checkoutStarts Int   @default(0)
+    ordersCompleted Int  @default(0)
+    revenue     Float    @default(0)
+    avgOrderValue Float  @default(0)
+
+    tenant Tenant @relation(fields: [tenantId], references: [id])
+
+    @@unique([tenantId, date])
+    @@index([tenantId])
+    @@index([date])
+}

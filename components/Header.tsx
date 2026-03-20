@@ -18,6 +18,8 @@ export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const pathname = usePathname();
     const isHome = pathname === "/";
+    // On home hero (transparent bg), always use light text regardless of theme
+    const onHeroTransparent = isHome && !isScrolled;
     const { t } = useLocale();
     const { items } = useCart();
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
@@ -33,18 +35,18 @@ export default function Header() {
 
     return (
         <>
-            {/* Notice Banner */}
-            <div role="alert" className="bg-zinc-950 text-white text-[10px] py-1.5 px-6 text-center font-bold tracking-widest border-b border-white/5 uppercase relative z-[60] font-sans">
-                NOTICE: WE HAVE UPDATED OUR E-TRANSFER PAYMENT DETAILS. PLEASE CHECK YOUR EMAIL.
+            {/* Notice Banner — vibrant brand gradient */}
+            <div role="alert" className="bg-forest dark:bg-charcoal-deep text-white text-[10px] py-1.5 px-6 text-center font-bold tracking-widest border-b border-lime/10 uppercase relative z-[60] font-sans">
+                <span className="text-lime/80">NOTICE:</span> WE HAVE UPDATED OUR E-TRANSFER PAYMENT DETAILS. PLEASE CHECK YOUR EMAIL.
             </div>
 
             <nav
                 role="navigation"
                 aria-label="Main navigation"
-                className={`fixed w-full z-50 transition-all duration-700 px-6 py-4 flex justify-between items-center ${isScrolled || !isHome
-                    ? "bg-zinc-950/95 backdrop-blur-xl border-b border-white/10 py-3 shadow-2xl"
+                className={`fixed w-full z-50 transition-all duration-500 px-4 md:px-6 py-4 flex justify-between items-center ${isScrolled || !isHome
+                    ? "py-3 shadow-lg bg-white/90 dark:bg-charcoal-deep/90 backdrop-blur-xl"
                     : "bg-transparent"
-                    } ${isHome ? "top-8" : "top-8"}`}
+                } ${isHome ? "top-8" : "top-8"}`}
             >
                 <div className="flex items-center gap-8">
                     <Link href="/" className="relative h-10 w-40 md:h-12 md:w-48 transition-opacity hover:opacity-80">
@@ -58,32 +60,42 @@ export default function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-8 text-[11px] font-bold tracking-[0.2em] uppercase text-white font-sans">
+                    <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] font-bold tracking-[0.15em] uppercase font-sans">
                         {(["Shop", "Deals", "About", "Blog", "Reviews", "FAQ", "Support"] as const).map((item) => (
                             <Link
                                 key={item}
                                 href={`/${item.toLowerCase()}`}
-                                className="relative group transition-colors hover:text-white"
+                                className={`relative group transition-colors ${
+                                    pathname === `/${item.toLowerCase()}`
+                                        ? "text-lime"
+                                        : onHeroTransparent
+                                            ? "text-white/90 hover:text-lime"
+                                            : "text-charcoal-deep/80 dark:text-white/80 hover:text-forest dark:hover:text-lime"
+                                }`}
                             >
                                 {t(`nav.${item.toLowerCase()}`)}
-                                <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-secondary transition-all duration-300 group-hover:w-full" />
+                                <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-lime transition-all duration-300 ${
+                                    pathname === `/${item.toLowerCase()}` ? "w-full" : "w-0 group-hover:w-full"
+                                }`} />
                             </Link>
                         ))}
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 md:gap-6">
-                    <div className="hidden md:flex items-center gap-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                    <div className={`hidden md:flex items-center gap-3 ${onHeroTransparent ? "header-on-hero" : ""}`}>
                         <LanguageSwitcher />
                         <ThemeToggle />
                         <SearchAutocomplete />
-                        <Button variant="ghost" size="icon" className="text-white/80 hover:text-white hover:bg-white/5" aria-label="My account">
-                            <User className="h-4 w-4" />
-                        </Button>
+                        <Link href="/account">
+                            <Button variant="ghost" size="icon" className={`rounded-xl ${onHeroTransparent ? "text-white/70 hover:text-lime hover:bg-white/10" : "text-charcoal-deep/60 dark:text-white/60 hover:text-forest dark:hover:text-lime hover:bg-charcoal-deep/5 dark:hover:bg-white/5"}`} aria-label="My account">
+                                <User className="h-4 w-4" />
+                            </Button>
+                        </Link>
                     </div>
 
                     <Link href="/wishlist" className="relative" aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}>
-                        <Button variant="ghost" size="icon" className="text-white/80 hover:text-red-400 hover:bg-white/5">
+                        <Button variant="ghost" size="icon" aria-label="Wishlist" className={`rounded-xl ${onHeroTransparent ? "text-white/70 hover:text-red-400 hover:bg-white/10" : "text-charcoal-deep/60 dark:text-white/60 hover:text-red-500 dark:hover:text-red-400 hover:bg-charcoal-deep/5 dark:hover:bg-white/5"}`}>
                             <Heart className="h-4 w-4" />
                         </Button>
                         {wishlistCount > 0 && (
@@ -94,7 +106,7 @@ export default function Header() {
                     </Link>
 
                     <Link href="/checkout" className="relative" aria-label={`Shopping cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}>
-                        <Button variant="brand" size="sm" className="rounded-full flex items-center gap-2 px-4 shadow-lg shadow-secondary/20">
+                        <Button variant="brand" size="sm" aria-label="Shopping cart" className="rounded-full flex items-center gap-2 px-4 shadow-lg glow-lime">
                             <ShoppingCart className="h-4 w-4" />
                             <span className="hidden md:inline text-[10px] font-bold tracking-widest uppercase">Cart</span>
                         </Button>
@@ -106,7 +118,7 @@ export default function Header() {
                     </Link>
 
                     <button
-                        className="lg:hidden text-white"
+                        className={`lg:hidden ${onHeroTransparent ? "text-white" : "text-charcoal-deep dark:text-white"}`}
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-expanded={isMobileMenuOpen}
                         aria-controls="mobile-menu"
@@ -116,36 +128,35 @@ export default function Header() {
                     </button>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile Menu — glassmorphic */}
                 {isMobileMenuOpen && (
-                    <div id="mobile-menu" role="menu" aria-label="Mobile navigation" className="absolute top-full left-0 w-full bg-zinc-950/95 backdrop-blur-xl border-t border-white/10 p-10 flex flex-col gap-8 text-2xl font-bold uppercase tracking-tight animate-in fade-in slide-in-from-top-4 duration-500 font-heading z-[70]">
-                        <Link href="/shop" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            Shop
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <Link href="/deals" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            Deals
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <Link href="/about" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            About
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <Link href="/faq" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            FAQ
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <Link href="/blog" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            Blog
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <Link href="/contact" className="hover:text-secondary transition-colors flex items-center justify-between" onClick={() => setIsMobileMenuOpen(false)}>
-                            Contact
-                            <div className="w-8 h-[1px] bg-white/20" />
-                        </Link>
-                        <div className="flex flex-col gap-4 pt-8 font-sans text-sm tracking-widest">
-                            <Button variant="outline" className="w-full rounded-2xl border-white/10 h-14 uppercase font-bold bg-white/5 hover:bg-white/10">Member Login</Button>
-                            <Button variant="brand" className="w-full rounded-2xl h-14 uppercase font-bold shadow-lg shadow-secondary/20">Talk to Support</Button>
+                    <div id="mobile-menu" role="menu" aria-label="Mobile navigation" className="absolute top-full left-0 w-full bg-white/95 dark:bg-charcoal-deep/95 backdrop-blur-xl shadow-2xl p-8 flex flex-col gap-6 text-xl font-bold uppercase tracking-tight animate-in fade-in slide-in-from-top-4 duration-500 font-heading z-[70]">
+                        {(["Shop", "Deals", "About", "Blog", "FAQ", "Contact"] as const).map((item) => (
+                            <Link
+                                key={item}
+                                href={`/${item.toLowerCase()}`}
+                                className={`flex items-center justify-between transition-colors ${
+                                    pathname === `/${item.toLowerCase()}`
+                                        ? "text-lime"
+                                        : "text-foreground dark:text-white hover:text-lime"
+                                }`}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                {item}
+                                <div className="w-8 h-[1px] bg-border" />
+                            </Link>
+                        ))}
+                        <div className="flex flex-col gap-3 pt-6 font-sans text-sm tracking-widest border-t border-border">
+                            <div className="flex items-center gap-3">
+                                <LanguageSwitcher />
+                                <ThemeToggle />
+                            </div>
+                            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Button variant="outline" className="w-full rounded-2xl h-12 uppercase font-bold glass">Member Login</Button>
+                            </Link>
+                            <Link href="/support" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Button variant="brand" className="w-full rounded-2xl h-12 uppercase font-bold glow-lime">Talk to Support</Button>
+                            </Link>
                         </div>
                     </div>
                 )}

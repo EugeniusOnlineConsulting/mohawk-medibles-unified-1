@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import { emitCartEvent } from "@/lib/medagent-events";
 
 interface CartItem {
     id: string;
@@ -53,29 +54,37 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             const existing = current.find((i) => i.id === newItem.id);
             if (existing) {
                 const newQty = existing.quantity + (newItem.quantity || 1);
-                // If quantity drops to 0 or below, remove the item
                 if (newQty <= 0) return current.filter((i) => i.id !== newItem.id);
-                // Cap at 10
                 return current.map((i) =>
                     i.id === newItem.id ? { ...i, quantity: Math.min(newQty, 10) } : i
                 );
             }
-            // New item — ensure positive quantity, default to 1
             const qty = Math.max(1, Math.min(newItem.quantity || 1, 10));
             return [...current, { ...newItem, quantity: qty }];
         });
+
+        // Emit cart event for MedAgent real-time awareness
+        emitCartEvent({ action: "add", item: newItem, source: "shop" });
 
         // Haptic feedback for "Premium" feel (Mobile)
         if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(50);
     }, []);
 
     const removeItem = React.useCallback((id: string) => {
-        setItems((current) => current.filter((i) => i.id !== id));
+        setItems((current) => {
+            const item = current.find((i) => i.id === id);
+            if (item) emitCartEvent({ action: "remove", item, source: "shop" });
+            return current.filter((i) => i.id !== id);
+        });
     }, []);
 
     const updateQuantity = React.useCallback((id: string, quantity: number) => {
         if (quantity <= 0) {
-            setItems((current) => current.filter((i) => i.id !== id));
+            setItems((current) => {
+                const item = current.find((i) => i.id === id);
+                if (item) emitCartEvent({ action: "remove", item, source: "shop" });
+                return current.filter((i) => i.id !== id);
+            });
         } else {
             setItems((current) =>
                 current.map((i) => i.id === id ? { ...i, quantity: Math.min(quantity, 10) } : i)
@@ -83,7 +92,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    const clearCart = React.useCallback(() => setItems([]), []);
+    const clearCart = React.useCallback(() => {
+        emitCartEvent({ action: "clear", source: "shop" });
+        setItems([]);
+    }, []);
 
     const total = React.useMemo(() => items.reduce((sum, item) => sum + item.price * item.quantity, 0), [items]);
 

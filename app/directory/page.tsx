@@ -7,7 +7,35 @@ import { SearchFilters } from "@/components/directory/SearchFilters";
 export const metadata: Metadata = {
     title: "Canadian Cannabis Directory | Find Dispensaries Near You | Mohawk Medibles",
     description:
-        "Explore Canada's most comprehensive cannabis directory. Find licensed dispensaries, Indigenous-owned retailers, and delivery services in every province.",
+        "Explore Canada's most comprehensive cannabis directory. Find licensed dispensaries, Indigenous-owned retailers, and delivery services in every province and territory.",
+    keywords: [
+        "cannabis directory canada",
+        "find dispensary near me",
+        "canadian dispensary list",
+        "indigenous dispensary directory",
+        "cannabis delivery service canada",
+        "licensed dispensary finder",
+        "weed dispensary map canada",
+        "ontario dispensary",
+        "BC dispensary",
+        "cannabis store locator",
+    ],
+    openGraph: {
+        title: "Canadian Cannabis Directory | Find Dispensaries Near You",
+        description:
+            "Canada's most comprehensive cannabis directory. Find licensed dispensaries, Indigenous-owned retailers, and delivery services.",
+        url: "https://mohawkmedibles.co/directory",
+        type: "website",
+        images: ["/og-image.png"],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Canadian Cannabis Directory | Mohawk Medibles",
+        description: "Find dispensaries, retailers, and delivery services across Canada.",
+    },
+    alternates: {
+        canonical: "https://mohawkmedibles.co/directory",
+    },
 };
 
 async function getDispensaries() {

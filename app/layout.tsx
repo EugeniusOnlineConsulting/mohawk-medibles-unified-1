@@ -1,107 +1,176 @@
 import type { Metadata } from "next";
-import { Poppins, Albert_Sans } from "next/font/google";
+import { Inter, Barlow, Sora } from "next/font/google";
 import "@/lib/env-check";
 import "./globals.css";
+import { getCurrentTenant } from "@/lib/tenant";
+import { TenantProvider } from "@/lib/tenant-context";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
-const albertSans = Albert_Sans({
-  variable: "--font-albert-sans",
+const barlow = Barlow({
+  variable: "--font-barlow",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
-// ─── SEO: Full Metadata (Open Graph + Twitter + AEO) ────────
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
 
-export const metadata: Metadata = {
-  title: {
-    default: "Mohawk Medibles | Premium Indigenous Cannabis — Six Nations",
-    template: "%s | Mohawk Medibles",
-  },
-  description:
-    "Indigenous-owned premium cannabis dispensary on Six Nations territory. 363+ lab-tested products: flower, edibles, concentrates, vapes. Empire Standard™ quality. Ships Canada-wide.",
-  keywords: [
-    "mohawk medibles", "indigenous cannabis", "six nations dispensary",
-    "buy weed online canada", "premium cannabis ontario",
-    "lab tested cannabis", "cannabis edibles", "cannabis delivery canada",
-    "terpene profile", "empire standard cannabis",
-  ],
-  metadataBase: new URL("https://mohawkmedibles.ca"),
-  alternates: { canonical: "https://mohawkmedibles.ca" },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+// ─── SEO: Dynamic Metadata (tenant-aware) ───────────────────
+
+// Fallback values used when tenant fields are null
+const FALLBACK_TITLE = "Mohawk Medibles | Premium Indigenous Cannabis — Six Nations";
+const FALLBACK_DESCRIPTION =
+  "Indigenous-owned premium cannabis dispensary on Six Nations territory. 344+ lab-tested products: flower, edibles, concentrates, vapes. Empire Standard™ quality. Ships Canada-wide.";
+const FALLBACK_DOMAIN = "https://mohawkmedibles.co";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const tenant = await getCurrentTenant();
+
+  const title = tenant.seoTitle || FALLBACK_TITLE;
+  const description = tenant.seoDescription || FALLBACK_DESCRIPTION;
+  const domainUrl = tenant.domain
+    ? `https://${tenant.domain}`
+    : FALLBACK_DOMAIN;
+  const ogImage = tenant.ogImage || "/og-image.png";
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${tenant.name}`,
+    },
+    description,
+    keywords: tenant.seoKeywords.length > 0
+      ? tenant.seoKeywords
+      : [
+          // English
+          "mohawk medibles", "indigenous cannabis", "six nations dispensary",
+          "buy weed online canada", "premium cannabis ontario",
+          "lab tested cannabis", "cannabis edibles", "cannabis delivery canada",
+          "terpene profile", "empire standard cannabis",
+          "drizzle factory", "stellar edibles", "aki wellness cbd",
+          "euphoria extractions", "plant of life cbd", "cannabis brands canada",
+          "online dispensary brands", "canadian cannabis brands",
+          "relaxing cannabis strains", "euphoric weed effects",
+          "pain relief cannabis canada", "best sleep strains",
+          "creative cannabis sativa", "cannabis by effect",
+          "shop weed by feeling", "indica vs sativa effects",
+          // French (fr_CA) — organic reach for Quebec & Francophone Canada
+          "acheter cannabis en ligne canada", "dispensaire cannabis autochtone",
+          "livraison cannabis canada", "comestibles cannabis",
+          "fleurs cannabis qualité", "concentrés cannabis",
+          "meilleur dispensaire en ligne canada", "cannabis Six Nations",
+          "cannabis testé en laboratoire", "vapoteuse cannabis canada",
+        ],
+    metadataBase: new URL(domainUrl),
+    alternates: {
+      canonical: domainUrl,
+      languages: {
+        "en": domainUrl,
+        "fr": domainUrl,
+        "x-default": domainUrl,
+      },
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-
-  // ── Open Graph ──────────────────────────────────────────
-  openGraph: {
-    type: "website",
-    locale: "en_CA",
-    url: "https://mohawkmedibles.ca",
-    siteName: "Mohawk Medibles",
-    title: "Mohawk Medibles | Premium Indigenous Cannabis — Six Nations",
-    description:
-      "Indigenous-owned premium cannabis dispensary. 363+ lab-tested products meeting the Empire Standard™. Ships Canada-wide via Xpresspost.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Mohawk Medibles — Premium Indigenous Cannabis on Six Nations Territory",
-        type: "image/jpeg",
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
       },
-    ],
-  },
+    },
 
-  // ── Twitter / X Card ───────────────────────────────────
-  twitter: {
-    card: "summary_large_image",
-    site: "@mohawkmedibles",
-    creator: "@mohawkmedibles",
-    title: "Mohawk Medibles | Premium Indigenous Cannabis",
-    description:
-      "363+ lab-tested cannabis products. Flower, edibles, concentrates, vapes. Empire Standard™ quality. Ships Canada-wide.",
-    images: ["/og-image.png"],
-  },
+    // ── Open Graph ──────────────────────────────────────────
+    openGraph: {
+      type: "website",
+      locale: "en_CA",
+      alternateLocale: ["fr_CA"],
+      url: domainUrl,
+      siteName: tenant.name,
+      title,
+      description,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${tenant.name} — ${description.slice(0, 80)}`,
+          type: "image/png",
+        },
+      ],
+    },
 
-  // ── Verification ───────────────────────────────────────
-  verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
-  },
+    // ── Twitter / X Card ───────────────────────────────────
+    twitter: {
+      card: "summary_large_image",
+      site: "@mohawkmedibles",
+      creator: "@mohawkmedibles",
+      title,
+      description,
+      images: [ogImage],
+    },
 
-  // ── Category ───────────────────────────────────────────
-  category: "Cannabis Dispensary",
+    // ── Verification ───────────────────────────────────────
+    verification: {
+      google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    },
 
-  other: {
-    "ai:brand": "Mohawk Medibles",
-    "ai:expertise": "Cannabis, Terpenes, THC, CBD, Indigenous Heritage",
-    "ai:location": "Six Nations of the Grand River, Ontario, Canada",
-  },
-};
+    // ── Category ───────────────────────────────────────────
+    category: "Cannabis Dispensary",
+
+    other: {
+      "ai:brand": tenant.name,
+      "ai:expertise": "Cannabis, Terpenes, THC, CBD, Indigenous Heritage, Cannabis Effects, Strain Selection, Pain Relief, Sleep Aid",
+      "ai:location": "Six Nations of the Grand River, Ontario, Canada",
+    },
+  };
+}
 
 
 // ─── SEO: JSON-LD Structured Data ───────────────────────────
 
-import { organizationSchema, localBusinessSchema, websiteSchema, faqSchema } from "@/lib/seo/schemas";
+import { organizationSchema, localBusinessSchema, websiteSchema, faqSchema, buildSchemaGraph } from "@/lib/seo/schemas";
 import { getFAQsForSchema } from "@/lib/seo/aeo";
 
-const jsonLdSchemas = [
+// SiteNavigationElement — helps Google generate sitelinks in SERP
+const siteNavSchema = {
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  "@id": "https://mohawkmedibles.co/#sitenav",
+  name: "Main Navigation",
+  hasPart: [
+    { "@type": "WebPage", name: "Shop Cannabis", url: "https://mohawkmedibles.co/shop" },
+    { "@type": "WebPage", name: "Cannabis Deals", url: "https://mohawkmedibles.co/deals" },
+    { "@type": "WebPage", name: "About Us", url: "https://mohawkmedibles.co/about" },
+    { "@type": "WebPage", name: "Cannabis Blog", url: "https://mohawkmedibles.co/blog" },
+    { "@type": "WebPage", name: "Customer Reviews", url: "https://mohawkmedibles.co/reviews" },
+    { "@type": "WebPage", name: "FAQ", url: "https://mohawkmedibles.co/faq" },
+    { "@type": "WebPage", name: "Support", url: "https://mohawkmedibles.co/support" },
+    { "@type": "WebPage", name: "Cannabis Delivery Canada", url: "https://mohawkmedibles.co/delivery" },
+    { "@type": "WebPage", name: "Buy Weed Online Canada", url: "https://mohawkmedibles.co/buy-weed-online-canada" },
+  ],
+};
+
+const jsonLdGraph = buildSchemaGraph(
   organizationSchema(),
   localBusinessSchema(),
   websiteSchema(),
   faqSchema(getFAQsForSchema(undefined, 8)),
-];
+  siteNavSchema,
+);
 
 // ─── Components ─────────────────────────────────────────────
 
@@ -110,42 +179,60 @@ import { CartProvider } from "@/hooks/useCart";
 import { WishlistProvider } from "@/hooks/useWishlist";
 import { Analytics } from "@/components/Analytics";
 import ConsentBanner from "@/components/ConsentBanner";
+import AgeGate from "@/components/AgeGate";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import ThemeProvider from "@/components/ThemeProvider";
 import { LocaleProvider } from "@/components/LocaleProvider";
+import StardustLoader from "@/components/StardustLoader";
+import LocaleSEOHead from "@/components/LocaleSEOHead";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const tenant = await getCurrentTenant();
+  const domainUrl = tenant.domain ? `https://${tenant.domain}` : "https://mohawkmedibles.co";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preconnect to Google Fonts for faster LCP */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* DNS prefetch for CDN image domains */}
+        <link rel="dns-prefetch" href="//mohawkmedibles.ca" />
+        <link rel="dns-prefetch" href="//i0.wp.com" />
+        {/* Preload LCP hero image for faster paint */}
+        <link rel="preload" as="image" type="image/webp" href="/assets/hero/hero-flower-premium.webp" fetchPriority="high" />
         {/* LLM Discovery */}
         <link rel="alternate" type="text/plain" href="/llms.txt" />
         <link rel="alternate" type="text/plain" href="/llms-full.txt" />
-        {/* Hreflang — Multi-lingual */}
-        <link rel="alternate" hrefLang="en" href="https://mohawkmedibles.ca" />
-        <link rel="alternate" hrefLang="fr" href="https://mohawkmedibles.ca" />
-        <link rel="alternate" hrefLang="x-default" href="https://mohawkmedibles.ca" />
+        {/* Hreflang for moh — not in Next.js alternates.languages (only standard ISO codes) */}
+        <link rel="alternate" hrefLang="moh" href={domainUrl} />
       </head>
       <body
-        className={`${poppins.className} ${poppins.variable} ${albertSans.variable} antialiased`}
+        className={`${inter.className} ${inter.variable} ${barlow.variable} ${sora.variable} antialiased`}
+        style={{
+          '--tenant-primary': tenant.primaryColor,
+          '--tenant-secondary': tenant.secondaryColor,
+          '--tenant-accent': tenant.accentColor,
+        } as React.CSSProperties}
       >
-        {/* Multi-schema JSON-LD injection */}
-        {jsonLdSchemas.map((schema, i) => (
-          <script
-            key={i}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-          />
-        ))}
+        {/* JSON-LD @graph — single script with all schema entities cross-referenced via @id */}
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger -- trusted server-side schema data
+          dangerouslySetInnerHTML={{ __html: jsonLdGraph }}
+        />
+        <StardustLoader />
         <ThemeProvider>
           <LocaleProvider>
+            <LocaleSEOHead />
             <CartProvider>
             <WishlistProvider>
+              <TenantProvider tenant={tenant}>
               {/* Skip to main content — AODA accessibility requirement */}
               <a
                 href="#main-content"
@@ -159,7 +246,9 @@ export default function RootLayout({
               </main>
               <Footer />
               <AgentChatWidget />
+              <AgeGate />
               <ConsentBanner />
+              </TenantProvider>
             </WishlistProvider>
             </CartProvider>
           </LocaleProvider>

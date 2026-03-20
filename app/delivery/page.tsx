@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description:
     "Order premium cannabis online and get it delivered to your door across Canada. Fast, discreet shipping to all provinces & territories. Lab-tested flower, edibles, concentrates & more.",
   alternates: {
-    canonical: "https://mohawkmedibles.ca/delivery",
+    canonical: "https://mohawkmedibles.co/delivery",
   },
   keywords: [
     "cannabis delivery Canada",
@@ -36,11 +36,11 @@ export const metadata: Metadata = {
     title: "Cannabis Delivery Across Canada | Mohawk Medibles",
     description:
       "Fast, discreet cannabis delivery to all Canadian provinces. Order premium, lab-tested products online.",
-    url: "https://mohawkmedibles.ca/delivery",
+    url: "https://mohawkmedibles.co/delivery",
     type: "website",
     images: [
       {
-        url: "https://mohawkmedibles.ca/og-image.png",
+        url: "https://mohawkmedibles.co/og-image.png",
         width: 1200,
         height: 630,
         alt: "Mohawk Medibles Canada-wide cannabis delivery",
@@ -76,8 +76,8 @@ export default function DeliveryPage() {
 
   // Breadcrumb JSON-LD
   const breadcrumbData = breadcrumbSchema([
-    { name: "Home", url: "https://mohawkmedibles.ca" },
-    { name: "Delivery", url: "https://mohawkmedibles.ca/delivery" },
+    { name: "Home", url: "https://mohawkmedibles.co" },
+    { name: "Delivery", url: "https://mohawkmedibles.co/delivery" },
   ]);
 
   return (
@@ -90,18 +90,18 @@ export default function DeliveryPage() {
         }}
       />
 
-      <main className="min-h-screen pt-32 pb-20 bg-forest text-cream">
+      <main className="min-h-screen pt-32 pb-20 page-glass text-foreground">
         <div className="container mx-auto px-6">
           {/* ── Hero Section ──────────────────────────────────────── */}
           <section className="mb-20">
             <div className="max-w-4xl mx-auto text-center">
-              <p className="text-[10px] font-bold tracking-widest uppercase text-secondary mb-4">
+              <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime mb-4">
                 Nationwide Delivery
               </p>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white uppercase mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground uppercase mb-6">
                 Cannabis Delivery Across Canada
               </h1>
-              <p className="text-lg text-cream/90 leading-relaxed mb-8">
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
                 Mohawk Medibles ships premium, lab-tested cannabis to every province and
                 territory in Canada. Fast, discreet delivery with full tracking and guaranteed
                 freshness.
@@ -111,28 +111,28 @@ export default function DeliveryPage() {
 
           {/* ── Stats Bar ─────────────────────────────────────────── */}
           <section className="mb-20">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-12 px-8 glass rounded-3xl border border-white/10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-12 px-8 glass-card rounded-3xl border border-border">
               <div className="text-center">
-                <p className="text-5xl font-bold text-white mb-2">{totalCities}+</p>
-                <p className="text-[10px] font-bold tracking-widest uppercase text-secondary">
+                <p className="text-5xl font-bold text-foreground mb-2">{totalCities}+</p>
+                <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime">
                   Cities Served
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-5xl font-bold text-white mb-2">13</p>
-                <p className="text-[10px] font-bold tracking-widest uppercase text-secondary">
+                <p className="text-5xl font-bold text-foreground mb-2">13</p>
+                <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime">
                   Provinces & Territories
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-5xl font-bold text-white mb-2">1-3</p>
-                <p className="text-[10px] font-bold tracking-widest uppercase text-secondary">
+                <p className="text-5xl font-bold text-foreground mb-2">1-3</p>
+                <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime">
                   Business Days
                 </p>
               </div>
               <div className="text-center">
-                <p className="text-5xl font-bold text-white mb-2">$150+</p>
-                <p className="text-[10px] font-bold tracking-widest uppercase text-secondary">
+                <p className="text-5xl font-bold text-foreground mb-2">$199+</p>
+                <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime">
                   FREE Shipping
                 </p>
               </div>
@@ -142,10 +142,10 @@ export default function DeliveryPage() {
           {/* ── Interactive Delivery Map ────────────────────────────── */}
           <section className="mb-20">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl font-bold text-foreground tracking-tight">
                 Our Delivery Coverage
               </h2>
-              <p className="text-cream/80 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Click any city on the map to view delivery details
               </p>
             </div>
@@ -155,10 +155,10 @@ export default function DeliveryPage() {
           {/* ── Province Grid ─────────────────────────────────────── */}
           <section className="mb-20">
             <div className="mb-12">
-              <h2 className="text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl font-bold text-foreground tracking-tight">
                 Select Your Province
               </h2>
-              <p className="text-cream/80 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Choose your location to see delivery times and available cities
               </p>
             </div>
@@ -170,13 +170,13 @@ export default function DeliveryPage() {
                   href={`/delivery/${province.slug}`}
                   className="group"
                 >
-                  <div className="glass p-6 rounded-2xl border border-white/10 hover:border-secondary/50 transition-all h-full flex flex-col">
+                  <div className="glass-card p-6 rounded-2xl border border-border hover:border-forest/50 dark:hover:border-lime/50 transition-all h-full flex flex-col">
                     {/* Province Name & Abbreviation */}
                     <div className="mb-4">
-                      <h3 className="text-lg font-bold text-white group-hover:text-secondary transition-colors">
+                      <h3 className="text-lg font-bold text-foreground group-hover:text-forest dark:group-hover:text-lime transition-colors">
                         {province.name}
                       </h3>
-                      <p className="text-[10px] font-bold tracking-widest uppercase text-secondary/70 mt-1">
+                      <p className="text-[10px] font-bold tracking-widest uppercase text-forest/70 dark:text-lime/70 mt-1">
                         {province.abbreviation}
                       </p>
                     </div>
@@ -184,31 +184,31 @@ export default function DeliveryPage() {
                     {/* Details */}
                     <div className="space-y-3 flex-1">
                       <div>
-                        <p className="text-[9px] font-bold tracking-widest uppercase text-secondary/60 mb-1">
+                        <p className="text-[9px] font-bold tracking-widest uppercase text-forest/60 dark:text-lime/60 mb-1">
                           Cities
                         </p>
-                        <p className="text-sm font-semibold text-cream">
+                        <p className="text-sm font-semibold text-foreground">
                           {province.cities.length} cities
                         </p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold tracking-widest uppercase text-secondary/60 mb-1">
+                        <p className="text-[9px] font-bold tracking-widest uppercase text-forest/60 dark:text-lime/60 mb-1">
                           Legal Age
                         </p>
-                        <p className="text-sm font-semibold text-cream">{province.legalAge}+</p>
+                        <p className="text-sm font-semibold text-foreground">{province.legalAge}+</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold tracking-widest uppercase text-secondary/60 mb-1">
+                        <p className="text-[9px] font-bold tracking-widest uppercase text-forest/60 dark:text-lime/60 mb-1">
                           Delivery Time
                         </p>
-                        <p className="text-sm font-semibold text-cream">
+                        <p className="text-sm font-semibold text-foreground">
                           {province.deliveryTime}
                         </p>
                       </div>
                     </div>
 
                     {/* CTA Arrow */}
-                    <div className="mt-6 inline-flex items-center gap-2 text-secondary group-hover:gap-3 transition-all">
+                    <div className="mt-6 inline-flex items-center gap-2 text-forest dark:text-lime group-hover:gap-3 transition-all">
                       <span className="text-xs font-bold tracking-widest uppercase">
                         Explore
                       </span>
@@ -235,10 +235,10 @@ export default function DeliveryPage() {
           {/* ── Popular Cities ────────────────────────────────────── */}
           <section className="mb-20">
             <div className="mb-12">
-              <h2 className="text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl font-bold text-foreground tracking-tight">
                 Popular Cities
               </h2>
-              <p className="text-cream/80 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Fast delivery to Canada's major hubs
               </p>
             </div>
@@ -250,25 +250,25 @@ export default function DeliveryPage() {
                   href={`/delivery/${province.slug}/${city.slug}`}
                   className="group"
                 >
-                  <div className="glass p-6 rounded-2xl border border-white/10 hover:border-secondary/50 transition-all h-full flex flex-col">
+                  <div className="glass-card p-6 rounded-2xl border border-border hover:border-forest/50 dark:hover:border-lime/50 transition-all h-full flex flex-col">
                     {/* City Name */}
-                    <h3 className="text-lg font-bold text-white group-hover:text-secondary transition-colors mb-2">
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-forest dark:group-hover:text-lime transition-colors mb-2">
                       {city.name}
                     </h3>
 
                     {/* Province & Population */}
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                      <span className="text-xs text-secondary/70">{province.abbreviation}</span>
-                      <span className="text-xs text-cream/70">Pop. {city.population}</span>
+                      <span className="text-xs text-forest/70 dark:text-lime/70">{province.abbreviation}</span>
+                      <span className="text-xs text-muted-foreground">Pop. {city.population}</span>
                     </div>
 
                     {/* Landmark */}
-                    <p className="text-xs text-cream/80 mb-3 flex-1">
-                      <span className="font-semibold text-secondary">Landmark:</span> {city.landmark}
+                    <p className="text-xs text-muted-foreground mb-3 flex-1">
+                      <span className="font-semibold text-forest dark:text-lime">Landmark:</span> {city.landmark}
                     </p>
 
                     {/* Delivery Time */}
-                    <div className="inline-flex items-center gap-1.5 text-secondary text-xs font-semibold">
+                    <div className="inline-flex items-center gap-1.5 text-forest dark:text-lime text-xs font-semibold">
                       <Truck className="w-3.5 h-3.5" />
                       {city.deliveryTime}
                     </div>
@@ -281,10 +281,10 @@ export default function DeliveryPage() {
           {/* ── Trust Section ─────────────────────────────────────── */}
           <section className="mb-20">
             <div className="mb-12">
-              <h2 className="text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-3xl font-bold text-foreground tracking-tight">
                 Why Choose Mohawk Medibles
               </h2>
-              <p className="text-cream/80 mt-2">
+              <p className="text-muted-foreground mt-2">
                 Trusted by thousands of Canadian cannabis enthusiasts
               </p>
             </div>
@@ -311,24 +311,24 @@ export default function DeliveryPage() {
                 },
                 {
                   icon: Gift,
-                  title: "FREE Shipping Over $150",
+                  title: "FREE Shipping Over $199",
                   description:
-                    "Orders over $150 CAD ship free to any Canadian address. No hidden fees or surprises.",
+                    "Orders over $199 CAD ship free to any Canadian address. No hidden fees or surprises.",
                 },
               ].map((feature, i) => {
                 const Icon = feature.icon;
                 return (
                   <div
                     key={i}
-                    className="glass p-8 rounded-2xl border border-white/10 hover:border-secondary/50 transition-all"
+                    className="glass-card p-8 rounded-2xl border border-border hover:border-forest/50 dark:hover:border-lime/50 transition-all"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-xl bg-secondary/10 flex-shrink-0">
-                        <Icon className="w-6 h-6 text-secondary" />
+                      <div className="p-3 rounded-xl bg-forest/10 dark:bg-lime/10 flex-shrink-0">
+                        <Icon className="w-6 h-6 text-forest dark:text-lime" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-white text-lg mb-2">{feature.title}</h3>
-                        <p className="text-cream/80 text-sm leading-relaxed">
+                        <h3 className="font-bold text-foreground text-lg mb-2">{feature.title}</h3>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                           {feature.description}
                         </p>
                       </div>
@@ -341,11 +341,11 @@ export default function DeliveryPage() {
 
           {/* ── Final CTA ─────────────────────────────────────────── */}
           <section className="mb-0">
-            <div className="glass p-12 rounded-3xl border border-white/10 text-center max-w-2xl mx-auto">
-              <h2 className="text-3xl font-bold text-white tracking-tight mb-4">
+            <div className="glass-card p-12 rounded-3xl border border-border text-center max-w-2xl mx-auto">
+              <h2 className="text-3xl font-bold text-foreground tracking-tight mb-4">
                 Ready to Order?
               </h2>
-              <p className="text-cream/90 mb-8 text-lg">
+              <p className="text-muted-foreground mb-8 text-lg">
                 Browse our full collection of premium, lab-tested cannabis products. Discreet
                 delivery to your door, guaranteed freshness.
               </p>

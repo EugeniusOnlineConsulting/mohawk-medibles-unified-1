@@ -4,15 +4,21 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  /* Brand Colors */
+  /* Brand Colors — Blended: .cc Lime + .ca Forest + Vercel Earth */
   --forest: #2D5016;
+  --forest-light: #3a6b1e;
   --earth: #8B4513;
   --cream: #F5F5DC;
   --leaf: #228B22;
+  --lime: #C8E63E;          /* .cc signature acid lime */
+  --lime-light: #CAF880;    /* .cc lighter lime */
+  --lime-dark: #9ABF2E;     /* accessible lime for light mode text */
+  --charcoal: #1e1e26;      /* .cc dark background */
+  --charcoal-deep: #111111; /* .cc deeper dark */
 
-  /* Semantic Colors */
-  --background: var(--cream);
-  --foreground: var(--forest);
+  /* Semantic Colors — Light mode: Apple-glass clarity */
+  --background: #F8F9FA;          /* cool white — crisp Apple-like base */
+  --foreground: #1a1a1a;          /* near-black for maximum readability */
 
   --primary: var(--forest);
   --primary-foreground: #ffffff;
@@ -20,18 +26,32 @@
   --secondary: var(--earth);
   --secondary-foreground: #ffffff;
 
-  --accent: var(--leaf);
+  --accent: #4A7A20;              /* darker lime for light mode — passes WCAG AA */
   --accent-foreground: #ffffff;
 
-  --muted: #e5e5c0;
-  --muted-foreground: #3a4d30;
+  --muted: #f0f1f3;               /* cool gray — glass-compatible */
+  --muted-foreground: #4a4a4a;    /* dark gray — 7:1 contrast on light bg */
 
-  --card: #ffffff;
-  --card-foreground: var(--forest);
+  --card: rgba(255, 255, 255, 0.82);
+  --card-foreground: #1a1a1a;     /* near-black text on white cards */
 
-  --border: #d4d4b8;
-  --input: #d4d4b8;
-  --ring: var(--leaf);
+  --border: rgba(0, 0, 0, 0.12);
+  --input: rgba(0, 0, 0, 0.08);
+  --ring: var(--lime);
+
+  /* Glass Design Tokens — Light mode */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.90);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --glass-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.10), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+
+  /* Vibrant accent gradients */
+  --gradient-brand: linear-gradient(135deg, var(--forest) 0%, var(--lime) 100%);
+  --gradient-warm: linear-gradient(135deg, var(--earth) 0%, #D4A574 100%);
+  --gradient-lime-glow: linear-gradient(135deg, var(--lime) 0%, var(--lime-light) 100%);
+  --gradient-page: linear-gradient(180deg, #F8F9FA 0%, #F0F2F0 50%, #F8F9FA 100%);
 }
 
 @theme inline {
@@ -45,9 +65,15 @@
 
   /* Short aliases so bg-forest, text-cream, etc. resolve */
   --color-forest: var(--forest);
+  --color-forest-light: var(--forest-light);
   --color-earth: var(--earth);
   --color-cream: var(--cream);
   --color-leaf: var(--leaf);
+  --color-lime: var(--lime);
+  --color-lime-light: var(--lime-light);
+  --color-lime-dark: var(--lime-dark);
+  --color-charcoal: var(--charcoal);
+  --color-charcoal-deep: var(--charcoal-deep);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -68,54 +94,501 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-albert-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Blended font stack: Sora (display) + Barlow (heading) + Inter (body) */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sora), var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
 }
 
 .font-heading {
   font-family: var(--font-heading), system-ui, sans-serif;
 }
 
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+/* Dark mode — .cc charcoal aesthetic with glass overlays */
 .dark {
-  --background: #0D1F0A;
-  /* Dark Forest — the signature green */
-  --foreground: #F5F5DC;
+  --background: #141418;           /* deeper charcoal — richer contrast */
+  --foreground: #f0f0f0;          /* bright white-ish — crisp on charcoal */
 
-  --primary: var(--leaf);
-  --primary-foreground: #ffffff;
+  --primary: var(--lime);
+  --primary-foreground: #0a0a0a;
 
-  --muted: #1a2f16;
-  --muted-foreground: #c8daca;
+  --accent: var(--lime);
+  --accent-foreground: #0a0a0a;
 
-  --card: #142910;
-  --card-foreground: #F5F5DC;
+  --muted: #1e1e28;
+  --muted-foreground: #c0c0c0;    /* lighter gray — passes WCAG AA on charcoal */
 
-  --border: #2D5016;
-  --input: #2D5016;
+  --card: rgba(255, 255, 255, 0.04);
+  --card-foreground: #f0f0f0;     /* bright text on dark cards */
+
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+
+  /* Glass Design Tokens — Dark mode */
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  --glass-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --glass-blur: 24px;
+
+  /* Dark vibrant gradients */
+  --gradient-brand: linear-gradient(135deg, var(--forest) 0%, var(--lime) 100%);
+  --gradient-page: linear-gradient(180deg, #141418 0%, #1a1a22 50%, #141418 100%);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
-  @apply antialiased scroll-smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  @apply scroll-smooth;
 }
 
-/* Glassmorphism Utility */
+/* iOS safe area for sticky bottom navs */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbar for horizontal carousels */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ─── Glassmorphism System — Apple-inspired ─── */
 .glass {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
-.glass-dark {
-  @apply bg-black/20 backdrop-blur-lg border border-white/10 shadow-xl;
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-lg);
 }
 
-/* Trust Ticker Scroll Animation */
+.glass-card {
+  background: var(--card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  box-shadow: var(--glass-shadow-lg);
+  border-color: var(--lime);
+}
+
+/* ─── Header on Hero — force white text for child components in light mode ─── */
+.header-on-hero button,
+.header-on-hero a {
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+.header-on-hero button:hover,
+.header-on-hero a:hover {
+  color: rgba(255, 255, 255, 1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Vibrant accent glow — pops on both themes */
+.glow-lime {
+  box-shadow: 0 0 20px rgba(200, 230, 62, 0.15), 0 0 60px rgba(200, 230, 62, 0.05);
+}
+
+.glow-forest {
+  box-shadow: 0 0 20px rgba(45, 80, 22, 0.2), 0 0 60px rgba(45, 80, 22, 0.08);
+}
+
+/* Brand gradient text */
+.text-gradient-brand {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Page wrapper — subtle gradient bg */
+.page-glass {
+  background: var(--gradient-page);
+  min-height: 100vh;
+}
+
+/* ─── Animations — Blended from .cc + Vercel ─── */
+
+/* Trust Ticker / Deal Marquee */
 @keyframes scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-
 .animate-scroll {
   animation: scroll 20s linear infinite;
+}
+
+/* Infinite marquee — smooth continuous scroll, speed via inline style */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee-scroll {
+  animation: marquee-scroll 40s linear infinite;
+}
+
+/* .cc: Kinetic text reveal — staggered character animation */
+@keyframes kinetic-reveal {
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(8px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.animate-kinetic-reveal {
+  animation: kinetic-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+}
+
+/* .cc: Neon glow pulse — lime green breathing effect */
+@keyframes neon-glow {
+  0%, 100% { text-shadow: 0 0 10px rgba(200, 230, 62, 0.5), 0 0 40px rgba(200, 230, 62, 0.2); }
+  50% { text-shadow: 0 0 20px rgba(200, 230, 62, 0.8), 0 0 60px rgba(200, 230, 62, 0.4), 0 0 100px rgba(200, 230, 62, 0.1); }
+}
+.animate-neon-glow {
+  animation: neon-glow 3s ease-in-out infinite;
+}
+
+/* Floating blob animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-20px) rotate(5deg); }
+  66% { transform: translateY(10px) rotate(-3deg); }
+}
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Glow pulse for badges/accents */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px rgba(200, 230, 62, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(200, 230, 62, 0.6), 0 0 40px rgba(200, 230, 62, 0.2); }
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Fast ticker for deals */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker 30s linear infinite;
+}
+
+/* Film grain overlay — .cc subtle texture */
+.grain-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  z-index: 1;
+}
+
+/* Stagger children animation helper */
+.stagger-children > * {
+  opacity: 0;
+  animation: kinetic-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.24s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.32s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.48s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.56s; }
+
+/* ─── Smoke / Haze Effect — Hero overlay ─── */
+
+/* Hide smoke on mobile for performance; show on md+ */
+.smoke-container {
+  display: none;
+}
+@media (min-width: 768px) {
+  .smoke-container {
+    display: block;
+  }
+}
+
+.smoke-layer {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform, opacity;
+}
+
+/* Layer 1 — Large slow drift from left */
+.smoke-layer-1 {
+  width: 60%;
+  height: 70%;
+  top: 10%;
+  left: -20%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
+  filter: blur(60px);
+  animation: smoke-drift-1 35s ease-in-out infinite;
+}
+.dark .smoke-layer-1 {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+}
+
+/* Layer 2 — Medium drift from right, offset timing */
+.smoke-layer-2 {
+  width: 50%;
+  height: 60%;
+  top: 20%;
+  right: -15%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
+  filter: blur(50px);
+  animation: smoke-drift-2 28s ease-in-out infinite;
+  animation-delay: -8s;
+}
+.dark .smoke-layer-2 {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, transparent 70%);
+}
+
+/* Layer 3 — Rising wisps, lime-tinted */
+.smoke-layer-3 {
+  width: 40%;
+  height: 50%;
+  bottom: 5%;
+  left: 20%;
+  background: radial-gradient(ellipse at center, rgba(200, 230, 62, 0.04) 0%, transparent 65%);
+  filter: blur(45px);
+  animation: smoke-drift-3 32s ease-in-out infinite;
+  animation-delay: -15s;
+}
+.dark .smoke-layer-3 {
+  background: radial-gradient(ellipse at center, rgba(200, 230, 62, 0.06) 0%, transparent 65%);
+}
+
+/* Layer 4 — Wide low haze crawling across bottom */
+.smoke-layer-4 {
+  width: 80%;
+  height: 35%;
+  bottom: -10%;
+  left: 10%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.03) 0%, rgba(200, 230, 62, 0.02) 40%, transparent 70%);
+  filter: blur(70px);
+  animation: smoke-drift-4 40s ease-in-out infinite;
+  animation-delay: -20s;
+}
+.dark .smoke-layer-4 {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, rgba(200, 230, 62, 0.03) 40%, transparent 70%);
+}
+
+/* Keyframes — organic drifting paths using translate + scale + opacity */
+
+@keyframes smoke-drift-1 {
+  0%   { transform: translate(0, 0) scale(1);       opacity: 0; }
+  15%  { opacity: 1; }
+  30%  { transform: translate(40%, 10%) scale(1.15); }
+  50%  { transform: translate(70%, -5%) scale(1.05); opacity: 0.8; }
+  70%  { transform: translate(90%, 8%) scale(1.2);   }
+  85%  { opacity: 1; }
+  100% { transform: translate(120%, 0) scale(1);     opacity: 0; }
+}
+
+@keyframes smoke-drift-2 {
+  0%   { transform: translate(0, 0) scale(1);        opacity: 0; }
+  10%  { opacity: 1; }
+  25%  { transform: translate(-30%, 15%) scale(1.1);  }
+  50%  { transform: translate(-60%, -8%) scale(1.2);  opacity: 0.7; }
+  75%  { transform: translate(-85%, 12%) scale(1.05); }
+  90%  { opacity: 1; }
+  100% { transform: translate(-110%, 0) scale(1);     opacity: 0; }
+}
+
+@keyframes smoke-drift-3 {
+  0%   { transform: translate(0, 0) scale(1);         opacity: 0; }
+  12%  { opacity: 1; }
+  35%  { transform: translate(15%, -30%) scale(1.15);  }
+  55%  { transform: translate(-10%, -55%) scale(1.25); opacity: 0.6; }
+  80%  { transform: translate(20%, -75%) scale(1.1);   }
+  92%  { opacity: 0.8; }
+  100% { transform: translate(5%, -90%) scale(1);      opacity: 0; }
+}
+
+@keyframes smoke-drift-4 {
+  0%   { transform: translate(0, 0) scaleX(1);      opacity: 0; }
+  10%  { opacity: 1; }
+  25%  { transform: translate(-8%, 5%) scaleX(1.1);  }
+  50%  { transform: translate(8%, -3%) scaleX(0.95); opacity: 0.7; }
+  75%  { transform: translate(-5%, 6%) scaleX(1.15); }
+  90%  { opacity: 1; }
+  100% { transform: translate(0, 0) scaleX(1);      opacity: 0; }
+}
+
+/* ─── Page-level Smoke / Ambient Haze ─── */
+
+.page-smoke-container {
+  display: none;
+}
+@media (min-width: 768px) {
+  .page-smoke-container {
+    display: block;
+  }
+}
+
+.page-smoke {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform, opacity;
+}
+
+/* Layer 1 — Large slow drift, top-left */
+.page-smoke-1 {
+  width: 55%;
+  height: 50%;
+  top: 5%;
+  left: -15%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.025) 0%, transparent 70%);
+  filter: blur(80px);
+  animation: page-smoke-1 50s ease-in-out infinite;
+}
+.dark .page-smoke-1 {
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 70%);
+}
+
+/* Layer 2 — Lime wisp, center-right */
+.page-smoke-2 {
+  width: 40%;
+  height: 45%;
+  top: 35%;
+  right: -10%;
+  background: radial-gradient(ellipse at center, rgba(132,204,22,0.02) 0%, transparent 65%);
+  filter: blur(70px);
+  animation: page-smoke-2 42s ease-in-out infinite;
+  animation-delay: -12s;
+}
+.dark .page-smoke-2 {
+  background: radial-gradient(ellipse at center, rgba(132,204,22,0.035) 0%, transparent 65%);
+}
+
+/* Layer 3 — Bottom mist crawl */
+.page-smoke-3 {
+  width: 70%;
+  height: 30%;
+  bottom: -5%;
+  left: 15%;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(132,204,22,0.015) 40%, transparent 70%);
+  filter: blur(90px);
+  animation: page-smoke-3 55s ease-in-out infinite;
+  animation-delay: -25s;
+}
+.dark .page-smoke-3 {
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, rgba(132,204,22,0.02) 40%, transparent 70%);
+}
+
+@keyframes page-smoke-1 {
+  0%   { transform: translate(0, 0) scale(1);       opacity: 0; }
+  12%  { opacity: 1; }
+  35%  { transform: translate(30%, 8%) scale(1.1);   }
+  55%  { transform: translate(55%, -4%) scale(1.05); opacity: 0.7; }
+  78%  { transform: translate(75%, 6%) scale(1.15);  }
+  90%  { opacity: 0.9; }
+  100% { transform: translate(100%, 0) scale(1);     opacity: 0; }
+}
+
+@keyframes page-smoke-2 {
+  0%   { transform: translate(0, 0) scale(1);        opacity: 0; }
+  10%  { opacity: 0.8; }
+  30%  { transform: translate(-25%, 12%) scale(1.1);  }
+  50%  { transform: translate(-50%, -6%) scale(1.15); opacity: 0.5; }
+  70%  { transform: translate(-70%, 10%) scale(1.05); }
+  88%  { opacity: 0.7; }
+  100% { transform: translate(-90%, 0) scale(1);      opacity: 0; }
+}
+
+@keyframes page-smoke-3 {
+  0%   { transform: translate(0, 0) scaleX(1);      opacity: 0; }
+  8%   { opacity: 0.8; }
+  30%  { transform: translate(-6%, 4%) scaleX(1.08); }
+  50%  { transform: translate(6%, -2%) scaleX(0.95); opacity: 0.5; }
+  70%  { transform: translate(-4%, 5%) scaleX(1.1);  }
+  92%  { opacity: 0.6; }
+  100% { transform: translate(0, 0) scaleX(1);      opacity: 0; }
+}
+
+/* ═══ Ken Burns — 4 unique hero background motion effects ═══ */
+
+/* Slide 1: Slow zoom in — cinematic pull-in */
+@keyframes ken-burns-zoom-in {
+  0%   { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.12) translate(-1%, -1%); }
+}
+.animate-ken-burns-zoom-in {
+  animation: ken-burns-zoom-in 8s ease-out forwards;
+}
+
+/* Slide 2: Pan left-to-right — horizontal sweep */
+@keyframes ken-burns-pan-right {
+  0%   { transform: scale(1.08) translate(-3%, 0); }
+  100% { transform: scale(1.08) translate(2%, -1%); }
+}
+.animate-ken-burns-pan-right {
+  animation: ken-burns-pan-right 8s ease-in-out forwards;
+}
+
+/* Slide 3: Slow zoom out with drift — pull-back reveal */
+@keyframes ken-burns-zoom-out {
+  0%   { transform: scale(1.15) translate(1%, 1%); }
+  100% { transform: scale(1.02) translate(-1%, 0); }
+}
+.animate-ken-burns-zoom-out {
+  animation: ken-burns-zoom-out 8s ease-out forwards;
+}
+
+/* Slide 4: Pan right-to-left — reverse horizontal sweep */
+@keyframes ken-burns-pan-left {
+  0%   { transform: scale(1.08) translate(3%, -1%); }
+  100% { transform: scale(1.08) translate(-2%, 1%); }
+}
+.animate-ken-burns-pan-left {
+  animation: ken-burns-pan-left 8s ease-in-out forwards;
+}
+
+
+/* WCAG 2.2.2 — Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll,
+  .animate-ticker,
+  .animate-float,
+  .animate-kinetic-reveal,
+  .animate-neon-glow,
+  .animate-glow-pulse,
+  .animate-marquee-scroll,
+  .animate-ken-burns-zoom-in,
+  .animate-ken-burns-pan-right,
+  .animate-ken-burns-zoom-out,
+  .animate-ken-burns-pan-left,
+  .stagger-children > *,
+  .smoke-layer,
+  .page-smoke {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .smoke-layer,
+  .page-smoke {
+    opacity: 0 !important;
+    display: none;
+  }
 }

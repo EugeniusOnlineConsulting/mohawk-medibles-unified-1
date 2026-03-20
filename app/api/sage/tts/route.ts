@@ -22,8 +22,13 @@ export async function POST(req: NextRequest) {
         // Validate persona — default to medagent if unknown
         const safePersona = VALID_PERSONAS.has(persona) ? persona : "medagent";
 
-        // Trim to ~800 chars max for TTS
-        const trimmed = text.slice(0, 800);
+        // Trim to ~400 chars max for faster TTS generation and lower latency
+        let trimmed = text.slice(0, 400);
+        // Cut at sentence boundary for natural speech
+        if (trimmed.length >= 400) {
+            const lastSentence = trimmed.lastIndexOf(".");
+            if (lastSentence > 150) trimmed = trimmed.slice(0, lastSentence + 1);
+        }
 
         const result = await getAudioStream(trimmed, safePersona);
 

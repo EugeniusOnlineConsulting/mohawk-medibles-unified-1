@@ -146,7 +146,7 @@ Yes. Mohawk Medibles ships all products Canada-wide via Canada Post Xpresspost w
         metaDescription: "Top sativa strains for energy, creativity, and focus in Canada. Expert picks with terpene data and buying guide from Mohawk Medibles, Six Nations.",
         excerpt: "Need a cannabis strain that fuels creativity and focus instead of couch-lock? Our Six Nations experts break down the best sativa strains for productive, energizing highs.",
         category: "Strain Guides",
-        image: "/assets/products/green-crack-shatter-1g-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/05/pineapple_express_meds_shatter_1200x1200-1.jpg",
         imageAlt: "Green Crack sativa cannabis strain for energy and focus — Mohawk Medibles Canada",
         author: "Mohawk Medibles Team",
         authorCredentials: "Sativa strain specialists with deep knowledge of energizing terpene profiles, Six Nations territory",
@@ -560,7 +560,7 @@ Both have excellent safety profiles. The World Health Organization's 2018 report
         metaDescription: "Complete guide to cannabis concentrates: shatter, wax, live resin, rosin, and more. Potency, prices, and how to use. Mohawk Medibles, Six Nations.",
         excerpt: "From shatter's glass-like clarity to live resin's terpene explosion, cannabis concentrates offer potency and flavour that flower cannot match. Here is your complete guide.",
         category: "Product Guides",
-        image: "/assets/products/green-crack-shatter-1g-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/05/pineapple_express_meds_shatter_1200x1200-1.jpg",
         imageAlt: "Cannabis shatter concentrate with amber clarity — Mohawk Medibles concentrates guide",
         author: "Mohawk Medibles Team",
         authorCredentials: "Concentrate specialists with expertise in extraction methods and quality assessment, Six Nations territory",
@@ -693,7 +693,7 @@ When stored, concentrates have minimal odour compared to flower. When dabbed or 
         metaDescription: "Best cannabis edibles in Canada for 2026. Expert reviews of gummies, chocolates, drinks, and more with dosing guide. Mohawk Medibles, Six Nations.",
         excerpt: "The Canadian cannabis edibles market has matured dramatically. From precision-dosed gummies to THC-infused beverages, here are the best edibles you can buy in 2026.",
         category: "Product Guides",
-        image: "/assets/products/thc-gummy-bears-200mg-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/05/pem_gummy_bears_1200x1200-1.jpg",
         imageAlt: "THC gummy bears edibles — best cannabis edibles in Canada from Mohawk Medibles",
         author: "Mohawk Medibles Team",
         authorCredentials: "Edible product specialists with expertise in THC formulation and dosing on Six Nations territory",
@@ -946,7 +946,7 @@ They work through different mechanisms. Melatonin signals your circadian rhythm 
         metaDescription: "Learn how to store cannabis flower, edibles, and concentrates properly. Temperature, humidity, and container tips from Mohawk Medibles experts.",
         excerpt: "Improperly stored cannabis loses potency, flavour, and quality within weeks. Our storage guide covers everything from humidity packs to UV protection so your product stays fresh.",
         category: "Guides",
-        image: "/assets/products/durban-poison-pre-rolls-5-pack-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Premium-Pre-Rolls-Photoroom.png",
         imageAlt: "Properly stored cannabis pre-rolls in quality packaging — Mohawk Medibles storage guide",
         author: "Mohawk Medibles Team",
         authorCredentials: "Cannabis curing and storage specialists with extensive experience preserving product quality, Six Nations territory",
@@ -1057,7 +1057,7 @@ If you are buying in bulk (ounces or more), consider these strategies:
 
 At Mohawk Medibles, every product ships in sealed, airtight packaging designed to preserve freshness during transit. Once your order arrives, transfer flower to a proper glass container with a humidity pack and store in a cool, dark place.
 
-Browse our full product collection at [mohawkmedibles.ca/shop](/shop) — premium quality deserves premium storage.
+Browse our full product collection at [mohawkmedibles.co/shop](/shop) — premium quality deserves premium storage.
 
 ## Frequently Asked Questions
 
@@ -1087,7 +1087,7 @@ Yes. Different strains have different terpene profiles, and storing them togethe
         metaDescription: "Complete guide to cannabis pre-rolls in Canada. Learn about types, quality signs, infused pre-rolls, and top picks. Mohawk Medibles, Six Nations.",
         excerpt: "Pre-rolls are the most convenient way to enjoy cannabis. But quality varies wildly. This guide teaches you how to spot premium pre-rolls and avoid overpriced trim tubes.",
         category: "Product Guides",
-        image: "/assets/products/durban-poison-pre-rolls-5-pack-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Premium-Pre-Rolls-Photoroom.png",
         imageAlt: "Premium cannabis pre-rolls in a 5-pack — Mohawk Medibles pre-roll buying guide",
         author: "Mohawk Medibles Team",
         authorCredentials: "Pre-roll production and quality assessment experts with years of rolling expertise on Six Nations territory",
@@ -1228,7 +1228,7 @@ Yes. All pre-rolls ship Canada-wide via Canada Post Xpresspost in protective pac
         metaDescription: "Complete guide to microdosing cannabis. Learn optimal THC doses, benefits for anxiety and focus, methods, and products. Mohawk Medibles, Six Nations.",
         excerpt: "Microdosing cannabis means using just enough THC to feel subtle therapeutic effects without getting high. Here is the science, the methods, and how to find your perfect microdose.",
         category: "Guides",
-        image: "/assets/products/thc-gummy-bears-200mg-canada.jpg",
+        image: "https://mohawkmedibles.ca/wp-content/uploads/2025/05/pem_gummy_bears_1200x1200-1.jpg",
         imageAlt: "Low-dose THC gummies for microdosing cannabis — Mohawk Medibles microdosing guide",
         author: "Mohawk Medibles Team",
         authorCredentials: "Cannabis wellness educators specializing in low-dose therapeutic protocols on Six Nations territory",

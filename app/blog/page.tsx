@@ -40,14 +40,14 @@ export default function BlogPage() {
     }
 
     return (
-        <main className="min-h-screen pt-32 pb-20 bg-forest text-cream">
+        <main className="min-h-screen pt-32 pb-20 page-glass text-foreground">
             <div className="container mx-auto px-6">
                 {/* Header */}
                 <header className="max-w-4xl mb-12">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-4 uppercase font-heading">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground mb-4 uppercase font-heading">
                         The Journal.
                     </h1>
-                    <p className="text-xl text-cream/60 max-w-2xl">
+                    <p className="text-xl text-muted-foreground max-w-2xl">
                         Cannabis science, dosing guides, and product education from our team
                         on Six Nations territory.
                     </p>
@@ -57,7 +57,7 @@ export default function BlogPage() {
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
                     {/* Search */}
                     <div className="relative flex-1 max-w-md" role="search">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cream/40" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <label htmlFor="blog-search" className="sr-only">Search articles</label>
                         <input
                             id="blog-search"
@@ -65,12 +65,12 @@ export default function BlogPage() {
                             value={searchQuery}
                             onChange={(e) => handleSearchChange(e.target.value)}
                             placeholder="Search articles..."
-                            className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-white/10 bg-white/5 text-sm text-cream placeholder:text-cream/30 focus:outline-none focus:ring-2 focus:ring-secondary/50 backdrop-blur-sm"
+                            className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-secondary/50 backdrop-blur-sm"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => handleSearchChange("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-cream/40 hover:text-cream"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -84,7 +84,7 @@ export default function BlogPage() {
                             className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase transition-all ${
                                 activeCategory === "All"
                                     ? "bg-secondary text-forest"
-                                    : "bg-white/5 text-cream/60 hover:bg-white/10 border border-white/10"
+                                    : "bg-card text-muted-foreground hover:bg-muted border border-border"
                             }`}
                         >
                             All ({allPosts.length})
@@ -98,7 +98,7 @@ export default function BlogPage() {
                                     className={`px-4 py-2 rounded-full text-xs font-bold tracking-wider uppercase transition-all ${
                                         activeCategory === cat
                                             ? "bg-secondary text-forest"
-                                            : "bg-white/5 text-cream/60 hover:bg-white/10 border border-white/10"
+                                            : "bg-card text-muted-foreground hover:bg-muted border border-border"
                                     }`}
                                 >
                                     {cat} ({count})
@@ -110,7 +110,7 @@ export default function BlogPage() {
 
                 {/* Results count */}
                 {searchQuery && (
-                    <div className="text-sm text-cream/40 mb-6" aria-live="polite">
+                    <div className="text-sm text-muted-foreground mb-6" aria-live="polite">
                         {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""} found
                         for &ldquo;{searchQuery}&rdquo;
                     </div>
@@ -119,15 +119,15 @@ export default function BlogPage() {
                 {/* No Results */}
                 {filteredPosts.length === 0 && (
                     <div className="text-center py-20">
-                        <Search className="h-12 w-12 text-cream/20 mx-auto mb-4" />
-                        <h3 className="text-lg font-bold text-white mb-2">No articles found</h3>
-                        <p className="text-cream/50 text-sm mb-4">
+                        <Search className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                        <h3 className="text-lg font-bold text-foreground mb-2">No articles found</h3>
+                        <p className="text-muted-foreground text-sm mb-4">
                             Try a different search term or browse a category.
                         </p>
                         <Button
                             variant="outline"
                             size="sm"
-                            className="border-white/20 text-cream"
+                            className="border-border text-foreground"
                             onClick={() => { handleSearchChange(""); handleCategoryChange("All"); }}
                         >
                             Clear Filters
@@ -141,7 +141,7 @@ export default function BlogPage() {
                         href={`/blog/${featured.slug}`}
                         className="group block mb-12"
                     >
-                        <article className="relative rounded-3xl overflow-hidden border border-white/10 hover:border-secondary/40 transition-all duration-500">
+                        <article className="relative rounded-3xl overflow-hidden border border-border hover:border-secondary/40 transition-all duration-500">
                             <div className="grid md:grid-cols-2">
                                 <div className="relative h-64 md:h-[420px]">
                                     <Image
@@ -154,23 +154,23 @@ export default function BlogPage() {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent to-forest/80 md:block hidden" />
                                 </div>
-                                <div className="p-8 md:p-12 flex flex-col justify-center bg-zinc-950/60 backdrop-blur-sm">
+                                <div className="p-8 md:p-12 flex flex-col justify-center glass-card">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <span className="text-[10px] font-bold tracking-widest uppercase bg-secondary/20 text-secondary px-3 py-1 rounded-full">
+                                        <span className="text-[10px] font-bold tracking-widest uppercase bg-secondary/20 text-forest dark:text-lime px-3 py-1 rounded-full">
                                             {featured.category}
                                         </span>
-                                        <span className="flex items-center gap-1 text-xs text-cream/40">
+                                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                             <Clock className="h-3 w-3" />
                                             {featured.readTime}
                                         </span>
                                     </div>
-                                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-secondary transition-colors">
+                                    <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-4 leading-tight group-hover:text-secondary transition-colors">
                                         {featured.title}
                                     </h2>
-                                    <p className="text-cream/60 leading-relaxed mb-6 line-clamp-3">
+                                    <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">
                                         {featured.excerpt}
                                     </p>
-                                    <div className="flex items-center gap-2 text-secondary font-bold text-sm group-hover:gap-4 transition-all">
+                                    <div className="flex items-center gap-2 text-forest dark:text-lime font-bold text-sm group-hover:gap-4 transition-all">
                                         Read Article <ArrowRight className="h-4 w-4" />
                                     </div>
                                 </div>
@@ -188,7 +188,7 @@ export default function BlogPage() {
                                 href={`/blog/${post.slug}`}
                                 className="group"
                             >
-                                <article className="rounded-2xl overflow-hidden border border-white/10 hover:border-secondary/40 transition-all duration-500 h-full flex flex-col bg-zinc-950/40">
+                                <article className="rounded-2xl overflow-hidden border border-border hover:border-secondary/40 transition-all duration-500 h-full flex flex-col glass-card">
                                     <div className="relative h-52">
                                         <Image
                                             src={post.image}
@@ -198,28 +198,28 @@ export default function BlogPage() {
                                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 to-transparent" />
-                                        <span className="absolute top-4 left-4 text-[10px] font-bold tracking-widest uppercase bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-white/10">
+                                        <span className="absolute top-4 left-4 text-[10px] font-bold tracking-widest uppercase bg-white/15 backdrop-blur-md text-white px-3 py-1 rounded-full border border-border">
                                             {post.category}
                                         </span>
                                     </div>
                                     <div className="p-6 flex-1 flex flex-col">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <span className="text-xs text-cream/40">
+                                            <span className="text-xs text-muted-foreground">
                                                 {new Date(post.datePublished).toLocaleDateString("en-CA", {
                                                     year: "numeric",
                                                     month: "short",
                                                     day: "numeric",
                                                 })}
                                             </span>
-                                            <span className="flex items-center gap-1 text-xs text-cream/40">
+                                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                                 <Clock className="h-3 w-3" />
                                                 {post.readTime}
                                             </span>
                                         </div>
-                                        <h3 className="text-lg font-bold text-white mb-3 leading-snug group-hover:text-secondary transition-colors line-clamp-2">
+                                        <h3 className="text-lg font-bold text-foreground mb-3 leading-snug group-hover:text-secondary transition-colors line-clamp-2">
                                             {post.title}
                                         </h3>
-                                        <p className="text-sm text-cream/50 leading-relaxed line-clamp-3 flex-1">
+                                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 flex-1">
                                             {post.excerpt}
                                         </p>
 
@@ -228,14 +228,14 @@ export default function BlogPage() {
                                             {post.tags.slice(0, 3).map((tag) => (
                                                 <span
                                                     key={tag}
-                                                    className="text-[10px] text-cream/30 bg-white/5 px-2 py-0.5 rounded-full"
+                                                    className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full"
                                                 >
                                                     {tag}
                                                 </span>
                                             ))}
                                         </div>
 
-                                        <div className="flex items-center gap-2 text-secondary font-bold text-xs group-hover:gap-3 transition-all uppercase tracking-wider">
+                                        <div className="flex items-center gap-2 text-forest dark:text-lime font-bold text-xs group-hover:gap-3 transition-all uppercase tracking-wider">
                                             Read More <ArrowRight className="h-3 w-3" />
                                         </div>
                                     </div>
@@ -251,13 +251,14 @@ export default function BlogPage() {
                         <Button
                             variant="outline"
                             size="lg"
-                            className="gap-2 px-8 border-white/20 text-cream hover:bg-white/5"
+                            className="gap-2 px-8 border-border text-foreground hover:bg-muted"
                             onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
                         >
                             Load More Articles
-                            <span className="text-xs text-cream/40">
+                            <span className="text-xs text-muted-foreground">
                                 ({filteredPosts.length - visibleCount - 1} remaining)
                             </span>
+
                         </Button>
                     </div>
                 )}

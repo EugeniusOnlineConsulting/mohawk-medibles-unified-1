@@ -6,7 +6,7 @@ export const metadata: Metadata = {
         default: "Cannabis Delivery Across Canada | Mohawk Medibles",
     },
     description:
-        "Mohawk Medibles delivers premium, lab-tested cannabis to all Canadian provinces and territories. Flower, edibles, concentrates, hash, and more. Free shipping over $150.",
+        "Mohawk Medibles delivers premium, lab-tested cannabis to all Canadian provinces and territories. Flower, edibles, concentrates, hash, and more. Free shipping over $199.",
 };
 
 export default function DeliveryLayout({ children }: { children: React.ReactNode }) {

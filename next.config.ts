@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // ─── Security Headers ───────────────────────────────────
+  // ─── Security Headers (merged from .cc + existing) ──────
   async headers() {
     return [
       {
-        // Apply to all routes
+        // Apply to all routes — full security headers
         source: "/(.*)",
         headers: [
           {
@@ -41,16 +41,28 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-inline'",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://mohawkmedibles.ca https://*.wpengine.com",
+              "font-src 'self' https://fonts.gstatic.com data:",
+              "img-src 'self' data: blob: https: http:",
               "media-src 'self' blob:",
-              "connect-src 'self' blob: https://ssapi.shipstation.com",
+              "connect-src 'self' blob: https: wss:",
               "worker-src 'self' blob:",
+              "frame-src 'none'",
               "frame-ancestors 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
             ].join("; "),
           },
+        ],
+      },
+      {
+        // Service worker — no-cache (from .cc)
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
         ],
       },
       {
@@ -140,6 +152,11 @@ const nextConfig: NextConfig = {
       // Old .co product URLs → new /shop/ pattern
       { source: "/product/:slug", destination: "/shop/:slug", permanent: true },
       { source: "/product/:slug/", destination: "/shop/:slug/", permanent: true },
+      // SEO pillar page aliases
+      { source: "/buy-weed-online", destination: "/buy-weed-online-canada", permanent: true },
+      { source: "/buy-weed-online/", destination: "/buy-weed-online-canada/", permanent: true },
+      { source: "/cannabis-laws-canada", destination: "/cannabis-laws", permanent: true },
+      { source: "/cannabis-laws-canada/", destination: "/cannabis-laws/", permanent: true },
     ];
   },
 

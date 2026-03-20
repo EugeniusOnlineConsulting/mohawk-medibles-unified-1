@@ -184,7 +184,7 @@ SHIPPING TIERS (all prices CAD):
 - Quebec & Maritimes: $18 flat rate, 2-3 business days
 - Western Canada (MB, SK, AB, BC): $20 flat rate, 3-5 business days
 - Northern Canada (YT, NT, NU): $25 flat rate, 5-7 business days
-- FREE shipping on all orders over $150 Canada-wide
+- FREE shipping on all orders over $199 Canada-wide
 
 CONTACT:
 - Email: support@mohawkmedibles.ca

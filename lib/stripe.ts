@@ -5,7 +5,7 @@
  */
 
 const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY || "";
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.ca";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.co";
 
 // ─── Stripe API Helper ──────────────────────────────────────
 

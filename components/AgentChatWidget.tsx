@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
     MessageCircle, X, Send, Mic, MicOff, Leaf,
     Truck, Sparkles, ChevronDown, Heart,
-    Zap, Volume2, VolumeX,
+    Zap, Volume2, VolumeX, ShoppingCart, CreditCard,
+    MapPin, HelpCircle, Package, Tag, Home, Phone,
+    ArrowRight, Plus, Minus, Trash2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/hooks/useCart";
@@ -18,6 +20,7 @@ import {
     rememberTopic, recordMood, acknowledgePrivacy, clearMemory,
     detectNameInMessage, detectPreferences,
 } from "@/lib/sage/memory";
+import { emitCartEvent, emitNavEvent, emitFilterEvent, onCartEvent } from "@/lib/medagent-events";
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -26,6 +29,9 @@ interface Message {
     text: string;
     sender: "user" | "medagent";
     mood?: string;
+    products?: MedAgentProduct[];
+    quickNav?: QuickNavItem[];
+    cartAction?: CartActionCard;
 }
 
 interface MedAgentProduct {
@@ -36,11 +42,25 @@ interface MedAgentProduct {
     price: number;
     slug: string;
     path: string;
+    image?: string;
 }
 
 interface MedAgentAction {
     type: "NAVIGATE" | "ADD_TO_CART" | "REMOVE_FROM_CART" | "CLEAR_CART" | "SEARCH" | "FILTER" | "CHECKOUT";
     payload: string;
+}
+
+interface QuickNavItem {
+    label: string;
+    href: string;
+    icon: string;
+}
+
+interface CartActionCard {
+    type: "added" | "removed" | "checkout_ready";
+    productName?: string;
+    cartTotal?: number;
+    itemCount?: number;
 }
 
 // ─── Persona Definitions ───────────────────────────────────
@@ -87,6 +107,21 @@ const PERSONAS: Record<PersonaId, Persona> = {
     },
 };
 
+// ─── Quick Navigation Routes ──────────────────────────────
+
+const NAV_ROUTES = [
+    { label: "Shop All", href: "/shop", icon: "🛒" },
+    { label: "Flower", href: "/shop?category=Flower", icon: "🌿" },
+    { label: "Edibles", href: "/shop?category=Edibles", icon: "🍬" },
+    { label: "Concentrates", href: "/shop?category=Concentrates", icon: "💎" },
+    { label: "Vapes", href: "/shop?category=Vapes", icon: "💨" },
+    { label: "Deals", href: "/deals", icon: "🔥" },
+    { label: "Delivery", href: "/delivery", icon: "🚚" },
+    { label: "Cart", href: "/checkout", icon: "🛍️" },
+    { label: "Support", href: "/support", icon: "💬" },
+    { label: "FAQ", href: "/faq", icon: "❓" },
+];
+
 // ─── Suggestion Chips ───────────────────────────────────────
 
 const SUGGESTION_CHIPS = [
@@ -94,6 +129,8 @@ const SUGGESTION_CHIPS = [
     { label: "What's Popular", icon: Zap, message: "What are your most popular products?" },
     { label: "Delivery Info", icon: Truck, message: "What are your delivery zones and shipping times?" },
     { label: "Help Me Choose", icon: Heart, message: "I'm not sure what to get — can you help me pick something?" },
+    { label: "View My Cart", icon: ShoppingCart, message: "What's in my cart right now?" },
+    { label: "Checkout Help", icon: CreditCard, message: "Help me checkout and complete my order" },
 ];
 
 // ─── Streaming Text Hook ───────────────────────────────────
@@ -107,7 +144,6 @@ function useStreamingText(text: string, speed = 8) {
         setIsStreaming(true);
         setDisplayed("");
         let i = 0;
-        // Adaptive speed: faster chunks for longer text to stay in sync with audio
         const chunkSize = text.length > 200 ? 5 : text.length > 100 ? 4 : 3;
         const interval = setInterval(() => {
             const variance = Math.random() > 0.5 ? 1 : 0;
@@ -136,6 +172,142 @@ function StreamingMessage({ text, isLatest }: { text: string; isLatest: boolean 
     );
 }
 
+// ─── Category emoji fallback ──────────────────────────────
+
+function categoryEmoji(category: string) {
+    switch (category) {
+        case "Flower": return "🌿";
+        case "Edibles": return "🍬";
+        case "Concentrates": return "💎";
+        case "Vapes": return "💨";
+        case "Pre-Rolls": return "🚬";
+        case "CBD": return "💚";
+        case "Mushrooms": return "🍄";
+        case "Bath & Body": return "🛁";
+        case "Capsules": return "💊";
+        case "Accessories": return "🔧";
+        default: return "📦";
+    }
+}
+
+// ─── Product Card (in-chat) — with real images ────────────
+
+function ProductCard({ product, onAddToCart, onNavigate }: {
+    product: MedAgentProduct;
+    onAddToCart: (p: MedAgentProduct) => void;
+    onNavigate: (path: string) => void;
+}) {
+    const productUrl = `/product/${product.slug}`;
+    const hasImage = product.image && product.image.startsWith("http");
+
+    return (
+        <div
+            className="flex items-center gap-2.5 p-2 rounded-lg bg-muted/50 border border-border/50 hover:border-green-600/30 transition-colors group cursor-pointer"
+            onClick={() => onNavigate(productUrl)}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === "Enter" && onNavigate(productUrl)}
+        >
+            {/* Product image or emoji fallback */}
+            {hasImage ? (
+                <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={product.image}
+                        alt={product.shortName || product.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                    />
+                </div>
+            ) : (
+                <div className="w-11 h-11 rounded-lg bg-green-900/20 flex items-center justify-center flex-shrink-0 text-lg">
+                    {categoryEmoji(product.category)}
+                </div>
+            )}
+            <div className="flex-1 min-w-0">
+                <span className="text-xs font-semibold text-foreground group-hover:text-green-600 transition-colors truncate block text-left w-full">
+                    {product.shortName || product.name}
+                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10px] text-muted-foreground">{product.category}</span>
+                    <span className="text-xs font-bold text-green-600">${product.price.toFixed(2)}</span>
+                </div>
+            </div>
+            <button
+                onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+                className="h-7 w-7 rounded-full bg-green-800 hover:bg-green-700 text-white flex items-center justify-center flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
+                title="Add to cart"
+            >
+                <Plus className="h-3.5 w-3.5" />
+            </button>
+        </div>
+    );
+}
+
+// ─── Cart Status Card (in-chat) ────────────────────────────
+
+function CartStatusCard({ items, total, onCheckout, onClear }: {
+    items: { id: string; name: string; price: number; quantity: number }[];
+    total: number;
+    onCheckout: () => void;
+    onClear: () => void;
+}) {
+    if (items.length === 0) return null;
+    return (
+        <div className="rounded-lg border border-green-600/20 bg-green-900/10 p-3 space-y-2">
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-green-600 flex items-center gap-1">
+                    <ShoppingCart className="h-3 w-3" /> Your Cart ({items.length})
+                </span>
+                <button onClick={onClear} className="text-[9px] text-red-400 hover:text-red-300 transition-colors">
+                    Clear
+                </button>
+            </div>
+            {items.slice(0, 3).map((item) => (
+                <div key={item.id} className="flex items-center justify-between text-xs">
+                    <span className="truncate flex-1 text-foreground/80">{item.name}</span>
+                    <span className="text-green-600 font-semibold ml-2">${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            ))}
+            {items.length > 3 && (
+                <p className="text-[10px] text-muted-foreground">+{items.length - 3} more items</p>
+            )}
+            <div className="flex items-center justify-between pt-2 border-t border-green-600/10">
+                <span className="text-sm font-bold text-foreground">Total: ${total.toFixed(2)}</span>
+                <button
+                    onClick={onCheckout}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-800 hover:bg-green-700 text-white text-xs font-semibold transition-colors"
+                >
+                    <CreditCard className="h-3 w-3" /> Checkout
+                </button>
+            </div>
+            {total < 199 && (
+                <p className="text-[9px] text-lime/60 text-center">
+                    Add ${(199 - total).toFixed(2)} more for FREE shipping!
+                </p>
+            )}
+        </div>
+    );
+}
+
+// ─── Quick Nav Bar (in-chat) ───────────────────────────────
+
+function QuickNavBar({ onNavigate }: { onNavigate: (href: string) => void }) {
+    return (
+        <div className="flex gap-1 overflow-x-auto py-1 px-0.5 scrollbar-none">
+            {NAV_ROUTES.map((r) => (
+                <button
+                    key={r.href}
+                    onClick={() => onNavigate(r.href)}
+                    className="flex items-center gap-1 px-2 py-1 rounded-full border border-border/60 bg-card text-[10px] font-medium text-muted-foreground hover:text-green-600 hover:border-green-600/30 transition-all whitespace-nowrap flex-shrink-0"
+                >
+                    <span>{r.icon}</span> {r.label}
+                </button>
+            ))}
+        </div>
+    );
+}
+
 // ─── Welcome Popup (first visit) ────────────────────────────
 
 function WelcomePopup({ onDismiss, onOpen }: { onDismiss: () => void; onOpen: () => void }) {
@@ -144,22 +316,22 @@ function WelcomePopup({ onDismiss, onOpen }: { onDismiss: () => void; onOpen: ()
             initial={{ opacity: 0, scale: 0.9, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
-            className="mb-3 w-[280px] rounded-2xl bg-card border border-border shadow-xl p-4"
+            className="absolute bottom-16 right-0 w-[280px] rounded-2xl bg-card border border-border shadow-xl p-4"
         >
             <div className="flex items-start gap-3 mb-3">
                 <div className="h-9 w-9 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center shrink-0">
                     <Leaf className="h-4 w-4 text-green-700 dark:text-green-400" />
                 </div>
                 <div>
-                    <h4 className="text-sm font-bold text-foreground">Hey! I&apos;m MedAgent</h4>
+                    <p className="text-sm font-bold text-foreground">Hey! I&apos;m MedAgent</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Your personal cannabis guide</p>
                 </div>
             </div>
             <ul className="space-y-1.5 mb-3 text-xs text-foreground">
                 <li className="flex items-center gap-2"><Sparkles className="h-3 w-3 text-green-600 shrink-0" /> Find products by effects or category</li>
-                <li className="flex items-center gap-2"><Truck className="h-3 w-3 text-green-600 shrink-0" /> Check delivery zones & shipping</li>
-                <li className="flex items-center gap-2"><Mic className="h-3 w-3 text-green-600 shrink-0" /> Voice input — just tap the mic</li>
-                <li className="flex items-center gap-2"><Heart className="h-3 w-3 text-green-600 shrink-0" /> Personalized recommendations</li>
+                <li className="flex items-center gap-2"><ShoppingCart className="h-3 w-3 text-green-600 shrink-0" /> Add to cart & checkout by voice</li>
+                <li className="flex items-center gap-2"><Mic className="h-3 w-3 text-green-600 shrink-0" /> Two-way voice — talk naturally</li>
+                <li className="flex items-center gap-2"><MapPin className="h-3 w-3 text-green-600 shrink-0" /> Navigate anywhere on the site</li>
             </ul>
             <div className="flex gap-2">
                 <button
@@ -183,16 +355,19 @@ function WelcomePopup({ onDismiss, onOpen }: { onDismiss: () => void; onOpen: ()
 
 export default function AgentChatWidget() {
     const router = useRouter();
+    const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [showWelcome, setShowWelcome] = useState(false);
     const [activePersona, setActivePersona] = useState<PersonaId>("medagent");
     const [showPersonaSelector, setShowPersonaSelector] = useState(false);
+    const [showQuickNav, setShowQuickNav] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [latestMsgId, setLatestMsgId] = useState<number | null>(null);
     const [ttsEnabled, setTtsEnabled] = useState(true);
+    const [voiceConversationMode, setVoiceConversationMode] = useState(false);
 
     // Voice input state
     const [isListening, setIsListening] = useState(false);
@@ -212,7 +387,7 @@ export default function AgentChatWidget() {
         if (typeof window !== "undefined") {
             trackPageVisit(window.location.pathname);
         }
-    }, []);
+    }, [pathname]);
 
     // Show welcome popup for first-time visitors (after 3s delay)
     useEffect(() => {
@@ -232,7 +407,6 @@ export default function AgentChatWidget() {
             const memory = recordSessionStart();
             let greeting = persona.greeting;
 
-            // Personalize greeting for returning customers
             if (memory.sessionCount > 1 && memory.preferredName) {
                 greeting = `Welcome back, ${memory.preferredName}! Great to see you again. What can I help you with today?`;
             } else if (memory.sessionCount > 1) {
@@ -241,11 +415,10 @@ export default function AgentChatWidget() {
 
             const msgs: Message[] = [{ id: 0, text: greeting, sender: "medagent" }];
 
-            // Show privacy notice on first interaction
             if (!memory.privacyAcknowledged && memory.sessionCount <= 1) {
                 msgs.push({
                     id: 1,
-                    text: "Your conversations with me are completely private. I don't share your information with anyone — I'm just here to help you find what you need. Your privacy matters to us.",
+                    text: "Your conversations with me are completely private. I don't share your information with anyone — I'm just here to help you find what you need.",
                     sender: "medagent",
                 });
                 acknowledgePrivacy();
@@ -256,7 +429,7 @@ export default function AgentChatWidget() {
         }
     }, [isOpen, persona.greeting, messages.length]);
 
-    // ── Text-to-Speech with Gemini TTS (browser fallback) ──
+    // ── Text-to-Speech with API TTS (browser fallback) ──
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const speakWithBrowser = useCallback((text: string, onEnd?: () => void) => {
@@ -280,7 +453,6 @@ export default function AgentChatWidget() {
     const speak = useCallback((text: string, onEnd?: () => void) => {
         if (!ttsEnabled) { onEnd?.(); return; }
 
-        // Stop any current playback
         window.speechSynthesis?.cancel();
         if (audioRef.current) {
             audioRef.current.pause();
@@ -290,10 +462,9 @@ export default function AgentChatWidget() {
         setIsSpeaking(true);
 
         const currentPersona = localStorage.getItem("medagent_persona") || "medagent";
+        // Clean markdown for natural speech
         const clean = text.replace(/\*\*/g, "").replace(/\n/g, ". ").replace(/•/g, "").replace(/[#_~`]/g, "");
 
-        // Use streaming approach: pipe audio chunks directly to a MediaSource
-        // for near-instant playback as ElevenLabs generates speech
         const controller = new AbortController();
 
         fetch("/api/sage/tts", {
@@ -305,47 +476,98 @@ export default function AgentChatWidget() {
             .then(async (res) => {
                 if (!res.ok || !res.body) throw new Error(`tts-${res.status}`);
 
-                // Collect chunks and start playback as soon as we have data
-                const reader = res.body.getReader();
-                const chunks: BlobPart[] = [];
+                // Try streaming playback via MediaSource (Chrome/Edge), fall back to full buffer (Safari/Firefox)
+                const canStream = typeof MediaSource !== "undefined" && MediaSource.isTypeSupported("audio/mpeg");
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    chunks.push(value);
+                let audio: HTMLAudioElement;
+                let url: string;
+
+                if (canStream) {
+                    const mediaSource = new MediaSource();
+                    url = URL.createObjectURL(mediaSource);
+                    audio = new Audio(url);
+                    audioRef.current = audio;
+
+                    await new Promise<void>((resolve, reject) => {
+                        mediaSource.addEventListener("sourceopen", async () => {
+                            try {
+                                const sourceBuffer = mediaSource.addSourceBuffer("audio/mpeg");
+                                const reader = res.body!.getReader();
+                                let started = false;
+
+                                const appendChunk = (chunk: Uint8Array) =>
+                                    new Promise<void>((res) => {
+                                        const buf = chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength) as ArrayBuffer;
+                                        if (sourceBuffer.updating) {
+                                            sourceBuffer.addEventListener("updateend", () => { sourceBuffer.appendBuffer(buf); res(); }, { once: true });
+                                        } else {
+                                            sourceBuffer.appendBuffer(buf);
+                                            sourceBuffer.addEventListener("updateend", () => res(), { once: true });
+                                        }
+                                    });
+
+                                while (true) {
+                                    const { done, value } = await reader.read();
+                                    if (done) break;
+                                    await appendChunk(value);
+                                    if (!started) {
+                                        audio.play().catch(() => {});
+                                        started = true;
+                                    }
+                                }
+                                if (sourceBuffer.updating) {
+                                    await new Promise<void>((r) => sourceBuffer.addEventListener("updateend", () => r(), { once: true }));
+                                }
+                                mediaSource.endOfStream();
+                                resolve();
+                            } catch (e) { reject(e); }
+                        }, { once: true });
+                    });
+                } else {
+                    // Fallback: buffer full stream then play
+                    const blob = await new Response(res.body).blob();
+                    url = URL.createObjectURL(blob);
+                    audio = new Audio(url);
+                    audioRef.current = audio;
                 }
 
-                // Create blob from all chunks and play
-                const blob = new Blob(chunks, { type: "audio/mpeg" });
-                const url = URL.createObjectURL(blob);
-                const audio = new Audio(url);
-                audioRef.current = audio;
-
-                audio.onended = () => {
+                const handleEnd = () => {
                     URL.revokeObjectURL(url);
                     audioRef.current = null;
                     setIsSpeaking(false);
                     onEnd?.();
+                    if (voiceConversationMode) setTimeout(() => startListeningRound(), 150);
                 };
+                audio.onended = handleEnd;
                 audio.onerror = () => {
                     URL.revokeObjectURL(url);
                     audioRef.current = null;
                     setIsSpeaking(false);
-                    speakWithBrowser(text, onEnd);
+                    speakWithBrowser(text, () => {
+                        onEnd?.();
+                        if (voiceConversationMode) setTimeout(() => startListeningRound(), 150);
+                    });
                 };
 
                 await audio.play().catch(() => {
                     URL.revokeObjectURL(url);
                     audioRef.current = null;
                     setIsSpeaking(false);
-                    speakWithBrowser(text, onEnd);
+                    speakWithBrowser(text, () => {
+                        onEnd?.();
+                        if (voiceConversationMode) setTimeout(() => startListeningRound(), 150);
+                    });
                 });
             })
             .catch((err) => {
                 if (err.name === "AbortError") return;
-                speakWithBrowser(text, onEnd);
+                speakWithBrowser(text, () => {
+                    onEnd?.();
+                    if (voiceConversationMode) setTimeout(() => startListeningRound(), 150);
+                });
             });
-    }, [ttsEnabled, speakWithBrowser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ttsEnabled, speakWithBrowser, voiceConversationMode]);
 
     // ── Session persistence ─────────────────────────────────
     useEffect(() => {
@@ -362,6 +584,22 @@ export default function AgentChatWidget() {
         }
     }, [sessionId]);
 
+    // Listen for cart events from other parts of the app (real-time sync)
+    useEffect(() => {
+        return onCartEvent((e) => {
+            if (e.source === "medagent") return; // ignore our own events
+            if (e.action === "add" && e.item && isOpen) {
+                const notifyId = Date.now() + 400;
+                setMessages((prev) => [...prev, {
+                    id: notifyId,
+                    text: `I see you added **${e.item!.name}** to your cart! Need help finding anything else? 🛒`,
+                    sender: "medagent",
+                }]);
+                setLatestMsgId(notifyId);
+            }
+        });
+    }, [isOpen]);
+
     // Auto-scroll
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -373,6 +611,40 @@ export default function AgentChatWidget() {
             setTimeout(() => inputRef.current?.focus(), 300);
         }
     }, [isOpen]);
+
+    // ── Navigate helper ──────────────────────────────────────
+    const navigateTo = useCallback((href: string) => {
+        router.push(href);
+        // Add nav confirmation message
+        const navId = Date.now() + 100;
+        setMessages((prev) => [...prev, {
+            id: navId,
+            text: `Navigating you to ${href.replace(/\?.*/, "").replace(/^\//, "") || "home"}...`,
+            sender: "medagent",
+        }]);
+        setLatestMsgId(navId);
+    }, [router]);
+
+    // ── Add to cart helper (real-time sync) ─────────────────
+    const addProductToCart = useCallback((product: MedAgentProduct) => {
+        const item = {
+            id: product.id,
+            name: product.shortName || product.name,
+            price: product.price,
+            quantity: 1,
+        };
+        addItem(item);
+        emitCartEvent({ action: "add", item, source: "medagent" });
+        const cartMsgId = Date.now() + 200;
+        setMessages((prev) => [...prev, {
+            id: cartMsgId,
+            text: `Added ${product.shortName || product.name} ($${product.price.toFixed(2)}) to your cart! 🛒`,
+            sender: "medagent",
+            cartAction: { type: "added", productName: product.shortName || product.name },
+        }]);
+        setLatestMsgId(cartMsgId);
+        speak(`Added ${product.shortName || product.name} to your cart.`);
+    }, [addItem, speak]);
 
     // ── Switch persona ──────────────────────────────────────
     const switchPersona = useCallback((id: PersonaId) => {
@@ -387,11 +659,10 @@ export default function AgentChatWidget() {
         sessionStorage.removeItem("medagent_session_id");
     }, []);
 
-    // ── Handle actions (with streaming-aware delay) ─────────
-    const handleActions = useCallback((actions: MedAgentAction[], responseTextLength: number = 0) => {
-        // Calculate delay to sync with streaming text completion
-        // Streaming: ~3-5 chars per chunk at 8ms intervals ≈ 2.5ms per char + 500ms buffer for reading
-        const streamingDuration = Math.max(800, Math.round(responseTextLength * 2.5) + 500);
+    // ── Handle actions (real-time — minimal delay) ──────────
+    const handleActions = useCallback((actions: MedAgentAction[]) => {
+        // Short delay so user sees the start of the response before navigation
+        const NAV_DELAY = 300;
 
         for (const action of actions) {
             switch (action.type) {
@@ -399,33 +670,51 @@ export default function AgentChatWidget() {
                     try {
                         const product = JSON.parse(action.payload);
                         addItem({ ...product, quantity: 1 });
+                        emitCartEvent({ action: "add", item: { ...product, quantity: 1 }, source: "medagent" });
                     } catch { /* invalid payload */ }
                     break;
                 case "REMOVE_FROM_CART": {
-                    // Fuzzy-match product name from payload to a cart item
                     const query = action.payload.trim().toLowerCase();
                     const match = cartItems.find((item) =>
                         item.name.toLowerCase().includes(query) ||
                         query.includes(item.name.toLowerCase()) ||
                         item.name.toLowerCase().split(/\s+/).some((w) => query.includes(w) && w.length > 3)
                     );
-                    if (match) removeItem(match.id);
+                    if (match) {
+                        removeItem(match.id);
+                        emitCartEvent({ action: "remove", item: match, source: "medagent" });
+                    }
                     break;
                 }
                 case "CLEAR_CART":
                     clearCart();
+                    emitCartEvent({ action: "clear", source: "medagent" });
                     break;
                 case "NAVIGATE":
-                    setTimeout(() => router.push(action.payload.trim()), streamingDuration);
+                    setTimeout(() => {
+                        router.push(action.payload.trim());
+                        emitNavEvent({ path: action.payload.trim(), source: "medagent" });
+                    }, NAV_DELAY);
                     break;
                 case "SEARCH":
-                    setTimeout(() => router.push(`/shop?search=${encodeURIComponent(action.payload.trim())}`), streamingDuration);
+                    setTimeout(() => {
+                        const searchPath = `/shop?search=${encodeURIComponent(action.payload.trim())}`;
+                        router.push(searchPath);
+                        emitFilterEvent({ search: action.payload.trim(), source: "medagent" });
+                    }, NAV_DELAY);
                     break;
                 case "FILTER":
-                    setTimeout(() => router.push(`/shop?category=${encodeURIComponent(action.payload.trim())}`), streamingDuration);
+                    setTimeout(() => {
+                        const filterPath = `/shop?category=${encodeURIComponent(action.payload.trim())}`;
+                        router.push(filterPath);
+                        emitFilterEvent({ category: action.payload.trim(), source: "medagent" });
+                    }, NAV_DELAY);
                     break;
                 case "CHECKOUT":
-                    setTimeout(() => router.push("/checkout"), streamingDuration);
+                    setTimeout(() => {
+                        router.push("/checkout");
+                        emitNavEvent({ path: "/checkout", source: "medagent" });
+                    }, NAV_DELAY);
                     break;
             }
         }
@@ -438,13 +727,11 @@ export default function AgentChatWidget() {
         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SR) return;
 
-        // Abort any in-flight recognition to prevent double instances
         if (recognitionRef.current) {
             try { recognitionRef.current.abort(); } catch { /* ignore */ }
             recognitionRef.current = null;
         }
 
-        // Cancel TTS so mic doesn't pick it up
         window.speechSynthesis?.cancel();
         if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
         setIsSpeaking(false);
@@ -466,15 +753,19 @@ export default function AgentChatWidget() {
 
             if (event.results[event.results.length - 1].isFinal) {
                 finalTranscript = transcript;
+                // Send immediately on isFinal — don't wait for onend (saves 500-1000ms)
+                if (finalTranscript.trim()) {
+                    try { recognition.abort(); } catch { /* ignore */ }
+                    recognitionRef.current = null;
+                    setIsListening(false);
+                    sendMessageRef.current?.(finalTranscript.trim());
+                }
             }
         };
 
         recognition.onend = () => {
             setIsListening(false);
-            // Auto-send if we got a final transcript (use ref for latest version)
-            if (finalTranscript.trim()) {
-                sendMessageRef.current?.(finalTranscript.trim());
-            }
+            // finalTranscript already sent on isFinal above
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -486,10 +777,9 @@ export default function AgentChatWidget() {
         recognitionRef.current = recognition;
         recognition.start();
         setIsListening(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // ── Send message (direct, no input dependency) ──────────
+    // ── Send message ─────────────────────────────────────────
     const sendMessageDirect = useCallback(async (msg: string) => {
         if (!msg.trim()) return;
 
@@ -501,11 +791,9 @@ export default function AgentChatWidget() {
             const currentSessionId = sessionStorage.getItem("medagent_session_id");
             const currentPersona = localStorage.getItem("medagent_persona") || "medagent";
 
-            // Attach behavioral + memory context (PIPEDA-compliant, localStorage only)
             const behavior = getBehavior();
             const customerMemory = getMemory();
 
-            // Detect name/preferences in user message and persist
             const detectedName = detectNameInMessage(msg);
             if (detectedName) rememberName(detectedName);
             const detectedPrefs = detectPreferences(msg);
@@ -522,6 +810,7 @@ export default function AgentChatWidget() {
                     cartTotal: cartTotal > 0 ? cartTotal : undefined,
                     cartItems: cartItems.length > 0 ? cartItems : undefined,
                     memory: customerMemory,
+                    currentPage: pathname,
                 }),
             });
 
@@ -532,48 +821,51 @@ export default function AgentChatWidget() {
                 sessionStorage.setItem("medagent_session_id", data.sessionId);
             }
 
-            // Record mood for persistent memory
             if (data.sentiment?.mood) {
                 recordMood(data.sentiment.mood);
             }
 
-            // Remember conversation topic (extract key words from message)
             if (msg.length > 5) {
                 const topicWords = msg.replace(/[^\w\s]/g, "").trim().slice(0, 60);
                 if (topicWords) rememberTopic(topicWords);
             }
 
             const responseId = Date.now();
-            setMessages((prev) => [...prev, {
+            const responseMsg: Message = {
                 id: responseId,
                 text: data.text,
                 sender: "medagent",
                 mood: data.sentiment?.mood,
-            }]);
+            };
+
+            // Attach product cards if returned (show up to 6 for better discovery)
+            if (data.products?.length > 0) {
+                responseMsg.products = data.products.slice(0, 6);
+            }
+
+            // Sync server-side cart actions back to client cart in real-time
+            if (data.cart?.items?.length > 0) {
+                const serverItems = data.cart.items;
+                for (const si of serverItems) {
+                    const exists = cartItems.find(ci =>
+                        ci.name.toLowerCase() === si.name.toLowerCase() ||
+                        ci.id === String(si.productId)
+                    );
+                    if (!exists) {
+                        addItem({ id: String(si.productId || si.slug), name: si.name, price: si.price, quantity: si.quantity });
+                    }
+                }
+                emitCartEvent({ action: "sync", items: cartItems, total: cartTotal, source: "medagent" });
+            }
+
+            setMessages((prev) => [...prev, responseMsg]);
             setLatestMsgId(responseId);
 
-            // Execute actions (synced to streaming text completion)
-            if (data.actions?.length > 0) {
-                handleActions(data.actions, data.text?.length || 0);
-            }
-
-            // Show products
-            if (data.products?.length > 0) {
-                const productList = data.products
-                    .slice(0, 4)
-                    .map((p: MedAgentProduct) => `• ${p.shortName || p.name} — $${p.price}`)
-                    .join("\n");
-                const productMsgId = Date.now() + 1;
-                setMessages((prev) => [...prev, {
-                    id: productMsgId,
-                    text: `Here are some picks:\n${productList}\n\nWant me to add any to your cart?`,
-                    sender: "medagent",
-                }]);
-                setLatestMsgId(productMsgId);
-            }
-
-            // TTS playback
+            // Start TTS immediately while actions execute in parallel (saves ~300ms)
             speak(data.text);
+            if (data.actions?.length > 0) {
+                handleActions(data.actions);
+            }
 
         } catch {
             const errId = Date.now();
@@ -586,12 +878,10 @@ export default function AgentChatWidget() {
         } finally {
             setIsTyping(false);
         }
-    }, [handleActions, speak, cartTotal, cartItems]);
+    }, [handleActions, speak, cartTotal, cartItems, pathname]);
 
-    // Keep sendMessageRef in sync so startListeningRound always calls the latest
     useEffect(() => { sendMessageRef.current = sendMessageDirect; }, [sendMessageDirect]);
 
-    // ── Send from text input ────────────────────────────────
     const sendMessage = useCallback(async (text?: string) => {
         const msg = (text || inputValue).trim();
         if (!msg) return;
@@ -599,7 +889,7 @@ export default function AgentChatWidget() {
         await sendMessageDirect(msg);
     }, [inputValue, sendMessageDirect]);
 
-    // ── Single tap mic (one-shot voice input) ─────────────
+    // ── Toggle mic (single tap) ─────────────────────────────
     const toggleMic = useCallback(() => {
         if (isListening) {
             recognitionRef.current?.stop();
@@ -608,6 +898,29 @@ export default function AgentChatWidget() {
             startListeningRound();
         }
     }, [isListening, startListeningRound]);
+
+    // ── Toggle voice conversation mode (long press / double tap) ──
+    const toggleVoiceConversation = useCallback(() => {
+        const next = !voiceConversationMode;
+        setVoiceConversationMode(next);
+        if (next) {
+            // Start conversation mode — listen immediately
+            startListeningRound();
+            const modeId = Date.now() + 300;
+            setMessages((prev) => [...prev, {
+                id: modeId,
+                text: "🎙️ Voice conversation mode ON — I'll keep listening after each response. Say \"stop listening\" to end.",
+                sender: "medagent",
+            }]);
+            setLatestMsgId(modeId);
+        } else {
+            recognitionRef.current?.abort();
+            setIsListening(false);
+            window.speechSynthesis?.cancel();
+            if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
+            setIsSpeaking(false);
+        }
+    }, [voiceConversationMode, startListeningRound]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -619,7 +932,7 @@ export default function AgentChatWidget() {
     }, []);
 
     return (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end" style={{ contain: "layout" }}>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -630,10 +943,10 @@ export default function AgentChatWidget() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="mb-4 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl bg-card border border-border shadow-2xl"
+                        className="mb-4 w-[400px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl bg-card border border-border shadow-2xl"
                     >
                         {/* ── Header ─────────────────────────────────── */}
-                        <div className={cn("flex items-center justify-between p-4 text-white bg-gradient-to-r", persona.headerGradient)}>
+                        <div className={cn("flex items-center justify-between p-3 text-white bg-gradient-to-r", persona.headerGradient)}>
                             <div className="flex items-center gap-2.5">
                                 <div className="h-9 w-9 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm">
                                     {persona.icon}
@@ -641,27 +954,35 @@ export default function AgentChatWidget() {
                                 <div>
                                     <h3 className="font-bold text-sm tracking-tight leading-none">{persona.name}</h3>
                                     <span className="text-[10px] uppercase tracking-widest opacity-70 font-medium">
-                                        {isListening ? "Listening..." : isSpeaking ? "Speaking..." : persona.tagline}
+                                        {isListening ? "Listening..." : isSpeaking ? "Speaking..." : voiceConversationMode ? "Voice Mode" : persona.tagline}
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-1">
-                                <div className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full">
+                            <div className="flex items-center gap-0.5">
+                                <div className="flex items-center gap-1.5 bg-white/10 px-2 py-0.5 rounded-full mr-1">
                                     <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_6px_rgba(74,222,128,0.6)]" />
                                     <span className="text-[9px] uppercase tracking-wider font-bold opacity-80">Live</span>
                                 </div>
+                                {/* Cart indicator */}
+                                {cartItems.length > 0 && (
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-7 w-7 text-white hover:bg-white/20 rounded-full relative"
+                                        onClick={() => sendMessage("What's in my cart?")}
+                                        title="View cart"
+                                    >
+                                        <ShoppingCart className="h-3.5 w-3.5" />
+                                        <span className="absolute -top-0.5 -right-0.5 bg-lime text-charcoal-deep text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                                            {cartItems.length}
+                                        </span>
+                                    </Button>
+                                )}
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     className="h-7 w-7 text-white hover:bg-white/20 rounded-full"
-                                    onClick={() => {
-                                        setTtsEnabled(!ttsEnabled);
-                                        if (ttsEnabled) {
-                                            window.speechSynthesis?.cancel();
-                                            if (audioRef.current) { audioRef.current.pause(); audioRef.current = null; }
-                                            setIsSpeaking(false);
-                                        }
-                                    }}
+                                    onClick={() => setTtsEnabled(!ttsEnabled)}
                                     title={ttsEnabled ? "Mute voice" : "Unmute voice"}
                                     aria-label={ttsEnabled ? "Mute voice" : "Unmute voice"}
                                 >
@@ -671,9 +992,17 @@ export default function AgentChatWidget() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-7 w-7 text-white hover:bg-white/20 rounded-full"
+                                    onClick={() => setShowQuickNav(!showQuickNav)}
+                                    title="Quick navigation"
+                                >
+                                    <MapPin className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 text-white hover:bg-white/20 rounded-full"
                                     onClick={() => setShowPersonaSelector(!showPersonaSelector)}
                                     title="Switch personality"
-                                    aria-label="Switch personality"
                                     aria-expanded={showPersonaSelector}
                                 >
                                     <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", showPersonaSelector && "rotate-180")} />
@@ -682,13 +1011,27 @@ export default function AgentChatWidget() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-7 w-7 text-white hover:bg-white/20 rounded-full"
-                                    onClick={() => { setIsOpen(false); recognitionRef.current?.abort(); window.speechSynthesis?.cancel(); setIsListening(false); setIsSpeaking(false); }}
+                                    onClick={() => { setIsOpen(false); recognitionRef.current?.abort(); window.speechSynthesis?.cancel(); setIsListening(false); setIsSpeaking(false); setVoiceConversationMode(false); }}
                                     aria-label="Close chat"
                                 >
                                     <X className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
                         </div>
+
+                        {/* ── Quick Nav Bar ──────────────────────────── */}
+                        <AnimatePresence>
+                            {showQuickNav && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden border-b border-border bg-muted px-2 py-1.5"
+                                >
+                                    <QuickNavBar onNavigate={(href) => { navigateTo(href); setShowQuickNav(false); }} />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* ── Persona Selector ──────────────────────── */}
                         <AnimatePresence>
@@ -733,7 +1076,6 @@ export default function AgentChatWidget() {
                                                     setShowPersonaSelector(false);
                                                 }}
                                                 className="w-full text-left px-3 py-2 rounded-lg text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                                aria-label="Clear all conversation data"
                                             >
                                                 Clear My Data
                                                 <span className="block text-[10px] text-muted-foreground/60 mt-0.5">Remove all saved preferences and history</span>
@@ -745,34 +1087,78 @@ export default function AgentChatWidget() {
                         </AnimatePresence>
 
                         {/* ── Messages ────────────────────────────────── */}
-                        <div className="h-[340px] sm:h-[380px] overflow-y-auto bg-muted p-4 space-y-3">
+                        <div className="h-[320px] sm:h-[360px] overflow-y-auto bg-muted p-3 space-y-2.5">
                             {messages.map((msg) => (
-                                <motion.div
-                                    key={msg.id}
-                                    initial={{ opacity: 0, y: 8 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className={cn(
-                                        "max-w-[82%] rounded-2xl px-4 py-2.5 text-sm shadow-sm whitespace-pre-line",
-                                        msg.sender === "user"
-                                            ? "ml-auto bg-green-800 text-white rounded-br-none"
-                                            : "mr-auto bg-card text-foreground rounded-bl-none border border-border"
+                                <div key={msg.id}>
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className={cn(
+                                            "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm shadow-sm whitespace-pre-line",
+                                            msg.sender === "user"
+                                                ? "ml-auto bg-green-800 text-white rounded-br-none"
+                                                : "mr-auto bg-card text-foreground rounded-bl-none border border-border"
+                                        )}
+                                    >
+                                        {msg.sender === "medagent" ? (
+                                            <StreamingMessage text={msg.text} isLatest={msg.id === latestMsgId} />
+                                        ) : (
+                                            msg.text
+                                        )}
+                                    </motion.div>
+
+                                    {/* Product cards */}
+                                    {msg.products && msg.products.length > 0 && (
+                                        <div className="mr-auto max-w-[85%] mt-1.5 space-y-1">
+                                            {msg.products.map((p) => (
+                                                <ProductCard
+                                                    key={p.id}
+                                                    product={p}
+                                                    onAddToCart={addProductToCart}
+                                                    onNavigate={navigateTo}
+                                                />
+                                            ))}
+                                        </div>
                                     )}
-                                >
-                                    {msg.sender === "medagent" ? (
-                                        <StreamingMessage text={msg.text} isLatest={msg.id === latestMsgId} />
-                                    ) : (
-                                        msg.text
+
+                                    {/* Cart action card */}
+                                    {msg.cartAction?.type === "added" && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="mr-auto max-w-[85%] mt-1.5 flex items-center gap-2 px-3 py-2 rounded-lg bg-green-900/20 border border-green-600/20 text-xs text-green-600"
+                                        >
+                                            <ShoppingCart className="h-3.5 w-3.5" />
+                                            <span className="font-medium">{msg.cartAction.productName} added!</span>
+                                            <button
+                                                onClick={() => navigateTo("/checkout")}
+                                                className="ml-auto flex items-center gap-1 text-[10px] font-bold hover:underline"
+                                            >
+                                                Checkout <ArrowRight className="h-3 w-3" />
+                                            </button>
+                                        </motion.div>
                                     )}
-                                </motion.div>
+                                </div>
                             ))}
                             {isTyping && <TypingIndicator />}
+
+                            {/* Inline cart summary when cart context is relevant */}
+                            {cartItems.length > 0 && messages.length > 2 && /cart|checkout|order|added|buy|purchase|pay/i.test(messages[messages.length - 1]?.text || "") && (
+                                <CartStatusCard
+                                    items={cartItems}
+                                    total={cartTotal}
+                                    onCheckout={() => navigateTo("/checkout")}
+                                    onClear={clearCart}
+                                />
+                            )}
+
                             <div ref={messagesEndRef} />
                         </div>
 
                         {/* ── Suggestion Chips ────────────────────────── */}
                         {messages.length <= 2 && !isTyping && (
-                            <div className="bg-muted px-3 py-2.5 border-t border-border">
+                            <div className="bg-muted px-3 py-2 border-t border-border">
                                 <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60 font-semibold mb-1.5 px-1">Quick actions</p>
                                 <div className="flex flex-wrap gap-1.5 overflow-x-auto">
                                     {SUGGESTION_CHIPS.map((chip) => (
@@ -792,16 +1178,18 @@ export default function AgentChatWidget() {
                         {/* ── Input Bar ──────────────────────────────── */}
                         <div className="bg-card p-3 border-t border-border">
                             <div className="flex gap-2">
-                                {/* Mic Button (one-shot voice input) */}
+                                {/* Mic Button — tap = one-shot, double-tap = conversation mode */}
                                 <Button
                                     size="icon"
-                                    variant={isListening ? "destructive" : "outline"}
+                                    variant={voiceConversationMode ? "default" : isListening ? "destructive" : "outline"}
                                     className={cn(
                                         "rounded-full h-9 w-9 flex-shrink-0 transition-all",
-                                        isListening && "animate-pulse"
+                                        isListening && "animate-pulse",
+                                        voiceConversationMode && "bg-green-600 hover:bg-green-500 border-green-600 ring-2 ring-green-400/30"
                                     )}
                                     onClick={toggleMic}
-                                    title={isListening ? "Stop listening" : "Voice input"}
+                                    onDoubleClick={toggleVoiceConversation}
+                                    title={voiceConversationMode ? "Voice conversation ON (double-tap to stop)" : isListening ? "Stop listening" : "Tap: voice input | Double-tap: conversation mode"}
                                     aria-label={isListening ? "Stop listening" : "Voice input"}
                                 >
                                     {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -815,7 +1203,7 @@ export default function AgentChatWidget() {
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                                    placeholder={isListening ? "Listening..." : persona.inputPlaceholder}
+                                    placeholder={isListening ? "Listening..." : voiceConversationMode ? "Voice mode active..." : persona.inputPlaceholder}
                                     className="flex-1 rounded-full bg-muted px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-green-600/50"
                                     aria-label={`Message ${persona.name}`}
                                 />
@@ -830,23 +1218,36 @@ export default function AgentChatWidget() {
                                 </Button>
                             </div>
 
-                            {/* Listening Status Indicator */}
-                            {isListening && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    className="mt-2 flex items-center justify-center gap-2 text-[11px] text-muted-foreground"
-                                >
-                                    <span className="flex gap-0.5">
-                                        <span className="w-1 h-3 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: "0ms" }} />
-                                        <span className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "150ms" }} />
-                                        <span className="w-1 h-2 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: "300ms" }} />
-                                        <span className="w-1 h-5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "100ms" }} />
-                                        <span className="w-1 h-3 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: "200ms" }} />
-                                    </span>
-                                    <span>Listening — speak now</span>
-                                </motion.div>
-                            )}
+                            {/* Voice Status */}
+                            <AnimatePresence>
+                                {(isListening || voiceConversationMode) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: "auto" }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="mt-2 flex items-center justify-center gap-2 text-[11px] text-muted-foreground"
+                                    >
+                                        {isListening && (
+                                            <span className="flex gap-0.5">
+                                                {[0, 150, 300, 100, 200].map((d, i) => (
+                                                    <span key={i} className={`w-1 rounded-full bg-red-${i % 2 ? 500 : 400} animate-pulse`} style={{ height: `${8 + (i * 3) % 12}px`, animationDelay: `${d}ms` }} />
+                                                ))}
+                                            </span>
+                                        )}
+                                        <span>
+                                            {isSpeaking ? "Speaking..." : isListening ? "Listening — speak now" : "Voice mode — waiting..."}
+                                        </span>
+                                        {voiceConversationMode && (
+                                            <button
+                                                onClick={toggleVoiceConversation}
+                                                className="text-red-400 hover:text-red-300 text-[10px] font-semibold ml-2"
+                                            >
+                                                Stop
+                                            </button>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </motion.div>
                 )}
@@ -873,7 +1274,12 @@ export default function AgentChatWidget() {
             <Button
                 size="lg"
                 data-medagent-fab
-                className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 bg-green-800 hover:bg-green-700 text-white"
+                className={cn(
+                    "h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-white",
+                    voiceConversationMode
+                        ? "bg-green-600 hover:bg-green-500 ring-2 ring-green-400/40 animate-pulse"
+                        : "bg-green-800 hover:bg-green-700"
+                )}
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close chat assistant" : "Open chat assistant"}
                 aria-expanded={isOpen}
@@ -883,6 +1289,11 @@ export default function AgentChatWidget() {
                     <Sparkles className="h-2.5 w-2.5" />
                     AI
                 </div>
+                {cartItems.length > 0 && (
+                    <div className="absolute -top-1 -left-1 bg-lime text-charcoal-deep text-[9px] font-bold w-4.5 h-4.5 rounded-full shadow-sm flex items-center justify-center" aria-hidden="true">
+                        {cartItems.length}
+                    </div>
+                )}
                 {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
             </Button>
         </div>

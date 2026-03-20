@@ -18,6 +18,7 @@ export {
     videoSchema,
     speakableSchema,
     combineSchemas,
+    buildSchemaGraph,
 } from "./schemas";
 
 // AEO (Answer Engine Optimization)

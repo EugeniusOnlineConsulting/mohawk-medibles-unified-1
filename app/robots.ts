@@ -6,7 +6,7 @@
  */
 import { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.ca";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.co";
 
 export default function robots(): MetadataRoute.Robots {
     return {
@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
             },
             {
                 // Allow AI crawlers explicitly
-                userAgent: ["GPTBot", "Google-Extended", "PerplexityBot", "ClaudeBot", "Applebot"],
+                userAgent: ["GPTBot", "Google-Extended", "PerplexityBot", "ClaudeBot", "Anthropic-AI", "Applebot", "Amazonbot", "ChatGPT-User", "cohere-ai", "Bytespider"],
                 allow: ["/", "/llms.txt"],
                 disallow: ["/admin/", "/api/", "/checkout/"],
             },

@@ -10,6 +10,8 @@ import { processMessage } from "@/lib/sage/engine";
 import { applyRateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 import { pushEvent } from "@/lib/activityStream";
 import { log } from "@/lib/logger";
+import { verifySessionToken } from "@/lib/auth";
+import type { AuthenticatedUserData } from "@/lib/sage/behavioral";
 
 const MESSAGE_MAX_LENGTH = 2000;
 const CONTEXT_MAX_BYTES = 10_000; // 10KB max for behavioral/memory payloads
@@ -75,6 +77,22 @@ export async function POST(req: NextRequest) {
     const safePersona = VALID_PERSONAS.has(persona || "") ? persona : "medagent";
 
     try {
+        // Resolve authenticated user from session cookie
+        let authenticatedUser: AuthenticatedUserData | undefined;
+        const sessionCookie = req.cookies.get("mm-session")?.value;
+        if (sessionCookie) {
+            const token = verifySessionToken(sessionCookie);
+            if (token) {
+                authenticatedUser = {
+                    name: token.name,
+                    orderCount: 0,
+                    totalSpend: 0,
+                    topCategories: [],
+                    segment: "returning",
+                };
+            }
+        }
+
         const validatedCartItems = validateCartItems(cartItems);
         const result = await processMessage({
             message,
@@ -85,6 +103,7 @@ export async function POST(req: NextRequest) {
             ...(cartTotal !== undefined && typeof cartTotal === "number" && cartTotal >= 0 && cartTotal < 100000 && { cartTotal }),
             ...(validatedCartItems && { cartItems: validatedCartItems }),
             ...(validateContextPayload(memory) && { memory: memory as any }),
+            ...(authenticatedUser && { authenticatedUser }),
         });
 
         // Push activity event for admin dashboard

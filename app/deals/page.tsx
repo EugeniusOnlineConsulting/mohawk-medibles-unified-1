@@ -1,7 +1,42 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getAllProducts } from "@/lib/products";
+
+export const metadata: Metadata = {
+    title: "Cannabis Deals & Promotions | Mohawk Medibles — Save on Premium Weed",
+    description:
+        "Save on premium lab-tested cannabis with active deals from Mohawk Medibles. Free shipping over $199, bulk discounts, staff picks & best sellers. Indigenous-owned dispensary.",
+    keywords: [
+        "cannabis deals canada",
+        "weed deals online",
+        "cheap weed canada",
+        "cannabis promotions",
+        "mohawk medibles deals",
+        "bulk cannabis discount",
+        "free shipping cannabis canada",
+        "dispensary deals",
+        "cannabis sale canada",
+        "best weed deals online",
+    ],
+    openGraph: {
+        title: "Cannabis Deals & Promotions | Mohawk Medibles",
+        description:
+            "Save on 344+ premium cannabis products. Free shipping over $199, bulk discounts, and daily deals.",
+        url: "https://mohawkmedibles.co/deals",
+        type: "website",
+        images: ["/og-image.png"],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Cannabis Deals | Mohawk Medibles",
+        description: "Premium cannabis deals. Free shipping over $199 Canada-wide.",
+    },
+    alternates: {
+        canonical: "https://mohawkmedibles.co/deals",
+    },
+};
 
 /**
  * Cannabis Deals & Promotions Page
@@ -26,14 +61,14 @@ export default async function DealsPage() {
     const bestSellers = products.slice(4, 8);
 
     return (
-        <div className="min-h-screen pt-32 pb-20 bg-forest text-cream">
+        <div className="min-h-screen pt-32 pb-20 page-glass text-foreground">
             {/* Hero Section */}
             <section className="container mx-auto px-6 mb-20">
                 <div className="text-center max-w-3xl mx-auto">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white uppercase mb-6">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground uppercase mb-6">
                         Cannabis Deals & Promotions
                     </h1>
-                    <p className="text-lg md:text-xl text-cream leading-relaxed mb-8">
+                    <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
                         Save on premium, lab-tested cannabis with our active offers. From free shipping to bulk discounts,
                         we&apos;re committed to making Empire Standard™ quality accessible to all Canadians.
                     </p>
@@ -42,17 +77,17 @@ export default async function DealsPage() {
 
             {/* Active Offers Section */}
             <section className="container mx-auto px-6 mb-20">
-                <h2 className="text-3xl font-bold text-white tracking-tight mb-10 uppercase">
+                <h2 className="text-3xl font-bold text-foreground tracking-tight mb-10 uppercase">
                     Active Offers
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
                     {/* Free Shipping Card */}
-                    <div className="glass p-8 rounded-2xl border border-secondary/20 backdrop-blur-md bg-white/5">
-                        <h3 className="text-2xl font-bold text-secondary mb-3 uppercase tracking-wide">
+                    <div className="glass-card p-8 rounded-2xl border border-secondary/20 backdrop-blur-md">
+                        <h3 className="text-2xl font-bold text-forest dark:text-lime mb-3 uppercase tracking-wide">
                             Free Shipping
                         </h3>
-                        <p className="text-cream leading-relaxed mb-6">
-                            Free shipping on all orders over <span className="font-bold text-secondary">$150 CAD</span> — Canada-wide via Xpresspost.
+                        <p className="text-muted-foreground leading-relaxed mb-6">
+                            Free shipping on all orders over <span className="font-bold text-forest dark:text-lime">$199 CAD</span> — Canada-wide via Xpresspost.
                             Fast, discreet, secure delivery.
                         </p>
                         <Link href="/shop">
@@ -63,12 +98,12 @@ export default async function DealsPage() {
                     </div>
 
                     {/* Mix & Match Card */}
-                    <div className="glass p-8 rounded-2xl border border-secondary/20 backdrop-blur-md bg-white/5">
-                        <h3 className="text-2xl font-bold text-secondary mb-3 uppercase tracking-wide">
+                    <div className="glass-card p-8 rounded-2xl border border-secondary/20 backdrop-blur-md">
+                        <h3 className="text-2xl font-bold text-forest dark:text-lime mb-3 uppercase tracking-wide">
                             Mix & Match
                         </h3>
-                        <p className="text-cream leading-relaxed mb-6">
-                            Buy any <span className="font-bold text-secondary">3 edibles</span>, get <span className="font-bold text-secondary">10% off</span> your
+                        <p className="text-muted-foreground leading-relaxed mb-6">
+                            Buy any <span className="font-bold text-forest dark:text-lime">3 edibles</span>, get <span className="font-bold text-forest dark:text-lime">10% off</span> your
                             edible total. Mix flavors, strains, and potencies — your choice.
                         </p>
                         <Link href="/shop?category=Edibles">
@@ -79,12 +114,12 @@ export default async function DealsPage() {
                     </div>
 
                     {/* Bulk Savings Card */}
-                    <div className="glass p-8 rounded-2xl border border-secondary/20 backdrop-blur-md bg-white/5">
-                        <h3 className="text-2xl font-bold text-secondary mb-3 uppercase tracking-wide">
+                    <div className="glass-card p-8 rounded-2xl border border-secondary/20 backdrop-blur-md">
+                        <h3 className="text-2xl font-bold text-forest dark:text-lime mb-3 uppercase tracking-wide">
                             Bulk Savings
                         </h3>
-                        <p className="text-cream leading-relaxed mb-6">
-                            Ounce deals starting at <span className="font-bold text-secondary">$40</span> — premium flower at unbeatable prices.
+                        <p className="text-muted-foreground leading-relaxed mb-6">
+                            Ounce deals starting at <span className="font-bold text-forest dark:text-lime">$40</span> — premium flower at unbeatable prices.
                             Perfect for serious enthusiasts.
                         </p>
                         <Link href="/shop?category=Flower">
@@ -98,7 +133,7 @@ export default async function DealsPage() {
 
             {/* Staff Picks Section */}
             <section className="container mx-auto px-6 mb-20">
-                <h2 className="text-3xl font-bold text-white tracking-tight mb-10 uppercase">
+                <h2 className="text-3xl font-bold text-foreground tracking-tight mb-10 uppercase">
                     Staff Picks
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -106,7 +141,7 @@ export default async function DealsPage() {
                         <Link
                             key={product.id}
                             href={`/shop/${product.slug}`}
-                            className="group relative h-[300px] rounded-2xl overflow-hidden glass border border-white/10 hover:border-secondary/50 transition-all duration-500"
+                            className="group relative h-[300px] rounded-2xl overflow-hidden glass-card border border-border hover:border-secondary/50 transition-all duration-500"
                         >
                             {/* Product Image */}
                             {product.image && (
@@ -128,7 +163,7 @@ export default async function DealsPage() {
                             </div>
 
                             {/* Price Badge (Top Right) */}
-                            <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded-full text-sm font-bold text-secondary">
+                            <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-border px-3 py-1 rounded-full text-sm font-bold text-forest dark:text-lime">
                                 ${product.price.toFixed(2)}
                             </div>
 
@@ -145,7 +180,7 @@ export default async function DealsPage() {
 
             {/* Best Sellers Section */}
             <section className="container mx-auto px-6 mb-20">
-                <h2 className="text-3xl font-bold text-white tracking-tight mb-10 uppercase">
+                <h2 className="text-3xl font-bold text-foreground tracking-tight mb-10 uppercase">
                     Best Sellers
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -153,7 +188,7 @@ export default async function DealsPage() {
                         <Link
                             key={product.id}
                             href={`/shop/${product.slug}`}
-                            className="group relative h-[300px] rounded-2xl overflow-hidden glass border border-white/10 hover:border-secondary/50 transition-all duration-500"
+                            className="group relative h-[300px] rounded-2xl overflow-hidden glass-card border border-border hover:border-secondary/50 transition-all duration-500"
                         >
                             {/* Product Image */}
                             {product.image && (
@@ -175,7 +210,7 @@ export default async function DealsPage() {
                             </div>
 
                             {/* Price Badge (Top Right) */}
-                            <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded-full text-sm font-bold text-secondary">
+                            <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-border px-3 py-1 rounded-full text-sm font-bold text-forest dark:text-lime">
                                 ${product.price.toFixed(2)}
                             </div>
 
@@ -192,11 +227,11 @@ export default async function DealsPage() {
 
             {/* CTA Section */}
             <section className="container mx-auto px-6 text-center">
-                <div className="glass p-12 rounded-2xl border border-secondary/20 backdrop-blur-md bg-white/5 max-w-2xl mx-auto">
-                    <h2 className="text-3xl font-bold text-white mb-4 uppercase">
-                        Browse All 363+ Products
+                <div className="glass-card p-12 rounded-2xl border border-secondary/20 backdrop-blur-md max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold text-foreground mb-4 uppercase">
+                        Browse All 344+ Products
                     </h2>
-                    <p className="text-cream mb-8 text-lg">
+                    <p className="text-muted-foreground mb-8 text-lg">
                         Discover our complete selection of premium cannabis products, all meeting the Empire Standard™.
                     </p>
                     <Link href="/shop">

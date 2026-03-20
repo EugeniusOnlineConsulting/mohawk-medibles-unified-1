@@ -64,7 +64,7 @@ const BRAND_FOOTER = `
     <p>Mohawk Medibles — Indigenous-Owned Cannabis Dispensary</p>
     <p>Six Nations of the Grand River Territory, Ontario, Canada</p>
     <p style="margin-top:12px;">
-        <a href="https://mohawkmedibles.ca" style="color:#2D5016;">mohawkmedibles.ca</a>
+        <a href="https://mohawkmedibles.co" style="color:#2D5016;">mohawkmedibles.co</a>
     </p>
 </div>`;
 
@@ -115,7 +115,7 @@ export async function sendOrderConfirmation(to: string, order: OrderEmailData) {
             <tfoot>
                 <tr style="border-top:1px solid #e5e5e5;"><td colspan="2" style="padding:4px 0;">Subtotal</td><td style="text-align:right;">$${order.subtotal.toFixed(2)}</td></tr>
                 <tr><td colspan="2" style="padding:4px 0;">Shipping</td><td style="text-align:right;">${order.shipping === 0 ? "FREE" : "$" + order.shipping.toFixed(2)}</td></tr>
-                <tr><td colspan="2" style="padding:4px 0;">HST (13%)</td><td style="text-align:right;">$${order.tax.toFixed(2)}</td></tr>
+                <tr><td colspan="2" style="padding:4px 0;">Tax (Tax-Free)</td><td style="text-align:right;">$0.00</td></tr>
                 <tr style="border-top:2px solid #2D5016;"><td colspan="2" style="padding:8px 0;font-weight:bold;">Total</td><td style="text-align:right;font-weight:bold;color:#2D5016;font-size:18px;">$${order.total.toFixed(2)} CAD</td></tr>
             </tfoot>
         </table>
@@ -176,14 +176,14 @@ export async function sendWelcomeEmail(to: string, name: string) {
         <div style="background:#f5f5dc;padding:16px;border-radius:8px;margin:20px 0;">
             <p style="margin:0;font-weight:bold;color:#2D5016;">What makes us different:</p>
             <ul style="color:#4a5c40;font-size:14px;">
-                <li>339+ lab-tested products meeting the Empire Standard™</li>
+                <li>344+ lab-tested products meeting the Empire Standard™</li>
                 <li>Indigenous-owned, Six Nations of the Grand River Territory</li>
                 <li>Discreet Canada-wide shipping via Xpresspost</li>
                 <li>Dedicated customer support</li>
             </ul>
         </div>
 
-        <a href="https://mohawkmedibles.ca/shop" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Browse Our Collection</a>
+        <a href="https://mohawkmedibles.co/shop" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Browse Our Collection</a>
     `);
 
     return sendEmail({ to, subject: "Welcome to Mohawk Medibles 🍃", html });
@@ -238,9 +238,9 @@ export async function sendAbandonedCartReminder(
             <p style="margin:12px 0 0;font-size:16px;font-weight:bold;color:#2D5016;">Cart Total: $${data.cartTotal.toFixed(2)} CAD</p>
         </div>
 
-        <a href="https://mohawkmedibles.ca/checkout" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Complete Your Order</a>
+        <a href="https://mohawkmedibles.co/checkout" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Complete Your Order</a>
 
-        <p style="color:#666;margin-top:20px;font-size:13px;">Orders over $150 ship FREE across Canada. Don't miss out on your selection!</p>
+        <p style="color:#666;margin-top:20px;font-size:13px;">Orders over $199 ship FREE across Canada. Don't miss out on your selection!</p>
     `);
 
     return sendEmail({ to, subject: "Don't forget your cart! | Mohawk Medibles", html });
@@ -255,7 +255,7 @@ const HMAC_SECRET = process.env.AUTH_SECRET || "mohawk-medibles-unsubscribe-secr
 /** Generate HMAC-signed unsubscribe URL for campaign emails */
 export function generateUnsubscribeUrl(email: string, campaignId?: string): string {
     const token = crypto.createHmac("sha256", HMAC_SECRET).update(email.toLowerCase()).digest("hex").substring(0, 32);
-    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.ca";
+    const base = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.co";
     const params = new URLSearchParams({ email, token });
     if (campaignId) params.set("campaign", campaignId);
     return `${base}/api/newsletter/unsubscribe?${params.toString()}`;
@@ -268,7 +268,7 @@ export function buildCampaignEmail(content: string, unsubscribeUrl: string): str
     <p style="margin:0;">You're receiving this because you subscribed to Mohawk Medibles updates.</p>
     <p style="margin:4px 0 0;">
         <a href="${unsubscribeUrl}" style="color:#666;text-decoration:underline;">Unsubscribe</a> •
-        <a href="https://mohawkmedibles.ca" style="color:#666;text-decoration:underline;">Visit Store</a>
+        <a href="https://mohawkmedibles.co" style="color:#666;text-decoration:underline;">Visit Store</a>
     </p>
 </div>`;
 
@@ -316,7 +316,7 @@ export async function sendDeliveryConfirmation(
             <p style="margin:8px 0 0;font-size:14px;color:#4a5c40;">We'd love to hear your feedback. Your review helps us serve you better and helps other customers find the right products.</p>
         </div>
 
-        <a href="https://mohawkmedibles.ca/shop" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Shop Again</a>
+        <a href="https://mohawkmedibles.co/shop" style="display:inline-block;background:#2D5016;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;">Shop Again</a>
     `);
 
     return sendEmail({ to, subject: `Delivered — ${data.orderNumber} | Mohawk Medibles`, html });

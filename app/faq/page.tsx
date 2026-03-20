@@ -7,6 +7,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Search, MessageSquare } from "lucide-react";
+import { useLocale } from "@/components/LocaleProvider";
 
 interface FaqItem {
     q: string;
@@ -17,118 +18,6 @@ interface FaqSection {
     title: string;
     items: FaqItem[];
 }
-
-const FAQ_DATA: FaqSection[] = [
-    {
-        title: "Ordering & Payment",
-        items: [
-            {
-                q: "How do I place an order?",
-                a: "Browse our shop, add items to your cart, and proceed to checkout. We accept Visa, Mastercard, Interac e-Transfer, and Bitcoin. All orders are processed securely through Stripe.",
-            },
-            {
-                q: "Is there a minimum order amount?",
-                a: "No minimum order required! However, orders over $150 CAD qualify for FREE shipping Canada-wide.",
-            },
-            {
-                q: "Do you charge tax?",
-                a: "Ontario HST (13%) applies to all orders. The tax is calculated automatically at checkout and shown in your order summary before payment.",
-            },
-            {
-                q: "Can I modify or cancel my order?",
-                a: "Orders can be modified or cancelled within 1 hour of placement, before they enter processing. Contact us immediately at info@mohawkmedibles.ca or call (613) 396-6728.",
-            },
-            {
-                q: "Do you offer wholesale or bulk pricing?",
-                a: "Yes! We offer bulk pricing for qualified retailers and dispensaries. Contact our wholesale team at wholesale@mohawkmedibles.ca for pricing and minimum order requirements.",
-            },
-        ],
-    },
-    {
-        title: "Shipping & Delivery",
-        items: [
-            {
-                q: "Where do you ship?",
-                a: "We ship Canada-wide to all 13 provinces and territories via Canada Post Xpresspost. Local delivery is available for Hamilton, Brantford, and the Six Nations area.",
-            },
-            {
-                q: "How long does shipping take?",
-                a: "Local delivery: Same day or next day. Ontario: 1-3 business days. Quebec/Maritimes: 2-4 business days. Western Canada: 3-5 business days. Northern Canada: 5-10 business days.",
-            },
-            {
-                q: "How much does shipping cost?",
-                a: "FREE for local delivery and orders over $150. Ontario: $15. Quebec/Maritimes: $18. Western Canada: $20. Northern territories: $25. All prices in CAD.",
-            },
-            {
-                q: "Is the packaging discreet?",
-                a: "Absolutely. All orders ship in plain, unbranded boxes with no indication of contents. The return address shows a generic business name. Products are vacuum-sealed for freshness and odour control.",
-            },
-            {
-                q: "Will I need to show ID on delivery?",
-                a: "Canada Post may require age verification and a signature upon delivery. Please have valid government-issued photo ID confirming you are 19+ available when your package arrives.",
-            },
-            {
-                q: "How do I track my order?",
-                a: "Once shipped, you'll receive an email with a Canada Post tracking number. You can also track your order from your account dashboard or ask MedAgent for real-time status updates.",
-            },
-        ],
-    },
-    {
-        title: "Products & Quality",
-        items: [
-            {
-                q: "Are your products lab-tested?",
-                a: "Yes. All products meet our Empire Standard\u2122 quality benchmarks. We work with certified labs to verify THC/CBD content, check for contaminants, and ensure consistent potency across batches.",
-            },
-            {
-                q: "What product categories do you carry?",
-                a: "We carry 339+ products across five categories: Premium Flower, Artisan Edibles, Pure Concentrates, Elite Vapes, and Accessories. Our catalogue is updated regularly with new arrivals.",
-            },
-            {
-                q: "Do THC percentages vary between batches?",
-                a: "Yes, slight natural variation between batches is normal. The THC/CBD percentages listed on product pages represent the range for the most recent batch. Lab results are available upon request.",
-            },
-            {
-                q: "How should I store my products?",
-                a: "Store flower and edibles in a cool, dark place away from direct sunlight. Concentrates should be refrigerated for optimal consistency. Vape cartridges should be stored upright at room temperature.",
-            },
-        ],
-    },
-    {
-        title: "Returns & Refunds",
-        items: [
-            {
-                q: "What is your return policy?",
-                a: "Due to the nature of cannabis products, returns are accepted only for damaged, defective, or incorrectly shipped items. Report issues within 48 hours of delivery with photos to returns@mohawkmedibles.ca.",
-            },
-            {
-                q: "How long do refunds take?",
-                a: "Once a return is approved, refunds are processed within 5-10 business days to your original payment method. You'll receive an email confirmation when the refund is issued.",
-            },
-            {
-                q: "What if my package is lost?",
-                a: "Contact us within 48 hours of the expected delivery date. We'll work with Canada Post to investigate and either locate the package or arrange a replacement at no additional cost.",
-            },
-        ],
-    },
-    {
-        title: "Account & Privacy",
-        items: [
-            {
-                q: "Do I need an account to order?",
-                a: "No — you can checkout as a guest. However, creating an account lets you track orders, save addresses, and access exclusive subscriber perks.",
-            },
-            {
-                q: "How is my data protected?",
-                a: "All data is encrypted in transit (TLS) and at rest. Payment processing is handled by Stripe (PCI-DSS Level 1 compliant). We never store full credit card numbers. See our Privacy Policy for details.",
-            },
-            {
-                q: "What is MedAgent?",
-                a: "MedAgent is our AI-powered customer assistant. It can help you find products, track orders, answer questions, and provide general cannabis information. Click the chat icon on any page to start a conversation. MedAgent does not provide medical advice.",
-            },
-        ],
-    },
-];
 
 function FaqAccordion({ item }: { item: FaqItem }) {
     const [open, setOpen] = useState(false);
@@ -156,6 +45,56 @@ function FaqAccordion({ item }: { item: FaqItem }) {
 
 export default function FaqPage() {
     const [search, setSearch] = useState("");
+    const { t } = useLocale();
+
+    const FAQ_DATA: FaqSection[] = [
+        {
+            title: t("faq.orderingPayment"),
+            items: [
+                { q: t("faq.faqQ1"), a: t("faq.faqA1") },
+                { q: t("faq.faqQ2"), a: t("faq.faqA2") },
+                { q: t("faq.faqQ3"), a: t("faq.faqA3") },
+                { q: t("faq.faqQ4"), a: t("faq.faqA4") },
+                { q: t("faq.faqQ5"), a: t("faq.faqA5") },
+            ],
+        },
+        {
+            title: t("faq.shippingDelivery"),
+            items: [
+                { q: t("faq.faqQ6"), a: t("faq.faqA6") },
+                { q: t("faq.faqQ7"), a: t("faq.faqA7") },
+                { q: t("faq.faqQ8"), a: t("faq.faqA8") },
+                { q: t("faq.faqQ9"), a: t("faq.faqA9") },
+                { q: t("faq.faqQ10"), a: t("faq.faqA10") },
+                { q: t("faq.faqQ11"), a: t("faq.faqA11") },
+            ],
+        },
+        {
+            title: t("faq.productsQuality"),
+            items: [
+                { q: t("faq.faqQ12"), a: t("faq.faqA12") },
+                { q: t("faq.faqQ13"), a: t("faq.faqA13") },
+                { q: t("faq.faqQ14"), a: t("faq.faqA14") },
+                { q: t("faq.faqQ15"), a: t("faq.faqA15") },
+            ],
+        },
+        {
+            title: t("faq.returnsRefunds"),
+            items: [
+                { q: t("faq.faqQ16"), a: t("faq.faqA16") },
+                { q: t("faq.faqQ17"), a: t("faq.faqA17") },
+                { q: t("faq.faqQ18"), a: t("faq.faqA18") },
+            ],
+        },
+        {
+            title: t("faq.accountPrivacy"),
+            items: [
+                { q: t("faq.faqQ19"), a: t("faq.faqA19") },
+                { q: t("faq.faqQ20"), a: t("faq.faqA20") },
+                { q: t("faq.faqQ21"), a: t("faq.faqA21") },
+            ],
+        },
+    ];
 
     const filteredSections = FAQ_DATA.map((section) => ({
         ...section,
@@ -167,16 +106,23 @@ export default function FaqPage() {
     })).filter((section) => section.items.length > 0);
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="relative min-h-screen bg-background">
+            {/* Decorative background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+                <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='currentColor' stroke-width='0.5'%3E%3Cpath d='M40 0L60 20L40 40L20 20Z'/%3E%3Cpath d='M0 40L20 20L40 40L20 60Z'/%3E%3Cpath d='M40 40L60 20L80 40L60 60Z'/%3E%3Cpath d='M40 40L60 60L40 80L20 60Z'/%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/svg%3E")`, backgroundSize: "80px 80px" }} />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-lime/[0.04] rounded-full blur-[120px] -translate-y-1/3 translate-x-1/4" />
+                <div className="absolute bottom-1/3 left-0 w-[300px] h-[300px] bg-forest/[0.05] dark:bg-lime/[0.03] rounded-full blur-[100px] -translate-x-1/4" />
+            </div>
+
             {/* Header */}
-            <section className="pt-24 pb-8">
+            <section className="relative z-10 pt-24 pb-8">
                 <div className="max-w-3xl mx-auto px-6">
-                    <p className="text-sm uppercase tracking-widest text-green-600 dark:text-green-400 font-bold mb-4">Support</p>
+                    <p className="text-sm uppercase tracking-widest text-green-600 dark:text-green-400 font-bold mb-4">{t("faq.badge")}</p>
                     <h1 className="text-4xl font-bold text-foreground mb-3">
-                        Frequently Asked Questions
+                        {t("faq.title")}
                     </h1>
                     <p className="text-muted-foreground mb-8">
-                        Find answers to common questions about ordering, shipping, products, and more.
+                        {t("faq.subtitle")}
                     </p>
 
                     {/* Search */}
@@ -184,7 +130,7 @@ export default function FaqPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground/60" />
                         <input
                             type="text"
-                            placeholder="Search questions..."
+                            placeholder={t("faq.searchPlaceholder")}
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full pl-12 pr-4 py-3.5 rounded-xl border border-border bg-card focus:ring-2 focus:ring-forest/30 outline-none transition text-foreground"
@@ -194,19 +140,19 @@ export default function FaqPage() {
             </section>
 
             {/* FAQ Content */}
-            <section className="pb-20">
+            <section className="relative z-10 pb-20">
                 <div className="max-w-3xl mx-auto px-6 space-y-8">
                     {filteredSections.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-muted-foreground mb-4">
-                                No results found for &ldquo;{search}&rdquo;
+                                {t("faq.noResultsFor")} &ldquo;{search}&rdquo;
                             </p>
                             <p className="text-sm text-muted-foreground/60">
-                                Try a different search term, or{" "}
+                                {t("faq.noResultsHint")}{" "}
                                 <Link href="/contact" className="text-green-600 dark:text-green-400 underline">
-                                    contact us
+                                    {t("faq.contactUsLink")}
                                 </Link>{" "}
-                                for help.
+                                {t("faq.noResultsHintEnd")}
                             </p>
                         </div>
                     ) : (
@@ -225,22 +171,22 @@ export default function FaqPage() {
                     {/* Still Need Help */}
                     <div className="bg-forest/5 dark:bg-green-900/20 border border-forest/10 dark:border-green-800/30 rounded-xl p-8 text-center">
                         <MessageSquare className="h-10 w-10 text-forest dark:text-leaf mx-auto mb-4" />
-                        <h3 className="text-lg font-bold text-foreground mb-2">Still have questions?</h3>
+                        <h3 className="text-lg font-bold text-foreground mb-2">{t("faq.stillHaveQuestions")}</h3>
                         <p className="text-sm text-muted-foreground mb-4">
-                            Our team is ready to help. Reach out via chat, email, or phone.
+                            {t("faq.stillHaveQuestionsDesc")}
                         </p>
                         <div className="flex justify-center gap-3">
                             <Link
                                 href="/contact"
                                 className="inline-block bg-forest text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-forest/90 transition-colors"
                             >
-                                Contact Us
+                                {t("faq.contactUs")}
                             </Link>
                             <a
                                 href="mailto:info@mohawkmedibles.ca"
                                 className="inline-block border border-forest text-forest dark:text-leaf dark:border-leaf px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-forest/5 transition-colors"
                             >
-                                Email Support
+                                {t("faq.emailSupport")}
                             </a>
                         </div>
                     </div>

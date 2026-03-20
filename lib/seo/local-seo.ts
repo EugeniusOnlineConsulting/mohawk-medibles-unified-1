@@ -1,13 +1,25 @@
 /**
- * Mohawk Medibles — Local SEO & Service Area Targeting
- * ═════════════════════════════════════════════════════
- * Defines delivery regions with coordinates, local keywords,
- * and generates per-city structured data for local pack ranking.
+ * Mohawk Medibles — Local SEO & Service Area Schema Generator
+ * ═════════════════════════════════════════════════════════════
+ * Dynamically generates Service + GeoCircle structured data for ALL 72+
+ * cities in the delivery network. Powered by city-delivery-data.ts — no
+ * hardcoded city lists.
  */
 
-const BASE_URL = "https://mohawkmedibles.ca";
+import {
+    PROVINCES,
+    getAllCities,
+    getCity,
+    type CityData,
+    type ProvinceData,
+} from "./city-delivery-data";
 
-// ─── Service Area Definitions ───────────────────────────────
+const BASE_URL = "https://mohawkmedibles.co";
+
+// Default delivery radius when only lat/lng are available (km)
+const DEFAULT_RADIUS_KM = 20;
+
+// ─── Legacy ServiceArea type (kept for backward compat) ──────
 
 export interface ServiceArea {
     slug: string;
@@ -22,100 +34,159 @@ export interface ServiceArea {
     deliveryTime: string;
 }
 
-export const SERVICE_AREAS: ServiceArea[] = [
-    {
-        slug: "six-nations",
-        city: "Six Nations of the Grand River",
-        region: "Brant County",
-        province: "Ontario",
-        lat: 43.0667,
-        lng: -80.1167,
-        radiusKm: 10,
-        keywords: [
-            "six nations cannabis", "six nations dispensary",
-            "indigenous dispensary ohsweken", "cannabis six nations reserve",
-        ],
-        description: "Local pickup and same-day delivery on Six Nations territory. Our home community.",
-        deliveryTime: "Same day",
-    },
-    {
-        slug: "brantford",
-        city: "Brantford",
-        region: "Brant County",
-        province: "Ontario",
-        lat: 43.1394,
-        lng: -80.2644,
-        radiusKm: 15,
-        keywords: [
-            "cannabis delivery brantford", "weed delivery brantford",
-            "dispensary near brantford", "buy cannabis brantford ontario",
-        ],
-        description: "Premium cannabis delivery to Brantford and surrounding Brant County. Fast, discreet, lab-tested products.",
-        deliveryTime: "Same day – Next day",
-    },
-    {
-        slug: "hamilton",
-        city: "Hamilton",
-        region: "Hamilton-Wentworth",
-        province: "Ontario",
-        lat: 43.2557,
-        lng: -79.8711,
-        radiusKm: 25,
-        keywords: [
-            "cannabis delivery hamilton", "weed delivery hamilton ontario",
-            "dispensary hamilton", "buy weed online hamilton",
-        ],
-        description: "Cannabis delivery to Hamilton, Ancaster, Dundas, and Stoney Creek. Empire Standard™ quality, shipped fast.",
-        deliveryTime: "Next day",
-    },
-    {
-        slug: "caledonia",
-        city: "Caledonia",
-        region: "Haldimand County",
-        province: "Ontario",
-        lat: 43.0715,
-        lng: -79.9531,
-        radiusKm: 10,
-        keywords: [
-            "cannabis delivery caledonia", "dispensary near caledonia",
-            "weed delivery haldimand county",
-        ],
-        description: "Quick cannabis delivery to Caledonia and Haldimand County from Six Nations territory.",
-        deliveryTime: "Same day",
-    },
-    {
-        slug: "toronto",
-        city: "Toronto",
-        region: "Greater Toronto Area",
-        province: "Ontario",
-        lat: 43.6532,
-        lng: -79.3832,
-        radiusKm: 40,
-        keywords: [
-            "cannabis delivery toronto", "weed delivery toronto",
-            "buy weed online toronto", "toronto dispensary delivery",
-            "cannabis delivery gta",
-        ],
-        description: "Premium indigenous cannabis delivered to Toronto and the GTA. Lab-tested, terpene-profiled, Empire Standard™.",
-        deliveryTime: "1–2 business days",
-    },
-    {
-        slug: "hagersville",
-        city: "Hagersville",
-        region: "Haldimand County",
-        province: "Ontario",
-        lat: 42.9564,
-        lng: -80.0556,
-        radiusKm: 10,
-        keywords: [
-            "cannabis delivery hagersville", "dispensary near hagersville",
-        ],
-        description: "Cannabis delivery to Hagersville and surrounding Norfolk/Haldimand area.",
-        deliveryTime: "Same day",
-    },
-];
+/**
+ * Build the legacy SERVICE_AREAS array dynamically from city-delivery-data.
+ * Any code still referencing SERVICE_AREAS gets the full 72+ city set.
+ */
+export const SERVICE_AREAS: ServiceArea[] = getAllCities().map(({ province, city }) => ({
+    slug: city.slug,
+    city: city.name,
+    region: province.name,
+    province: province.name,
+    lat: city.lat,
+    lng: city.lng,
+    radiusKm: DEFAULT_RADIUS_KM,
+    keywords: [
+        `cannabis delivery ${city.name.toLowerCase()}`,
+        `weed delivery ${city.name.toLowerCase()}`,
+        `dispensary ${city.name.toLowerCase()}`,
+        `buy cannabis ${city.name.toLowerCase()} ${province.abbreviation.toLowerCase()}`,
+    ],
+    description: city.description,
+    deliveryTime: city.deliveryTime,
+}));
 
-// ─── Service Area JSON-LD Schema ────────────────────────────
+// ─── Single-City Service Schema ──────────────────────────────
+
+/**
+ * Generates a Schema.org Service JSON-LD object for a single city.
+ *
+ * If the city has lat/lng coordinates, the `areaServed` includes a
+ * GeoCircle with a default 20 km radius. Otherwise it falls back to
+ * a plain City + Province representation.
+ *
+ * @param citySlug    — city slug (e.g. "toronto")
+ * @param cityName    — optional override; if omitted, looked up from data
+ * @param provinceName — optional override; if omitted, looked up from data
+ */
+export function getCityServiceSchema(
+    citySlug: string,
+    cityName?: string,
+    provinceName?: string,
+): Record<string, unknown> | null {
+    // Find the city across all provinces
+    let matchedCity: CityData | undefined;
+    let matchedProvince: ProvinceData | undefined;
+
+    for (const province of PROVINCES) {
+        const city = province.cities.find((c) => c.slug === citySlug);
+        if (city) {
+            matchedCity = city;
+            matchedProvince = province;
+            break;
+        }
+    }
+
+    if (!matchedCity || !matchedProvince) return null;
+
+    const name = cityName ?? matchedCity.name;
+    const provName = provinceName ?? matchedProvince.name;
+    const hasCoords = matchedCity.lat !== 0 && matchedCity.lng !== 0;
+
+    // Build areaServed — GeoCircle when coordinates available, plain City otherwise
+    const areaServed: Record<string, unknown> = hasCoords
+        ? {
+              "@type": "GeoCircle",
+              geoMidpoint: {
+                  "@type": "GeoCoordinates",
+                  latitude: matchedCity.lat,
+                  longitude: matchedCity.lng,
+              },
+              geoRadius: `${DEFAULT_RADIUS_KM} km`,
+          }
+        : {
+              "@type": "City",
+              name,
+              containedInPlace: {
+                  "@type": "AdministrativeArea",
+                  name: `${provName}, Canada`,
+              },
+          };
+
+    return {
+        "@type": "Service",
+        "@id": `${BASE_URL}/delivery/${matchedProvince.slug}/${matchedCity.slug}/#service`,
+        name: `Cannabis Delivery — ${name}`,
+        description: matchedCity.description,
+        serviceType: "Cannabis Delivery",
+        provider: { "@id": `${BASE_URL}/#store` },
+        areaServed: {
+            "@type": "City",
+            name,
+            containedInPlace: {
+                "@type": "AdministrativeArea",
+                name: `${provName}, Canada`,
+            },
+            ...(hasCoords && {
+                geo: {
+                    "@type": "GeoCoordinates",
+                    latitude: matchedCity.lat,
+                    longitude: matchedCity.lng,
+                },
+            }),
+        },
+        availableChannel: {
+            "@type": "ServiceChannel",
+            serviceUrl: `${BASE_URL}/delivery/${matchedProvince.slug}/${matchedCity.slug}`,
+        },
+        offers: {
+            "@type": "Offer",
+            priceCurrency: "CAD",
+            price: "0",
+            description: `Free delivery on qualifying orders to ${name}`,
+            ...(hasCoords && {
+                eligibleRegion: areaServed,
+            }),
+        },
+        additionalProperty: [
+            {
+                "@type": "PropertyValue",
+                name: "Estimated Delivery Time",
+                value: matchedCity.deliveryTime,
+            },
+        ],
+    };
+}
+
+// ─── All-Cities Service Schemas ──────────────────────────────
+
+/**
+ * Returns an array of Service schemas for every city in the delivery
+ * network. Intended for inclusion in a top-level @graph (e.g. on the
+ * /delivery hub page or the site-wide schema).
+ */
+export function getAllCityServiceSchemas(): Record<string, unknown>[] {
+    return getAllCities()
+        .map(({ city }) => getCityServiceSchema(city.slug))
+        .filter((schema): schema is Record<string, unknown> => schema !== null);
+}
+
+// ─── Province-Filtered Service Schemas ───────────────────────
+
+/**
+ * Returns Service schemas for all cities within a given province.
+ * Useful on /delivery/[province] pages.
+ */
+export function getProvinceCityServiceSchemas(provinceSlug: string): Record<string, unknown>[] {
+    const province = PROVINCES.find((p) => p.slug === provinceSlug);
+    if (!province) return [];
+
+    return province.cities
+        .map((city) => getCityServiceSchema(city.slug))
+        .filter((schema): schema is Record<string, unknown> => schema !== null);
+}
+
+// ─── Legacy Helper — kept for backward compat ────────────────
 
 export function serviceAreaSchema(area: ServiceArea) {
     return {
@@ -142,7 +213,6 @@ export function serviceAreaSchema(area: ServiceArea) {
         availableChannel: {
             "@type": "ServiceChannel",
             serviceUrl: `${BASE_URL}/shop`,
-            serviceSmsNumber: undefined,
         },
         offers: {
             "@type": "Offer",
@@ -162,12 +232,12 @@ export function serviceAreaSchema(area: ServiceArea) {
     };
 }
 
-// ─── Local Landing Page Metadata Generator ──────────────────
+// ─── Local Landing Page Metadata Generator ───────────────────
 
 export function localLandingPageMetadata(area: ServiceArea) {
     return {
         title: `Cannabis Delivery ${area.city} | Mohawk Medibles`,
-        description: `Premium indigenous cannabis delivered to ${area.city}, ${area.province}. ${area.deliveryTime} delivery. 339+ lab-tested products. Empire Standard™ quality.`,
+        description: `Premium indigenous cannabis delivered to ${area.city}, ${area.province}. ${area.deliveryTime} delivery. 344+ lab-tested products. Empire Standard™ quality.`,
         keywords: area.keywords,
         openGraph: {
             title: `Cannabis Delivery ${area.city} | Mohawk Medibles`,

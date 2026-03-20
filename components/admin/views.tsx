@@ -1466,7 +1466,7 @@ export function AgentsView() {
                             min={0}
                             max={1000}
                             value={config.freeShippingThreshold}
-                            onChange={(e) => setConfig({ ...config, freeShippingThreshold: parseInt(e.target.value) || 150 })}
+                            onChange={(e) => setConfig({ ...config, freeShippingThreshold: parseInt(e.target.value) || 199 })}
                             className="w-full mt-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-green-500/50"
                         />
                     </div>
@@ -1706,7 +1706,7 @@ export function SettingsView() {
                     <div className="grid grid-cols-2 gap-4">
                         {[
                             { label: "Business Name", value: "Mohawk Medibles" },
-                            { label: "Site URL", value: "mohawkmedibles.ca" },
+                            { label: "Site URL", value: "mohawkmedibles.co" },
                             { label: "Email From", value: "orders@mohawkmedibles.ca" },
                             { label: "Currency", value: "CAD (Canadian Dollar)" },
                             { label: "Timezone", value: "America/Toronto (ET)" },

@@ -10,11 +10,14 @@ export const metadata: Metadata = {
     title: "Customer Reviews | Mohawk Medibles — Real Reviews from Real Canadians",
     description:
         "Read verified customer reviews for Mohawk Medibles. See what thousands of Canadians say about our premium cannabis products, fast shipping, and Indigenous-owned dispensary experience.",
+    keywords: ["mohawk medibles reviews", "cannabis dispensary reviews canada", "online dispensary reviews", "weed delivery reviews"],
     openGraph: {
         title: "Customer Reviews — Mohawk Medibles",
         description:
             "Verified reviews from thousands of satisfied Canadian customers. Premium cannabis, fast shipping, Indigenous-owned.",
+        url: "https://mohawkmedibles.co/reviews",
     },
+    alternates: { canonical: "https://mohawkmedibles.co/reviews" },
 };
 
 const REVIEWS = [
@@ -185,57 +188,77 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
     );
 }
 
+const aggregateRatingSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Mohawk Medibles",
+    "url": "https://mohawkmedibles.co",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": STATS.averageRating.toString(),
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": STATS.totalReviews.toString(),
+        "reviewCount": STATS.totalReviews.toString(),
+    },
+};
+
 export default function ReviewsPage() {
     return (
-        <main className="min-h-screen bg-cream dark:bg-forest">
+        <main className="min-h-screen page-glass text-foreground">
+            {/* AggregateRating structured data for rich SERP stars */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateRatingSchema) }}
+            />
             {/* Hero */}
-            <section className="py-16 md:py-24 bg-gradient-to-b from-forest to-forest/95 text-cream">
+            <section className="py-16 md:py-24">
                 <div className="max-w-5xl mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 font-serif">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4 font-serif text-foreground">
                         What Our Customers Say
                     </h1>
-                    <p className="text-lg text-cream/70 max-w-2xl mx-auto mb-10">
+                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
                         Real reviews from real Canadians. See why thousands trust Mohawk Medibles
                         for premium cannabis products and fast, discreet shipping.
                     </p>
 
                     {/* Aggregate Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-                            <div className="text-3xl font-bold text-secondary">{STATS.averageRating}</div>
+                        <div className="glass-card border border-border rounded-xl p-5">
+                            <div className="text-3xl font-bold text-forest dark:text-lime">{STATS.averageRating}</div>
                             <StarRating rating={5} size={14} />
-                            <div className="text-xs text-cream/80 mt-1">Average Rating</div>
+                            <div className="text-xs text-muted-foreground mt-1">Average Rating</div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-                            <div className="text-3xl font-bold text-secondary">{STATS.totalReviews.toLocaleString()}</div>
-                            <div className="text-xs text-cream/80 mt-1">Total Reviews</div>
+                        <div className="glass-card border border-border rounded-xl p-5">
+                            <div className="text-3xl font-bold text-forest dark:text-lime">{STATS.totalReviews.toLocaleString()}</div>
+                            <div className="text-xs text-muted-foreground mt-1">Total Reviews</div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
-                            <div className="text-3xl font-bold text-secondary">{STATS.repeatRate}%</div>
-                            <div className="text-xs text-cream/80 mt-1">Repeat Customers</div>
+                        <div className="glass-card border border-border rounded-xl p-5">
+                            <div className="text-3xl font-bold text-forest dark:text-lime">{STATS.repeatRate}%</div>
+                            <div className="text-xs text-muted-foreground mt-1">Repeat Customers</div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-5">
+                        <div className="glass-card border border-border rounded-xl p-5">
                             <div className="flex items-center justify-center gap-1 text-green-400">
                                 <ShieldCheck size={20} />
                                 <span className="text-sm font-semibold">Verified</span>
                             </div>
-                            <div className="text-xs text-cream/80 mt-2">All Reviews Verified</div>
+                            <div className="text-xs text-muted-foreground mt-2">All Reviews Verified</div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Rating Distribution */}
-            <section className="py-12 bg-white dark:bg-forest/80 border-b border-border">
+            <section className="py-12 border-b border-border">
                 <div className="max-w-3xl mx-auto px-4">
-                    <h2 className="text-xl font-bold text-forest dark:text-cream mb-6 text-center">Rating Breakdown</h2>
+                    <h2 className="text-xl font-bold text-foreground mb-6 text-center">Rating Breakdown</h2>
                     <div className="space-y-3">
                         {[5, 4, 3, 2, 1].map((star) => {
                             const count = STATS.distribution[star as keyof typeof STATS.distribution];
                             const pct = (count / STATS.totalReviews) * 100;
                             return (
                                 <div key={star} className="flex items-center gap-3">
-                                    <span className="text-sm font-medium text-forest dark:text-cream w-12">{star} star</span>
+                                    <span className="text-sm font-medium text-foreground w-12">{star} star</span>
                                     <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                                         <div
                                             className="h-full bg-yellow-500 rounded-full transition-all"
@@ -251,27 +274,27 @@ export default function ReviewsPage() {
             </section>
 
             {/* Trust Badges */}
-            <section className="py-10 bg-cream dark:bg-forest">
+            <section className="py-10">
                 <div className="max-w-5xl mx-auto px-4">
                     <div className="grid md:grid-cols-3 gap-6">
-                        <div className="flex items-center gap-4 p-5 bg-white dark:bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-4 p-5 glass-card border border-border rounded-xl">
                             <Truck size={28} className="text-green-600 shrink-0" />
                             <div>
-                                <div className="font-semibold text-forest dark:text-cream text-sm">Fast Canada-Wide Shipping</div>
+                                <div className="font-semibold text-foreground text-sm">Fast Canada-Wide Shipping</div>
                                 <div className="text-xs text-muted-foreground">Same-day processing, 2-5 day delivery</div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-5 bg-white dark:bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-4 p-5 glass-card border border-border rounded-xl">
                             <ShieldCheck size={28} className="text-green-600 shrink-0" />
                             <div>
-                                <div className="font-semibold text-forest dark:text-cream text-sm">Empire Standard Quality</div>
+                                <div className="font-semibold text-foreground text-sm">Empire Standard Quality</div>
                                 <div className="text-xs text-muted-foreground">Lab-tested, properly stored, curated</div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-5 bg-white dark:bg-card border border-border rounded-xl">
+                        <div className="flex items-center gap-4 p-5 glass-card border border-border rounded-xl">
                             <ThumbsUp size={28} className="text-green-600 shrink-0" />
                             <div>
-                                <div className="font-semibold text-forest dark:text-cream text-sm">Satisfaction Guaranteed</div>
+                                <div className="font-semibold text-foreground text-sm">Satisfaction Guaranteed</div>
                                 <div className="text-xs text-muted-foreground">Responsive support, hassle-free returns</div>
                             </div>
                         </div>
@@ -280,9 +303,9 @@ export default function ReviewsPage() {
             </section>
 
             {/* Reviews List */}
-            <section className="py-12 bg-cream dark:bg-forest">
+            <section className="py-12">
                 <div className="max-w-5xl mx-auto px-4">
-                    <h2 className="text-2xl font-bold text-forest dark:text-cream mb-8">
+                    <h2 className="text-2xl font-bold text-foreground mb-8">
                         Featured Reviews
                     </h2>
 
@@ -290,13 +313,13 @@ export default function ReviewsPage() {
                         {REVIEWS.map((review) => (
                             <article
                                 key={review.id}
-                                className="bg-white dark:bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow"
+                                className="glass-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow"
                             >
                                 <div className="flex items-start justify-between mb-3">
                                     <div>
                                         <StarRating rating={review.rating} />
                                         {review.title && (
-                                            <h3 className="font-semibold text-forest dark:text-cream mt-2">
+                                            <h3 className="font-semibold text-foreground mt-2">
                                                 {review.title}
                                             </h3>
                                         )}
@@ -318,7 +341,7 @@ export default function ReviewsPage() {
 
                                 <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
                                     <div className="text-xs text-muted-foreground">
-                                        <span className="font-medium text-forest dark:text-cream">{review.name}</span>
+                                        <span className="font-medium text-foreground">{review.name}</span>
                                         {" "}&middot; {review.location}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
@@ -332,9 +355,9 @@ export default function ReviewsPage() {
             </section>
 
             {/* CTA */}
-            <section className="py-16 bg-gradient-to-b from-cream to-white dark:from-forest dark:to-forest/80">
+            <section className="py-16">
                 <div className="max-w-2xl mx-auto px-4 text-center">
-                    <h2 className="text-3xl font-bold text-forest dark:text-cream mb-4 font-serif">
+                    <h2 className="text-3xl font-bold text-foreground mb-4 font-serif">
                         Ready to Experience It Yourself?
                     </h2>
                     <p className="text-muted-foreground mb-8">

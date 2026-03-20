@@ -152,7 +152,7 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
     }
 
     return (
-        <div className="min-h-screen bg-background pt-20">
+        <div className="min-h-screen page-glass pt-20">
             <div className="container mx-auto px-4 sm:px-6 py-8">
 
                 {/* ── Breadcrumbs ─────────────────────────────── */}
@@ -577,13 +577,11 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
                                     href={`/shop/${r.slug}`}
                                     className="group bg-white dark:bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300"
                                 >
-                                    <div className="aspect-square bg-forest/5 flex items-center justify-center relative overflow-hidden">
-                                        <ProductImage
-                                            src={r.image}
-                                            alt={r.altText || r.name}
-                                            sizes="25vw"
-                                        />
-                                    </div>
+                                    <ProductImage
+                                        src={r.image}
+                                        alt={r.altText || r.name}
+                                        sizes="(max-width: 640px) 50vw, 25vw"
+                                    />
                                     <div className="p-4">
                                         <div className="text-sm text-foreground/70 dark:text-cream/70 mb-1 font-medium">
                                             {r.category} • {r.specs.thc} THC

@@ -6,11 +6,10 @@
  */
 import { MetadataRoute } from "next";
 import { getAllProducts } from "@/lib/products";
-import { SERVICE_AREAS } from "@/lib/seo/local-seo";
 import { getAllBlogPosts } from "@/data/blog/posts";
 import { getAllCities, getAllProvinces } from "@/lib/seo/city-delivery-data";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.ca";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.co";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const now = new Date().toISOString();
@@ -108,9 +107,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: "monthly",
             priority: 0.6,
         },
+        {
+            url: `${BASE_URL}/indigenous-cannabis-dispensary-canada`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.9,
+        },
+        {
+            url: `${BASE_URL}/buy-weed-online-canada`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.95,
+        },
+        {
+            url: `${BASE_URL}/indigenous-cannabis-rights-canada`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.85,
+        },
+        {
+            url: `${BASE_URL}/cannabis-laws`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.8,
+        },
+        {
+            url: `${BASE_URL}/cannabis-directory-listings`,
+            lastModified: now,
+            changeFrequency: "monthly",
+            priority: 0.6,
+        },
+        {
+            url: `${BASE_URL}/delivery`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.85,
+        },
     ];
 
-    // ─── Product Pages (363 products) with images ───────────
+    // ─── Product Pages (344 products) with images ───────────
     const productPages: MetadataRoute.Sitemap = PRODUCTS.map((product) => ({
         url: `${BASE_URL}${product.path}`,
         lastModified: now,
@@ -128,25 +163,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.85,
     }));
 
-    // ─── Delivery Landing Pages (Local SEO) ────────────────
-    const cityDeliveryPages: MetadataRoute.Sitemap = SERVICE_AREAS
-        .filter((area) => ["hamilton", "brantford", "toronto"].includes(area.slug))
-        .map((area) => ({
-            url: `${BASE_URL}/delivery/${area.slug}`,
-            lastModified: now,
-            changeFrequency: "weekly" as const,
-            priority: 0.85,
-        }));
-
-    // ─── Delivery Hub Page ─────────────────────────────────────
-    const deliveryHub: MetadataRoute.Sitemap = [
-        {
-            url: `${BASE_URL}/delivery`,
-            lastModified: now,
-            changeFrequency: "weekly" as const,
-            priority: 0.85,
-        },
+    // ─── Brand Filter Pages (Shop by Brand — AEO/GEO signals) ──
+    const brandNames = [
+        "Drizzle Factory", "Plant of Life", "AKI Wellness", "Stellar",
+        "Euphoria Extractions", "Euphoria Psychedelics", "Wesley Tea Co.",
+        "Cactus Labs", "Burn", "Diamond Concentrates", "Geek Bar",
+        "Fungara", "Zoomz", "ASEND", "Backwoods", "Al Fakher",
     ];
+    const brandPages: MetadataRoute.Sitemap = brandNames.map((brand) => ({
+        url: `${BASE_URL}/shop?category=Brands&brand=${encodeURIComponent(brand)}`,
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+    }));
 
     // ─── Provincial Delivery Pages (match WordPress /province-delivery/) ──
     const provincialSlugs = [
@@ -179,6 +208,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.75,
     }));
 
+    // ─── Cannabis Law Province Pages ──────────────────────────
+    const CANNABIS_LAW_PROVINCES = [
+        "ontario", "british-columbia", "alberta", "quebec", "manitoba",
+        "saskatchewan", "nova-scotia", "new-brunswick",
+        "newfoundland-and-labrador", "prince-edward-island",
+        "northwest-territories", "yukon", "nunavut",
+    ];
+    const cannabisLawPages: MetadataRoute.Sitemap = CANNABIS_LAW_PROVINCES.map((slug) => ({
+        url: `${BASE_URL}/cannabis-laws/${slug}`,
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.75,
+    }));
+
     // ─── Blog Posts ─────────────────────────────────────────
     const blogPosts = getAllBlogPosts();
     const blogPages: MetadataRoute.Sitemap = blogPosts.map((post) => ({
@@ -198,5 +241,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
     ];
 
-    return [...staticPages, ...deliveryHub, ...categoryPages, ...cityDeliveryPages, ...provincialPages, ...provinceDeliveryPages, ...cityDeliveryPages2, ...blogPages, ...productPages, ...llmsEntry];
+    return [...staticPages, ...categoryPages, ...brandPages, ...provincialPages, ...provinceDeliveryPages, ...cityDeliveryPages2, ...cannabisLawPages, ...blogPages, ...productPages, ...llmsEntry];
 }

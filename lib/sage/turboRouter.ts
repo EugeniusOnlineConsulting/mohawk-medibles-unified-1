@@ -259,7 +259,7 @@ const ADD_TO_CART_PATTERN = /\b(add|put|throw|toss)\s+(.+?)\s+(to|in|into)\s*(my
 // Prevents false matches on "buy some edibles" (browsing) vs "buy a Blue Dream" (cart)
 const ADD_TO_CART_SHORT = /\b(add|order|buy|get\s*me)\s+(\d+\s+|an?\s+|some\s+|the\s+|one\s+|two\s+|three\s+)?(.{4,}?)\s+(to\s+cart|please|now|asap)\b/i;
 const VIEW_CART_PATTERN = /\b(what'?s?\s*(in\s*)?(my\s*)?cart|view\s*cart|show\s*(my\s*)?cart|my\s*cart|cart\s*items?)\b/i;
-const CHECKOUT_PATTERN = /\b(checkout|check\s*out|ready\s*to\s*(pay|buy|order)|place\s*(my\s*)?order|buy\s*now|complete\s*(my\s*)?(order|purchase))\b/i;
+const CHECKOUT_PATTERN = /\b(checkout|check\s*out|ready\s*to\s*(pay|buy|order)|place\s*(my\s*)?order|buy\s*now|complete\s*(my\s*)?(order|purchase)|help\s*me\s*(checkout|check\s*out|pay|order|purchase)|i\s*want\s*to\s*(pay|order|checkout|check\s*out)|finish\s*(my\s*)?(order|purchase)|proceed\s*to\s*(checkout|payment))\b/i;
 const REMOVE_FROM_CART_PATTERN = /\b(remove|delete|take\s*out|drop)\s+(.+?)\s+(from\s*)?(my\s*)?(cart|basket|bag)\b/i;
 const CLEAR_CART_PATTERN = /\b(clear|empty|remove\s*all|delete\s*all|wipe)\s*(my\s*)?(entire\s*)?(cart|basket|bag)\b|\b(empty|clear)\s*(everything\s*)?(from|in)\s*(my\s*)?(cart|basket|bag)\b/i;
 
@@ -383,21 +383,25 @@ export function turboRoute(message: string, sessionId?: string): TurboResponse {
             };
         }
 
-        // Checkout
+        // Checkout — with payment guidance
         if (CHECKOUT_PATTERN.test(trimmed)) {
             const cart = getCart(sessionId);
             if (cart.items.length === 0) {
                 return {
                     handled: true,
-                    text: "Your cart is empty! Add some products first, then I'll get you checked out. 🛒",
-                    actions: [],
+                    text: "Your cart is empty! Browse our shop or tell me what you're looking for, and I'll help you find the perfect products. 🛒",
+                    actions: [{ type: "NAVIGATE", payload: "/shop" }],
                     cart,
                     model: "turbo",
                 };
             }
+            const shippingNote = cart.subtotal >= 199
+                ? "You qualify for **FREE shipping**! 🎉"
+                : `Add **$${(199 - cart.subtotal).toFixed(2)}** more for **FREE shipping**.`;
+
             return {
                 handled: true,
-                text: `Ready to checkout! You have **${cart.itemCount} item${cart.itemCount !== 1 ? "s" : ""}** totaling **$${cart.subtotal.toFixed(2)} CAD**.\n\nPay with **Google Pay** for instant checkout, or use a credit card. 💳`,
+                text: `Ready to checkout! 🛒\n\n**${cart.itemCount} item${cart.itemCount !== 1 ? "s" : ""}** — **$${cart.subtotal.toFixed(2)} CAD**\n${shippingNote}\n\n**Payment options:**\n• 💳 Credit Card (Visa, Mastercard, Amex)\n• 📧 Interac e-Transfer\n• ₿ Cryptocurrency\n\nYou can check out as a guest or sign in for order tracking. Taking you to checkout now!`,
                 actions: [{ type: "CHECKOUT", payload: sessionId }],
                 cart,
                 model: "turbo",

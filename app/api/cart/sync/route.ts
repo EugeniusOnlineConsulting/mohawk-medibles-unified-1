@@ -10,6 +10,7 @@ import { saveCart } from "@/lib/abandonedCart";
 import { pushEvent } from "@/lib/activityStream";
 import { applyRateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 import { randomUUID } from "crypto";
+import { prisma } from "@/server/trpc/trpc";
 
 export async function POST(req: NextRequest) {
     const limited = applyRateLimit(req, RATE_LIMITS.support);
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
         ? email.trim().toLowerCase()
         : undefined;
 
-    // Save to in-memory store
+    // Save to in-memory store (existing)
     const snapshot = saveCart(cartId, validItems, safeEmail);
 
     // Push activity event
@@ -55,6 +56,41 @@ export async function POST(req: NextRequest) {
             productName: topItem.name || "Unknown",
             amount: snapshot.total,
         });
+    }
+
+    // ── Persist to DB for abandoned cart recovery (merged from .cc) ──
+    const userId = req.headers.get("x-user-id");
+    if (userId && validItems.length > 0) {
+        try {
+            // Upsert abandoned cart record
+            const existingCart = await prisma.abandonedCart.findFirst({
+                where: { userId, status: "active" },
+            });
+            const cartData = {
+                cartSnapshot: validItems,
+                cartTotal: snapshot.total,
+                email: safeEmail,
+            };
+            if (existingCart) {
+                await prisma.abandonedCart.update({
+                    where: { id: existingCart.id },
+                    data: cartData,
+                });
+            } else {
+                await prisma.abandonedCart.create({
+                    data: { userId, status: "active", ...cartData },
+                });
+            }
+        } catch (e) {
+            console.error("[Cart Sync] DB persist error:", e);
+            // Non-blocking — cart still synced to memory
+        }
+    } else if (userId && validItems.length === 0) {
+        // Cart emptied — mark as recovered
+        await prisma.abandonedCart.updateMany({
+            where: { userId, status: "active" },
+            data: { status: "recovered", recoveredAt: new Date() },
+        }).catch(() => {});
     }
 
     const response = NextResponse.json({

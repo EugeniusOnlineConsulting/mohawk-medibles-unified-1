@@ -83,8 +83,8 @@ export default function CheckoutPage() {
     const discount = appliedCoupon?.valid ? (appliedCoupon.discount || 0) : 0;
     const subtotalAfterDiscount = Math.max(0, total - discount);
     const hasFreeShipping = appliedCoupon?.valid && appliedCoupon.freeShipping;
-    const shipping = hasFreeShipping ? 0 : (total >= 150 ? 0 : 15);
-    const tax = +((subtotalAfterDiscount + shipping) * 0.13).toFixed(2); // Ontario HST 13%
+    const shipping = hasFreeShipping ? 0 : (total >= 199 ? 0 : 15);
+    const tax = 0; // Tax-free — Indigenous sovereignty (Tyendinaga Mohawk Territory)
     const grandTotal = +(subtotalAfterDiscount + shipping + tax).toFixed(2);
 
     // ─── Coupon Validation ───────────────────────────────────
@@ -322,8 +322,8 @@ export default function CheckoutPage() {
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">HST (13%)</span>
-                                    <span className="font-medium">${tax.toFixed(2)}</span>
+                                    <span className="text-muted-foreground">Tax (Tax-Free)</span>
+                                    <span className="font-medium">$0.00</span>
                                 </div>
                                 <div className="border-t border-border pt-3 flex justify-between">
                                     <span className="font-bold text-lg">Total</span>
@@ -375,9 +375,9 @@ export default function CheckoutPage() {
                                 )}
                             </div>
 
-                            {total < 150 && !hasFreeShipping && (
+                            {total < 199 && !hasFreeShipping && (
                                 <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-lg text-xs">
-                                    Add ${(150 - total).toFixed(2)} more for FREE shipping!
+                                    Add ${(199 - total).toFixed(2)} more for FREE shipping!
                                 </div>
                             )}
 

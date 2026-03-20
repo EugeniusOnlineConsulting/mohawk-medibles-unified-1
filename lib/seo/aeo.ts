@@ -22,7 +22,7 @@ export const MASTER_FAQ_DATABASE: FAQEntry[] = [
     // ── General ─────────────────────────────────────────────
     {
         question: "What is Mohawk Medibles?",
-        answer: "Mohawk Medibles is an Indigenous-owned premium cannabis dispensary located on Six Nations of the Grand River territory in Ontario, Canada. Founded by Mohawk entrepreneurs, we specialize in lab-tested, terpene-profiled cannabis products that meet our Empire Standard™ quality benchmark. We carry 339+ products across flower, edibles, concentrates, vapes, pre-rolls, and accessories.",
+        answer: "Mohawk Medibles is an Indigenous-owned premium cannabis dispensary located on Six Nations of the Grand River territory in Ontario, Canada. Founded by Mohawk entrepreneurs, we specialize in lab-tested, terpene-profiled cannabis products that meet our Empire Standard™ quality benchmark. We carry 344+ products across flower, edibles, concentrates, vapes, pre-rolls, and accessories.",
         category: "general",
         intent: "informational",
         keywords: ["mohawk medibles", "indigenous cannabis", "six nations dispensary"],
@@ -45,7 +45,7 @@ export const MASTER_FAQ_DATABASE: FAQEntry[] = [
     // ── Products ────────────────────────────────────────────
     {
         question: "What types of cannabis products does Mohawk Medibles carry?",
-        answer: "We carry 339+ products across 6 categories: Premium Flower (Indica, Sativa, Hybrid strains with full terpene profiles), Edibles (gummies, chocolates, beverages with precise dosing from 5mg-100mg THC), Concentrates (hash, shatter, wax, live resin, distillate), Vapes (cartridges and disposable pens), Pre-Rolls (singles, multi-packs, and infused joints), and Accessories (grinders, papers, pipes, storage). Every product is lab-tested under our Empire Standard™.",
+        answer: "We carry 344+ products across 6 categories: Premium Flower (Indica, Sativa, Hybrid strains with full terpene profiles), Edibles (gummies, chocolates, beverages with precise dosing from 5mg-100mg THC), Concentrates (hash, shatter, wax, live resin, distillate), Vapes (cartridges and disposable pens), Pre-Rolls (singles, multi-packs, and infused joints), and Accessories (grinders, papers, pipes, storage). Every product is lab-tested under our Empire Standard™.",
         category: "products",
         intent: "informational",
         keywords: ["mohawk medibles products", "cannabis products online canada", "buy weed online ontario"],
@@ -186,7 +186,7 @@ export function generateProductFAQs(product: {
         },
         {
             question: `How much does ${product.name} cost?`,
-            answer: `${product.name} is available at Mohawk Medibles ${product.price ? `starting at $${product.price.toFixed(2)} CAD` : "at competitive prices"}. We offer Canada-wide shipping via Canada Post Xpresspost. Visit mohawkmedibles.ca/shop for current pricing and availability.`,
+            answer: `${product.name} is available at Mohawk Medibles ${product.price ? `starting at $${product.price.toFixed(2)} CAD` : "at competitive prices"}. We offer Canada-wide shipping via Canada Post Xpresspost. Visit mohawkmedibles.co/shop for current pricing and availability.`,
             category: "products",
             intent: "transactional",
             keywords: [`${product.name.toLowerCase()} price`, "cannabis prices canada"],

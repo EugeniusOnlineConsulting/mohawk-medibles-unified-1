@@ -151,7 +151,7 @@ export default function SearchAutocomplete() {
                         setIsOpen(true);
                         setTimeout(() => inputRef.current?.focus(), 100);
                     }}
-                    className="text-cream/70 hover:text-white hover:bg-white/5 p-2 rounded-md transition-colors"
+                    className="text-foreground/60 dark:text-white/70 hover:text-foreground dark:hover:text-white hover:bg-foreground/5 dark:hover:bg-white/5 p-2 rounded-md transition-colors"
                     aria-label="Open search"
                 >
                     <Search className="h-4 w-4" />
@@ -162,7 +162,7 @@ export default function SearchAutocomplete() {
             {isOpen && (
                 <div className="flex items-center gap-2">
                     <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-cream/40" />
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
                         <input
                             ref={inputRef}
                             type="text"
@@ -170,7 +170,7 @@ export default function SearchAutocomplete() {
                             onChange={(e) => handleInputChange(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Search products..."
-                            className="w-48 lg:w-64 pl-8 pr-8 py-1.5 text-xs bg-white/10 border border-white/15 rounded-lg text-white placeholder-cream/40 focus:outline-none focus:ring-1 focus:ring-secondary/50 focus:border-secondary/50 transition-all"
+                            className="w-48 lg:w-64 pl-8 pr-8 py-1.5 text-xs bg-foreground/5 dark:bg-white/10 border border-border rounded-lg text-foreground dark:text-white placeholder-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-lime/50 focus:border-lime/50 transition-all"
                             aria-label="Search products"
                             aria-expanded={results.length > 0}
                             aria-controls="search-results"
@@ -179,11 +179,11 @@ export default function SearchAutocomplete() {
                             autoComplete="off"
                         />
                         {loading ? (
-                            <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-cream/40 animate-spin" />
+                            <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60 animate-spin" />
                         ) : query ? (
                             <button
                                 onClick={() => { setQuery(""); setResults([]); inputRef.current?.focus(); }}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-cream/40 hover:text-cream/70"
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground/60 hover:text-foreground dark:hover:text-white/70"
                                 aria-label="Clear search"
                             >
                                 <X className="h-3.5 w-3.5" />
@@ -192,7 +192,7 @@ export default function SearchAutocomplete() {
                     </div>
                     <button
                         onClick={closeSearch}
-                        className="text-cream/50 hover:text-cream/80 text-xs"
+                        className="text-muted-foreground hover:text-foreground dark:hover:text-white text-xs"
                         aria-label="Close search"
                     >
                         <X className="h-4 w-4" />
@@ -205,7 +205,7 @@ export default function SearchAutocomplete() {
                 <div
                     id="search-results"
                     role="listbox"
-                    className="absolute top-full right-0 mt-2 w-80 bg-zinc-950/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[80]"
+                    className="absolute top-full right-0 mt-2 w-80 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border border-border rounded-xl shadow-2xl overflow-hidden z-[80]"
                 >
                     {results.length > 0 ? (
                         <>
@@ -219,12 +219,12 @@ export default function SearchAutocomplete() {
                                         onClick={() => navigateToProduct(result)}
                                         className={`w-full flex items-center gap-3 p-3 text-left transition-colors ${
                                             selectedIndex === idx
-                                                ? "bg-white/10"
-                                                : "hover:bg-white/5"
+                                                ? "bg-foreground/10 dark:bg-white/10"
+                                                : "hover:bg-foreground/5 dark:hover:bg-white/5"
                                         }`}
                                     >
                                         {/* Product Image */}
-                                        <div className="w-10 h-10 rounded-lg bg-white/5 flex-shrink-0 overflow-hidden relative">
+                                        <div className="w-10 h-10 rounded-lg bg-foreground/5 dark:bg-white/5 flex-shrink-0 overflow-hidden relative">
                                             {result.image && result.image.startsWith("http") ? (
                                                 <Image
                                                     src={result.image}
@@ -235,16 +235,16 @@ export default function SearchAutocomplete() {
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
-                                                    <Search className="h-4 w-4 text-white/20" />
+                                                    <Search className="h-4 w-4 text-muted-foreground/40" />
                                                 </div>
                                             )}
                                         </div>
                                         {/* Product Info */}
                                         <div className="flex-1 min-w-0">
-                                            <div className="text-sm text-white font-medium truncate">
+                                            <div className="text-sm text-foreground dark:text-white font-medium truncate">
                                                 {result.shortName}
                                             </div>
-                                            <div className="flex items-center gap-2 text-[10px] text-cream/50">
+                                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                                                 <span className="uppercase tracking-wider">{result.category}</span>
                                                 {result.thc && result.thc !== "TBD" && (
                                                     <span className="text-secondary">THC {result.thc}</span>
@@ -252,7 +252,7 @@ export default function SearchAutocomplete() {
                                             </div>
                                         </div>
                                         {/* Price */}
-                                        <div className="text-sm font-bold text-cream/80 whitespace-nowrap">
+                                        <div className="text-sm font-bold text-foreground/80 dark:text-cream/80 whitespace-nowrap">
                                             {result.price > 0 ? `$${result.price.toFixed(2)}` : "Quote"}
                                         </div>
                                     </button>
@@ -264,15 +264,15 @@ export default function SearchAutocomplete() {
                                     router.push(`/shop?q=${encodeURIComponent(query)}`);
                                     closeSearch();
                                 }}
-                                className="w-full p-3 text-xs text-center text-secondary hover:text-secondary/80 border-t border-white/10 hover:bg-white/5 transition-colors uppercase tracking-wider font-bold"
+                                className="w-full p-3 text-xs text-center text-forest dark:text-lime hover:text-forest/80 dark:hover:text-lime/80 border-t border-border hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors uppercase tracking-wider font-bold"
                             >
                                 View all results for &ldquo;{query}&rdquo;
                             </button>
                         </>
                     ) : (
                         <div className="p-6 text-center">
-                            <p className="text-sm text-cream/50">No products found for &ldquo;{query}&rdquo;</p>
-                            <p className="text-xs text-cream/30 mt-1">Try a different search term</p>
+                            <p className="text-sm text-muted-foreground">No products found for &ldquo;{query}&rdquo;</p>
+                            <p className="text-xs text-muted-foreground/60 mt-1">Try a different search term</p>
                         </div>
                     )}
                 </div>

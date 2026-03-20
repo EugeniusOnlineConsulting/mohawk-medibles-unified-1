@@ -8,6 +8,10 @@ import {
     Search, Bell, ChevronDown, TrendingUp, Truck,
     ChevronLeft, ChevronRight, Percent,
     LayoutDashboard, Megaphone, BookOpen, MessageSquare,
+    Zap, Gift, Tag, Warehouse, ClipboardList,
+    UserCog, Monitor, PieChart, CreditCard,
+    ShoppingBag, Star, Beaker, ArrowLeftRight,
+    Globe, Heart, Clock, Mail,
 } from "lucide-react";
 
 const NAV_SECTIONS = [
@@ -15,20 +19,44 @@ const NAV_SECTIONS = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
         { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
         { href: "/admin/financial", label: "Financial Model", icon: TrendingUp },
+        { href: "/admin/bi", label: "BI Reports", icon: PieChart },
     ]},
     { heading: "Commerce", items: [
         { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
         { href: "/admin/products", label: "Products", icon: Package },
         { href: "/admin/customers", label: "Customers", icon: Users },
         { href: "/admin/coupons", label: "Coupons", icon: Percent },
+        { href: "/admin/flash-sales", label: "Flash Sales", icon: Zap },
+        { href: "/admin/gift-cards", label: "Gift Cards", icon: Gift },
+        { href: "/admin/brands", label: "Brands", icon: Tag },
+    ]},
+    { heading: "Point of Sale", items: [
+        { href: "/admin/pos", label: "POS Terminal", icon: CreditCard },
+        { href: "/admin/pos/transactions", label: "Transactions", icon: ClipboardList },
+        { href: "/admin/pos/employees", label: "Employees", icon: UserCog },
+    ]},
+    { heading: "Inventory", items: [
+        { href: "/admin/inventory", label: "Stock Levels", icon: Warehouse },
+        { href: "/admin/inventory/purchase-orders", label: "Purchase Orders", icon: ShoppingBag },
+        { href: "/admin/inventory/transfers", label: "Transfers", icon: ArrowLeftRight },
+        { href: "/admin/inventory/vendors", label: "Vendors", icon: Globe },
     ]},
     { heading: "Operations", items: [
         { href: "/admin/shipping", label: "Shipping", icon: Truck },
         { href: "/admin/campaigns", label: "Campaigns", icon: Megaphone },
         { href: "/admin/content", label: "Content", icon: BookOpen },
         { href: "/admin/agents", label: "Agents", icon: MessageSquare },
+        { href: "/admin/reviews", label: "Reviews", icon: Star },
+        { href: "/admin/abandoned-carts", label: "Abandoned Carts", icon: Clock },
+        { href: "/admin/email", label: "Email Logs", icon: Mail },
+    ]},
+    { heading: "Testing", items: [
+        { href: "/admin/split-test", label: "A/B Tests", icon: Beaker },
     ]},
     { heading: "System", items: [
+        { href: "/admin/team", label: "Team", icon: UserCog },
+        { href: "/admin/sites", label: "Site Monitor", icon: Monitor },
+        { href: "/admin/wishlist", label: "Wishlists", icon: Heart },
         { href: "/admin/settings", label: "Settings", icon: Settings },
     ]},
 ];

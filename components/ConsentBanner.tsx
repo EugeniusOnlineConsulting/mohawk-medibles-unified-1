@@ -45,11 +45,11 @@ export default function ConsentBanner() {
 
     return (
         <div className="fixed bottom-0 inset-x-0 z-[60] p-4 md:p-6" role="dialog" aria-label="Cookie consent">
-            <div className="max-w-2xl mx-auto bg-[#0D1F0A] border border-white/10 rounded-2xl p-5 shadow-2xl backdrop-blur-xl">
+            <div className="max-w-2xl mx-auto bg-white dark:bg-[#0D1F0A] border border-border rounded-2xl p-5 shadow-2xl backdrop-blur-xl">
                 <div className="flex items-start gap-4">
                     <Shield className="h-5 w-5 text-secondary flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                        <p className="text-sm text-cream/80 leading-relaxed">
+                        <p className="text-sm text-foreground/80 dark:text-cream/80 leading-relaxed">
                             We use cookies to improve your experience and analyze site traffic.
                             Your data stays in Canada and is never sold.{" "}
                             <a href="/privacy" className="text-secondary underline underline-offset-2 hover:text-secondary/80">
@@ -69,7 +69,7 @@ export default function ConsentBanner() {
                                 onClick={handleDecline}
                                 size="sm"
                                 variant="outline"
-                                className="rounded-full px-6 text-cream/60 border-white/10 hover:text-cream"
+                                className="rounded-full px-6 text-muted-foreground border-border hover:text-foreground dark:hover:text-cream"
                             >
                                 Decline
                             </Button>
@@ -77,7 +77,7 @@ export default function ConsentBanner() {
                     </div>
                     <button
                         onClick={handleDecline}
-                        className="text-cream/40 hover:text-cream transition-colors"
+                        className="text-muted-foreground/60 hover:text-foreground dark:hover:text-cream transition-colors"
                         aria-label="Dismiss cookie notice"
                     >
                         <X className="h-4 w-4" />

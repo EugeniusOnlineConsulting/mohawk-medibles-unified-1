@@ -23,6 +23,7 @@ export interface BlogPost {
 }
 
 import { EXPANDED_BLOG_POSTS } from "./posts-expanded";
+import { PAA_BLOG_POSTS } from "./posts-paa";
 
 const BASE_BLOG_POSTS: BlogPost[] = [
     {
@@ -213,7 +214,7 @@ For those starting their edible journey, we recommend products with precise per-
 - **Stellar Chocolate Bars** — Scored into equal pieces for precise dosing
 - [**Euphoria Extractions Shatter Chews**](/shop/euphoria-extractions-shatter-chews-canada) — Individual chews with consistent dosing
 
-Browse our full edible collection at mohawkmedibles.ca/shop with detailed dosing information on every product page.
+Browse our full edible collection at mohawkmedibles.co/shop with detailed dosing information on every product page.
 
 ## Shipping Edibles Across Canada
 
@@ -222,7 +223,7 @@ All edible products ship Canada-wide via Canada Post Xpresspost with discreet pa
     {
         slug: "indica-vs-sativa-vs-hybrid-guide",
         title: "Indica vs Sativa vs Hybrid: What's the Real Difference in 2026?",
-        metaDescription: "Indica vs Sativa vs Hybrid explained by experts. Learn why terpene profiles matter more than strain type, plus top picks from Mohawk Medibles' 363+ product catalog.",
+        metaDescription: "Indica vs Sativa vs Hybrid explained by experts. Learn why terpene profiles matter more than strain type, plus top picks from Mohawk Medibles' 344+ product catalog.",
         excerpt: "The indica/sativa debate is evolving. Modern cannabis science shows that terpene and cannabinoid profiles matter more than strain classification. Here's what you actually need to know.",
         category: "Cannabis Science",
         image: "/assets/products/amnesia-haze-5g.jpg",
@@ -311,7 +312,7 @@ Instead of asking "indica or sativa?", ask these questions:
 
 ## How We Label at Mohawk Medibles
 
-Every product page on mohawkmedibles.ca includes:
+Every product page on mohawkmedibles.co includes:
 
 - **Strain type** (Indica/Sativa/Hybrid) — for quick reference
 - **THC and CBD percentages** — lab-verified potency
@@ -321,7 +322,7 @@ Every product page on mohawkmedibles.ca includes:
 
 This layered approach gives beginners a familiar starting point while giving experienced consumers the detailed data they need.
 
-Browse our complete flower collection at mohawkmedibles.ca/shop to find your ideal strain by terpene profile, not just a label.`,
+Browse our complete flower collection at mohawkmedibles.co/shop to find your ideal strain by terpene profile, not just a label.`,
     },
     {
         slug: "hash-guide-types-potency-canada",
@@ -434,7 +435,7 @@ Hash offers a unique advantage: **no chemical solvents** are used in production.
 
 **For value:** Our bulk hash options (140/oz) offer excellent price-to-quality ratios
 
-Browse our complete hash collection at mohawkmedibles.ca/shop — over 40 varieties with detailed potency and terpene data on every product page.`,
+Browse our complete hash collection at mohawkmedibles.co/shop — over 40 varieties with detailed potency and terpene data on every product page.`,
     },
     {
         slug: "cbd-oil-guide-benefits-dosing-canada",
@@ -546,7 +547,7 @@ CBD is also used for pet wellness. Our [Peaceful Pawz Hemp Dog Treats](/shop/pea
 
 ## Shipping CBD Across Canada
 
-All CBD products ship Canada-wide via Canada Post Xpresspost. CBD is legal across Canada and ships with full tracking in discreet packaging. Browse our complete CBD collection at mohawkmedibles.ca/shop.`,
+All CBD products ship Canada-wide via Canada Post Xpresspost. CBD is legal across Canada and ships with full tracking in discreet packaging. Browse our complete CBD collection at mohawkmedibles.co/shop.`,
     },
     {
         slug: "buying-cannabis-online-canada-guide",
@@ -586,7 +587,7 @@ A well-stocked dispensary should offer:
 - CBD and wellness products
 - Accessories
 
-Mohawk Medibles carries 363+ verified products across all major categories.
+Mohawk Medibles carries 344+ verified products across all major categories.
 
 ### 3. Transparent Pricing
 Watch out for hidden fees. The price you see should be close to what you pay. Look for:
@@ -612,7 +613,7 @@ Check for:
 ## How to Order from Mohawk Medibles
 
 ### Step 1: Browse the Catalog
-Visit mohawkmedibles.ca/shop and filter by category, strain type, or price. Every product page includes:
+Visit mohawkmedibles.co/shop and filter by category, strain type, or price. Every product page includes:
 - High-resolution product photos
 - THC and CBD percentages
 - Terpene profiles (for flower products)
@@ -666,12 +667,12 @@ Mohawk Medibles operates from Six Nations of the Grand River territory, rooted i
 
 ## Ready to Shop?
 
-Browse our full catalog of 363+ premium, lab-tested cannabis products at mohawkmedibles.ca/shop. Every order ships Canada-wide with same-day processing and full tracking.`,
+Browse our full catalog of 344+ premium, lab-tested cannabis products at mohawkmedibles.co/shop. Every order ships Canada-wide with same-day processing and full tracking.`,
     },
 ];
 
-// Merge base + expanded posts
-export const BLOG_POSTS: BlogPost[] = [...BASE_BLOG_POSTS, ...EXPANDED_BLOG_POSTS];
+// Merge base + expanded + PAA posts
+export const BLOG_POSTS: BlogPost[] = [...BASE_BLOG_POSTS, ...EXPANDED_BLOG_POSTS, ...PAA_BLOG_POSTS];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
     return BLOG_POSTS.find((p) => p.slug === slug);

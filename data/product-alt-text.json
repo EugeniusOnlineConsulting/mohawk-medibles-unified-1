@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "name": "Bath Salts",
+    "altText": "Bath Salts - Bath & Body cannabis product from Mohawk Medibles, Canadian Indigenous wellness from Tyendinaga"
+  },
+  {
+    "id": 2,
+    "name": "AKI Wellness Full Spectrum CBD Oil 60ML",
+    "altText": "AKI Wellness Full Spectrum CBD Oil 60ML - CBD oil from Mohawk Medibles, full-spectrum Canadian wellness"
+  },
+  {
+    "id": 3,
+    "name": "Wesley Tea Company CBD Tea 40mg",
+    "altText": "Wesley Tea Company CBD Tea 40mg - Beverage cannabis product from Mohawk Medibles, 40mg CBD Canadian"
+  },
+  {
+    "id": 4,
+    "name": "Pineapple Express Meds Massage Oil",
+    "altText": "Pineapple Express Meds Massage Oil - CBD oil product from Mohawk Medibles, 250mg CBD Canadian wellness"
+  },
+  {
+    "id": 5,
+    "name": "Killa 12.8mg Nicotine Pouches",
+    "altText": "Killa 12.8mg Nicotine Pouches - Nicotine product from Mohawk Medibles, Canadian Indigenous dispensary"
+  },
+  {
+    "id": 6,
+    "name": "Pineapple Express Meds CBD Pain Relief Roller",
+    "altText": "Pineapple Express Meds CBD Pain Relief Roller - Topical cannabis product from Mohawk Medibles, pure CBD Canadian"
+  },
+  {
+    "id": 7,
+    "name": "Fungara Nicotine Pod",
+    "altText": "Fungara Nicotine Pod - Nicotine product from Mohawk Medibles, Canadian Indigenous dispensary Tyendinaga"
+  },
+  {
+    "id": 8,
+    "name": "Tyson 2.0 Legend 5% Nicotine Vape",
+    "altText": "Tyson 2.0 Legend 5% Nicotine Vape - Nicotine vape from Mohawk Medibles, Canadian Indigenous dispensary"
+  },
+  {
+    "id": 9,
+    "name": "Magnum XXL Sexual Enhancement Pills",
+    "altText": "Magnum XXL Sexual Enhancement Pills - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 10,
+    "name": "Euphoria Extractions Shatter Chews",
+    "altText": "Euphoria Extractions Shatter Chews - Edible cannabis product from Mohawk Medibles, THC infused Canadian"
+  },
+  {
+    "id": 11,
+    "name": "Pink Pussycat Sensual Enhancement Pill",
+    "altText": "Pink Pussycat Sensual Enhancement Pill - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 12,
+    "name": "AKI Pain Salve 1:1",
+    "altText": "AKI Pain Salve 1:1 - Topical cannabis product from Mohawk Medibles, balanced THC CBD Canadian wellness"
+  },
+  {
+    "id": 13,
+    "name": "Euphoria Extractions Live Resin Tarts",
+    "altText": "Euphoria Extractions Live Resin Tarts - Edible cannabis product from Mohawk Medibles, concentrate Canadian"
+  },
+  {
+    "id": 14,
+    "name": "CBD Tincture 2000MG",
+    "altText": "CBD Tincture 2000MG - Concentrate cannabis product from Mohawk Medibles, high potency 2000mg CBD Canadian"
+  },
+  {
+    "id": 15,
+    "name": "Temple Hash",
+    "altText": "Temple Hash - Concentrate cannabis product from Mohawk Medibles, premium Canadian hash from Tyendinaga"
+  },
+  {
+    "id": 16,
+    "name": "Etumax VIP Royal Honey",
+    "altText": "Etumax VIP Royal Honey - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness dispensary"
+  },
+  {
+    "id": 17,
+    "name": "Drizzle Factory Slims Standard Pre Rolls",
+    "altText": "Drizzle Factory Slims Standard Pre Rolls - Pre-roll cannabis product from Mohawk Medibles, craft Canadian"
+  },
+  {
+    "id": 18,
+    "name": "Sun Rock Premium AAAA Flower 2.5-3g",
+    "altText": "Sun Rock Premium AAAA Flower 2.5-3g - Flower cannabis product from Mohawk Medibles, AAAA craft Canadian"
+  },
+  {
+    "id": 19,
+    "name": "Fungara Pods",
+    "altText": "Fungara Pods - Nicotine product from Mohawk Medibles, Canadian Indigenous dispensary Tyendinaga Territory"
+  },
+  {
+    "id": 20,
+    "name": "Nova Twist 900mAh 510 Battery",
+    "altText": "Nova Twist 900mAh 510 Battery - Accessory cannabis product from Mohawk Medibles, vape battery Canadian"
+  },
+  {
+    "id": 21,
+    "name": "Pink Panther Sensual Enhancement Pill",
+    "altText": "Pink Panther Sensual Enhancement Pill - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 22,
+    "name": "Ginseng Red Sexual Enhancement Pill",
+    "altText": "Ginseng Red Sexual Enhancement Pill - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 23,
+    "name": "Ice Cream Hash",
+    "altText": "Ice Cream Hash - Concentrate cannabis product from Mohawk Medibles, premium Canadian hash from Tyendinaga"
+  },
+  {
+    "id": 24,
+    "name": "Guava Kush 24k Full Melt 75-80% THC",
+    "altText": "Guava Kush 24k Full Melt 75-80% THC - Hash cannabis product from Mohawk Medibles, high potency Canadian"
+  },
+  {
+    "id": 25,
+    "name": "Purple Mac $6/Gram Special",
+    "altText": "Purple Mac $6/Gram Special - Flower cannabis product from Mohawk Medibles, budget 15-16% THC Canadian"
+  },
+  {
+    "id": 26,
+    "name": "Stiff Rox Sexual Enhancement Pill",
+    "altText": "Stiff Rox Sexual Enhancement Pill - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 27,
+    "name": "Pink Moon $40/oz or $100/3oz",
+    "altText": "Pink Moon $40/oz or $100/3oz - Flower cannabis product from Mohawk Medibles, high 30% THC Canadian"
+  },
+  {
+    "id": 28,
+    "name": "CBD Pet Tincture",
+    "altText": "CBD Pet Tincture - CBD oil cannabis product from Mohawk Medibles, pet wellness Canadian Indigenous"
+  },
+  {
+    "id": 29,
+    "name": "ASEND 1ML Live Resin Disposable Vape Pen",
+    "altText": "ASEND 1ML Live Resin Disposable Vape Pen - Vape cannabis product from Mohawk Medibles, 88% THC Canadian"
+  },
+  {
+    "id": 30,
+    "name": "Geek Bar Pulse X 18ML Nicotine Vape",
+    "altText": "Geek Bar Pulse X 18ML Nicotine Vape - Nicotine vape from Mohawk Medibles, Canadian Indigenous dispensary"
+  },
+  {
+    "id": 31,
+    "name": "Power Up Psilly Wabbits Chocolate Bars 5000MG",
+    "altText": "Power Up Psilly Wabbits Chocolate Bars 5000MG - Mushroom edible from Mohawk Medibles, 5000mg Canadian"
+  },
+  {
+    "id": 32,
+    "name": "Purple Urkle $40/oz or $100/3oz",
+    "altText": "Purple Urkle $40/oz or $100/3oz - Flower cannabis product from Mohawk Medibles, 18-21% THC Canadian"
+  },
+  {
+    "id": 33,
+    "name": "Gas Gang 1G Terp Sauce",
+    "altText": "Gas Gang 1G Terp Sauce - Concentrate cannabis product from Mohawk Medibles, 25% THC terp sauce Canadian"
+  },
+  {
+    "id": 34,
+    "name": "Drizzle Factory THC Lean",
+    "altText": "Drizzle Factory THC Lean - Beverage cannabis product from Mohawk Medibles, THC infused Canadian wellness"
+  },
+  {
+    "id": 35,
+    "name": "Drizzle Factory IRY Pod Live Resin 1g",
+    "altText": "Drizzle Factory IRY Pod Live Resin 1g - Vape cannabis product from Mohawk Medibles, live resin Canadian"
+  },
+  {
+    "id": 36,
+    "name": "Red Velvet Hash",
+    "altText": "Red Velvet Hash - Concentrate cannabis product from Mohawk Medibles, premium Canadian hash from Tyendinaga"
+  },
+  {
+    "id": 37,
+    "name": "Z Pods 5% Nicotine Pods",
+    "altText": "Z Pods 5% Nicotine Pods - Nicotine product from Mohawk Medibles, Canadian Indigenous dispensary"
+  },
+  {
+    "id": 38,
+    "name": "Drizzle Factory Slims AAAA Craft Exotic Pre-Rolls",
+    "altText": "Drizzle Factory Slims AAAA Craft Exotic Pre-Rolls - Pre-roll cannabis from Mohawk Medibles, AAAA Canadian"
+  },
+  {
+    "id": 39,
+    "name": "Permanent Marker Milled Flower",
+    "altText": "Permanent Marker Milled Flower - Flower cannabis product from Mohawk Medibles, 28% THC premium Canadian"
+  },
+  {
+    "id": 40,
+    "name": "Tequila Sunrise Hash",
+    "altText": "Tequila Sunrise Hash - Concentrate cannabis product from Mohawk Medibles, premium Canadian hash Tyendinaga"
+  },
+  {
+    "id": 41,
+    "name": "Adalya Hookah Tobacco",
+    "altText": "Adalya Hookah Tobacco - Hookah product from Mohawk Medibles, Canadian Indigenous dispensary Tyendinaga"
+  },
+  {
+    "id": 42,
+    "name": "Green Crack $100/OZ Deal",
+    "altText": "Green Crack $100/OZ Deal - Flower cannabis product from Mohawk Medibles, 15-25% THC budget Canadian"
+  },
+  {
+    "id": 43,
+    "name": "Biscotti Hash",
+    "altText": "Biscotti Hash - Concentrate cannabis product from Mohawk Medibles, premium Canadian hash from Tyendinaga"
+  },
+  {
+    "id": 44,
+    "name": "Drizzle Factory Slims Delta-9 Distillate Infused Pre-Rolls",
+    "altText": "Drizzle Factory Slims Delta-9 Distillate Infused Pre-Rolls - Pre-roll cannabis from Mohawk Medibles, Canadian"
+  },
+  {
+    "id": 45,
+    "name": "Jack Rabbit Sexual Enhancement Honey",
+    "altText": "Jack Rabbit Sexual Enhancement Honey - Enhancement product from Mohawk Medibles, Canadian Indigenous wellness"
+  },
+  {
+    "id": 46,
+    "name": "STELLAR THC BANANA GUMMIES",
+    "altText": "STELLAR THC Banana Gummies - Edible cannabis product from Mohawk Medibles, THC infused Canadian wellness"
+  },
+  {
+    "id": 47,
+    "name": "Royal Honey VIP The Ultimate Power Source",
+    "altText": "Royal Honey VIP The Ultimate Power Source - Enhancement product from Mohawk Medibles, Canadian Indigenous"
+  },
+  {
+    "id": 48,
+    "name": "Fungara Large Air Flow Rechargeable Device",
+    "altText": "Fungara Large Air Flow Rechargeable Device - Battery product from Mohawk Medibles, Canadian Indigenous"
+  },
+  {
+    "id": 49,
+    "name": "STELLAR THC Salted Caramel Bar",
+    "altText": "STELLAR THC Salted Caramel Bar - Edible cannabis product from Mohawk Medibles, THC infused Canadian"
+  },
+  {
+    "id": 50,
+    "name": "Export A Rolling Papers",
+    "altText": "Export A Rolling Papers - Accessory product from Mohawk Medibles, Canadian Indigenous dispensary"
+  }
+]

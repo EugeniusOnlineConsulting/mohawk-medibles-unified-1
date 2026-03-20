@@ -73,3 +73,4 @@ user_memory.json
 
 # OMMAE backups
 .backups/
+.github/workflows/deploy.yml

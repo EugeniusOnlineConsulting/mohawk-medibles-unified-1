@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { fetchAllProducts, type WCStoreProduct } from '@/lib/wc-api';
 
+// ─── Excluded Categories ────────────────────────────────────
+// Products in these categories are NOT synced to the storefront
+const EXCLUDED_CATEGORIES = new Set([
+  'nicotine', 'sexual enhancement', 'enhancement pills',
+  'mushrooms', 'hookah',
+  'ijoy', 'geek bar', 'flavour beast', 'flying horse', 'lip rippers',
+  'euphoria psychedelics', 'her highness from the 6ix',
+]);
+
+function isExcludedProduct(wcProduct: WCStoreProduct): boolean {
+  return (wcProduct.categories || []).some(
+    (c) => EXCLUDED_CATEGORIES.has(c.name.toLowerCase())
+  );
+}
+
 // POST /api/sync/products — Full product sync from WooCommerce Store API
 export async function POST(req: NextRequest) {
   // Simple auth check — require AUTH_SECRET header
@@ -28,8 +43,15 @@ export async function POST(req: NextRequest) {
 
     let successCount = 0;
     let failCount = 0;
+    let skippedCount = 0;
 
     for (const wcProduct of products) {
+      // Skip excluded categories (nicotine, mushrooms, sexual enhancement, etc.)
+      if (isExcludedProduct(wcProduct)) {
+        skippedCount++;
+        continue;
+      }
+
       try {
         const category = wcProduct.categories?.[0]?.name || 'Uncategorized';
         const subcategory = wcProduct.categories?.[1]?.name || null;
@@ -124,6 +146,7 @@ export async function POST(req: NextRequest) {
       success: true,
       total: products.length,
       synced: successCount,
+      skipped: skippedCount,
       failed: failCount,
     });
   } catch (err: any) {

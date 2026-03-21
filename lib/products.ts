@@ -138,6 +138,18 @@ function transformProduct(dbProduct: NonNullable<DBProduct>): Product {
     };
 }
 
+/** Categories excluded from the storefront */
+const EXCLUDED_CATEGORIES = new Set([
+    "nicotine", "sexual enhancement", "enhancement pills",
+    "mushrooms", "hookah",
+    "ijoy", "geek bar", "flavour beast", "flying horse", "lip rippers",
+    "euphoria psychedelics", "her highness from the 6ix",
+]);
+
+function isAllowedProduct(p: Product): boolean {
+    return !EXCLUDED_CATEGORIES.has(p.category.toLowerCase());
+}
+
 /** Decode HTML entities in user-facing product text fields */
 function cleanProductText(p: Product): Product {
     return {
@@ -175,7 +187,7 @@ async function loadProductsFromDB(): Promise<Product[]> {
 export async function getAllProducts(): Promise<Product[]> {
     if (!useDatabase()) {
         const fb = await getFallback();
-        return fb.PRODUCTS.map(cleanProductText);
+        return fb.PRODUCTS.map(cleanProductText).filter(isAllowedProduct);
     }
 
     if (isCacheValid()) {
@@ -183,12 +195,12 @@ export async function getAllProducts(): Promise<Product[]> {
     }
 
     try {
-        const dbProducts = (await loadProductsFromDB()).map(cleanProductText);
+        const dbProducts = (await loadProductsFromDB()).map(cleanProductText).filter(isAllowedProduct);
         // If DB returns 0 products (not synced yet), fall back to hardcoded
         if (dbProducts.length === 0) {
             log.admin.warn("DB returned 0 products, falling back to hardcoded data");
             const fb = await getFallback();
-            return fb.PRODUCTS.map(cleanProductText);
+            return fb.PRODUCTS.map(cleanProductText).filter(isAllowedProduct);
         }
         cachedProducts = dbProducts;
         cacheTimestamp = Date.now();
@@ -198,7 +210,7 @@ export async function getAllProducts(): Promise<Product[]> {
             error: err instanceof Error ? err.message : "Unknown",
         });
         const fb = await getFallback();
-        return fb.PRODUCTS.map(cleanProductText);
+        return fb.PRODUCTS.map(cleanProductText).filter(isAllowedProduct);
     }
 }
 

@@ -13,6 +13,21 @@ function verifyWebhookSignature(payload: string, signature: string, secret: stri
   }
 }
 
+// ─── Excluded Categories ────────────────────────────────────
+// Products in these categories are NOT synced to the storefront
+const EXCLUDED_CATEGORIES = new Set([
+  'nicotine', 'sexual enhancement', 'enhancement pills',
+  'mushrooms', 'hookah',
+  // Nicotine vape brands
+  'ijoy', 'geek bar', 'flavour beast', 'flying horse', 'lip rippers',
+  // Psilocybin brands
+  'euphoria psychedelics', 'her highness from the 6ix',
+]);
+
+function isExcludedCategory(category: string): boolean {
+  return EXCLUDED_CATEGORIES.has(category.toLowerCase());
+}
+
 // ─── Status Mappers ──────────────────────────────────────────
 
 const ORDER_STATUS_MAP: Record<string, string> = {
@@ -223,6 +238,19 @@ async function handleProduct(wc: any, topic: string) {
   // v3 webhook payload has full product fields
   const category = wc.categories?.[0]?.name || 'Uncategorized';
   const subcategory = wc.categories?.[1]?.name || null;
+
+  // Skip excluded categories (nicotine, mushrooms, sexual enhancement, etc.)
+  const allCats = (wc.categories || []).map((c: any) => c.name);
+  if (allCats.some((c: string) => isExcludedCategory(c)) || isExcludedCategory(category)) {
+    console.log(`[WC Webhook] Product #${wc.id} "${wc.name}" skipped — excluded category: ${category}`);
+    // If it already exists in DB, mark it as discontinued
+    const existing = await prisma.product.findUnique({ where: { wcId: wc.id } });
+    if (existing) {
+      await prisma.product.update({ where: { id: existing.id }, data: { status: 'DISCONTINUED' } });
+    }
+    return;
+  }
+
   const price = parseFloat(wc.price) || parseFloat(wc.regular_price) || 0;
   const salePrice = wc.sale_price ? parseFloat(wc.sale_price) : null;
 

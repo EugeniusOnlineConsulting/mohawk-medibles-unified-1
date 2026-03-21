@@ -85,3 +85,4 @@ register-page-fullpage.png
 register-page-screenshot.png
 *.png
 !public/**/*.png
+.env*.local

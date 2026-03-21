@@ -86,3 +86,5 @@ register-page-screenshot.png
 *.png
 !public/**/*.png
 .env*.local
+lighthouse-*
+.env.vercel

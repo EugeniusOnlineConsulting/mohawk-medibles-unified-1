@@ -97,7 +97,7 @@ export function BentoGrid() {
                                 <h3 className="text-lg font-black tracking-tight font-display">Shop by Feels</h3>
                                 <p className="text-muted-foreground text-xs">Find your perfect match</p>
                             </div>
-                            <Link href="/shop" className="text-[10px] font-semibold text-lime-light hover:text-white flex items-center gap-0.5 transition-colors">
+                            <Link href="/shop" className="text-xs font-semibold text-lime hover:text-white flex items-center gap-0.5 transition-colors">
                                 All <ArrowRight className="w-2.5 h-2.5" />
                             </Link>
                         </div>
@@ -142,7 +142,7 @@ export function BentoGrid() {
 
                         {/* Trust micro-banner */}
                         <div className="rounded-xl border border-lime/20 bg-lime/5 p-3 text-center">
-                            <p className="text-[10px] font-bold text-lime-light uppercase tracking-wider mb-1">Indigenous Owned & Operated</p>
+                            <p className="text-xs font-bold text-lime uppercase tracking-wider mb-1">Indigenous Owned & Operated</p>
                             <p className="text-[9px] text-muted-foreground leading-relaxed">
                                 Proudly serving Canada from Tyendinaga Mohawk Territory since 2019. Lab-tested. Tax-free. Free shipping over $199.
                             </p>
@@ -203,7 +203,7 @@ function ProductCard({ product, index, t }: { product: Product; index: number; t
                     <span className="px-2.5 py-1 rounded-full bg-black/30 dark:bg-white/10 backdrop-blur-md text-[10px] font-medium tracking-wider uppercase border border-white/20 dark:border-white/10 text-white">
                         {product.category} &bull; {product.specs.type}
                     </span>
-                    <span className="px-2.5 py-1 rounded-full bg-lime/30 dark:bg-lime/20 backdrop-blur-md text-[10px] font-bold text-lime-light dark:text-lime border border-lime/30 dark:border-lime/20">
+                    <span className="px-2.5 py-1 rounded-full bg-lime/30 dark:bg-lime/20 backdrop-blur-md text-xs font-bold text-lime dark:text-lime border border-lime/30 dark:border-lime/20">
                         {product.specs.thc} THC
                     </span>
                 </div>

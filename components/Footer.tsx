@@ -199,13 +199,13 @@ export default function Footer() {
                                 )}
                             </div>
                         )}
-                        <p className="text-[10px] text-cream/50 uppercase tracking-widest">Subscriber Perk: Free 1:1 consultation & special drops</p>
+                        <p className="text-xs text-cream/70 uppercase tracking-widest">Subscriber Perk: Free 1:1 consultation & special drops</p>
                     </div>
                 </div>
             </div>
 
             {/* Copyright */}
-            <div className="container mx-auto px-6 mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-cream/50 uppercase tracking-widest">
+            <div className="container mx-auto px-6 mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-cream/70 uppercase tracking-widest">
                 <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
                     <span>45 Dundas Street Deseronto, Ontario</span>
                     <span>(613) 396 6728</span>

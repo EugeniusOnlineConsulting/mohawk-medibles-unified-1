@@ -27,7 +27,7 @@ function calcTimeLeft(endTime: string): TimeLeft {
 }
 
 export default function FlashSaleCountdown({ endTime }: FlashSaleCountdownProps) {
-    const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calcTimeLeft(endTime));
+    const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 0, minutes: 0, seconds: 0, expired: false });
 
     const tick = useCallback(() => {
         setTimeLeft(calcTimeLeft(endTime));

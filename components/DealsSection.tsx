@@ -21,9 +21,10 @@ function calcTimeLeft(targetHour: number, targetMinute: number) {
 }
 
 function useCountdown(targetHour = 23, targetMinute = 59) {
-  const [timeLeft, setTimeLeft] = useState(() => calcTimeLeft(targetHour, targetMinute));
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
+    setTimeLeft(calcTimeLeft(targetHour, targetMinute));
     const interval = setInterval(() => {
       setTimeLeft(calcTimeLeft(targetHour, targetMinute));
     }, 1000);

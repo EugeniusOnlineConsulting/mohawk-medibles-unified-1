@@ -160,6 +160,25 @@ export function HeroCarousel() {
       itemScope
       itemType="https://schema.org/ImageGallery"
     >
+      {/* ═══ SSR-safe first slide — paints instantly before JS hydration ═══ */}
+      {current === 0 && (
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-[-8%]">
+            <Image
+              src={SLIDES[0].bg}
+              alt={SLIDES[0].alt}
+              fill
+              priority
+              fetchPriority="high"
+              className="object-cover"
+              sizes="100vw"
+              quality={85}
+              itemProp="image"
+            />
+          </div>
+        </div>
+      )}
+
       {/* ═══ Background Image with Ken Burns Motion ═══ */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -180,7 +199,6 @@ export function HeroCarousel() {
               className="object-cover"
               sizes="100vw"
               quality={85}
-              itemProp="image"
             />
           </div>
 

@@ -235,6 +235,16 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, campaign: copy });
         }
 
+        // ─── Delete ─────────────────────────────
+        if (action === "delete") {
+            const { id } = body;
+            if (!id) return NextResponse.json({ error: "Campaign ID required" }, { status: 400 });
+            // Delete sends first (foreign key), then campaign
+            await prisma.campaignSend.deleteMany({ where: { campaignId: id } });
+            await prisma.campaign.delete({ where: { id } });
+            return NextResponse.json({ success: true });
+        }
+
         return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     } catch (e) {
         log.campaign.error("POST error", { error: e instanceof Error ? e.message : "Unknown" });

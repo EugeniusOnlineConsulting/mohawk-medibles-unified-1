@@ -1,0 +1,37 @@
+/**
+ * Admin Login Audit API — /api/admin/login-audit
+ * GET ?email=X&limit=N&offset=N
+ */
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(req: NextRequest) {
+    const { prisma } = await import("@/lib/db");
+    const email = req.nextUrl.searchParams.get("email") || "";
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "25");
+    const offset = parseInt(req.nextUrl.searchParams.get("offset") || "0");
+
+    try {
+        const where: any = {};
+        if (email) {
+            where.email = { contains: email, mode: "insensitive" };
+        }
+
+        const [attempts, total] = await Promise.all([
+            prisma.loginAttempt.findMany({
+                where,
+                orderBy: { createdAt: "desc" },
+                take: limit,
+                skip: offset,
+            }),
+            prisma.loginAttempt.count({ where }),
+        ]);
+
+        return NextResponse.json({
+            attempts,
+            total,
+        });
+    } catch (err: any) {
+        console.error("Login Audit GET error:", err);
+        return NextResponse.json({ error: err.message }, { status: 500 });
+    }
+}

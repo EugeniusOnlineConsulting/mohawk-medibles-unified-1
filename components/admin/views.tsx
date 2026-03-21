@@ -244,112 +244,439 @@ function LiveActivityFeed() {
 
 export function AnalyticsView() {
     const [range, setRange] = useState("30d");
+    const [subTab, setSubTab] = useState<"revenue" | "rfm" | "clv" | "churn">("revenue");
     const [revenueData, setRevenueData] = useState<{ chartData: { date: string; revenue: number }[]; totalRevenue: number; changePercent: number } | null>(null);
     const [topProducts, setTopProducts] = useState<{ name: string; totalSold: number; totalRevenue: number }[]>([]);
+    const [rfmData, setRfmData] = useState<any>(null);
+    const [clvData, setClvData] = useState<any>(null);
+    const [churnData, setChurnData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [segmentFilter, setSegmentFilter] = useState("");
+    const [tierFilter, setTierFilter] = useState("");
+    const [riskFilter, setRiskFilter] = useState("");
+    const [sortField, setSortField] = useState<string>("monetary");
+    const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
     useEffect(() => {
         setLoading(true);
-        Promise.all([
-            fetch(`/api/admin/analytics?range=${range}&metric=revenue`).then(r => r.json()).catch(() => null),
-            fetch(`/api/admin/analytics?range=${range}&metric=products`).then(r => r.json()).catch(() => null),
-        ]).then(([rev, prods]) => {
-            setRevenueData(rev);
-            setTopProducts(prods?.topProducts || []);
-            setLoading(false);
-        });
-    }, [range]);
+        if (subTab === "revenue") {
+            Promise.all([
+                fetch(`/api/admin/analytics?range=${range}&metric=revenue`).then(r => r.json()).catch(() => null),
+                fetch(`/api/admin/analytics?range=${range}&metric=products`).then(r => r.json()).catch(() => null),
+            ]).then(([rev, prods]) => {
+                setRevenueData(rev);
+                setTopProducts(prods?.topProducts || []);
+                setLoading(false);
+            });
+        } else {
+            fetch(`/api/admin/analytics/customer?type=${subTab}`).then(r => r.json()).then(data => {
+                if (subTab === "rfm") setRfmData(data);
+                else if (subTab === "clv") setClvData(data);
+                else if (subTab === "churn") setChurnData(data);
+                setLoading(false);
+            }).catch(() => setLoading(false));
+        }
+    }, [range, subTab]);
+
+    const cardClass = "bg-[#0f0f18] border border-white/5 rounded-2xl";
+    const badgeClass = "text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border";
+
+    const segmentColors: Record<string, string> = {
+        Champions: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10",
+        "Loyal Customers": "text-green-400 border-green-500/30 bg-green-500/10",
+        "Potential Loyalists": "text-blue-400 border-blue-500/30 bg-blue-500/10",
+        "Recent Customers": "text-cyan-400 border-cyan-500/30 bg-cyan-500/10",
+        Promising: "text-teal-400 border-teal-500/30 bg-teal-500/10",
+        "Need Attention": "text-amber-400 border-amber-500/30 bg-amber-500/10",
+        "About to Sleep": "text-orange-400 border-orange-500/30 bg-orange-500/10",
+        "At Risk": "text-red-400 border-red-500/30 bg-red-500/10",
+        "Can't Lose Them": "text-pink-400 border-pink-500/30 bg-pink-500/10",
+        Hibernating: "text-zinc-400 border-zinc-500/30 bg-zinc-500/10",
+        Lost: "text-zinc-500 border-zinc-600/30 bg-zinc-600/10",
+        Other: "text-zinc-400 border-zinc-500/30 bg-zinc-500/10",
+    };
+    const tierColors: Record<string, string> = {
+        platinum: "text-purple-400 border-purple-500/30 bg-purple-500/10",
+        gold: "text-yellow-400 border-yellow-500/30 bg-yellow-500/10",
+        silver: "text-zinc-300 border-zinc-400/30 bg-zinc-400/10",
+        bronze: "text-orange-400 border-orange-500/30 bg-orange-500/10",
+    };
+    const riskColors: Record<string, string> = {
+        critical: "text-red-400 border-red-500/30 bg-red-500/10",
+        high: "text-orange-400 border-orange-500/30 bg-orange-500/10",
+        medium: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+        low: "text-green-400 border-green-500/30 bg-green-500/10",
+    };
+
+    const toggleSort = (field: string) => {
+        if (sortField === field) setSortDir(d => d === "desc" ? "asc" : "desc");
+        else { setSortField(field); setSortDir("desc"); }
+    };
+
+    const subTabs = [
+        { id: "revenue" as const, label: "Revenue & Products" },
+        { id: "rfm" as const, label: "RFM Segmentation" },
+        { id: "clv" as const, label: "Customer Lifetime Value" },
+        { id: "churn" as const, label: "Churn Prediction" },
+    ];
 
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold">Analytics</h2>
-                    <p className="text-zinc-500 text-sm">Revenue, trends, and product performance.</p>
+                    <p className="text-zinc-500 text-sm">Revenue, RFM segmentation, CLV prediction, and churn risk analysis.</p>
                 </div>
-                <div className="flex gap-2">
-                    {["7d", "30d", "90d", "1y"].map(r => (
-                        <button
-                            key={r}
-                            onClick={() => setRange(r)}
-                            className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${range === r
-                                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                : "bg-white/5 hover:bg-white/10 border border-white/10"
-                            }`}
-                        >
-                            {r === "7d" ? "7 Days" : r === "30d" ? "30 Days" : r === "90d" ? "90 Days" : "1 Year"}
-                        </button>
-                    ))}
-                </div>
+                {subTab === "revenue" && (
+                    <div className="flex gap-2">
+                        {["7d", "30d", "90d", "1y"].map(r => (
+                            <button key={r} onClick={() => setRange(r)}
+                                className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${range === r
+                                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                                    : "bg-white/5 hover:bg-white/10 border border-white/10"
+                                }`}
+                            >
+                                {r === "7d" ? "7 Days" : r === "30d" ? "30 Days" : r === "90d" ? "90 Days" : "1 Year"}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Sub-tab navigation */}
+            <div className="flex gap-1 border-b border-white/5 pb-px">
+                {subTabs.map(tab => (
+                    <button key={tab.id} onClick={() => { setSubTab(tab.id); setSearchQuery(""); setSegmentFilter(""); setTierFilter(""); setRiskFilter(""); }}
+                        className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors border-b-2 whitespace-nowrap ${
+                            subTab === tab.id ? "border-green-500 text-green-400" : "border-transparent text-zinc-500 hover:text-zinc-300"
+                        }`}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
             </div>
 
             {loading ? <LoadingSpinner /> : (
                 <>
-                    {/* Revenue Chart (Bar representation) */}
-                    {revenueData && (
-                        <div className="bg-[#0f0f18] border border-white/5 rounded-2xl p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <h3 className="font-semibold">Revenue</h3>
-                                    <div className="flex items-center gap-3 mt-1">
-                                        <span className="text-3xl font-bold text-green-400">${revenueData.totalRevenue.toLocaleString()}</span>
-                                        <span className={`text-sm flex items-center gap-1 ${revenueData.changePercent >= 0 ? "text-green-400" : "text-red-400"}`}>
-                                            {revenueData.changePercent >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
-                                            {Math.abs(revenueData.changePercent)}% vs previous
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Simple bar chart */}
-                            <div className="flex items-end gap-1 h-40">
-                                {revenueData.chartData.slice(-30).map((d, i) => {
-                                    const max = Math.max(...revenueData.chartData.map(x => x.revenue));
-                                    const height = max > 0 ? (d.revenue / max) * 100 : 0;
-                                    return (
-                                        <div key={i} className="flex-1 group relative">
-                                            <div
-                                                className="bg-green-500/50 hover:bg-green-500/80 rounded-t transition-colors w-full"
-                                                style={{ height: `${Math.max(height, 2)}%` }}
-                                            />
-                                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-zinc-800 text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                                                ${d.revenue.toFixed(0)} — {d.date}
+                    {/* Revenue Sub-Tab */}
+                    {subTab === "revenue" && (
+                        <>
+                            {revenueData && (
+                                <div className={`${cardClass} p-6`}>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div>
+                                            <h3 className="font-semibold">Revenue</h3>
+                                            <div className="flex items-center gap-3 mt-1">
+                                                <span className="text-3xl font-bold text-green-400">${revenueData.totalRevenue.toLocaleString()}</span>
+                                                <span className={`text-sm flex items-center gap-1 ${revenueData.changePercent >= 0 ? "text-green-400" : "text-red-400"}`}>
+                                                    {revenueData.changePercent >= 0 ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                                                    {Math.abs(revenueData.changePercent)}% vs previous
+                                                </span>
                                             </div>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                    <div className="flex items-end gap-1 h-40">
+                                        {revenueData.chartData.slice(-30).map((d, i) => {
+                                            const max = Math.max(...revenueData.chartData.map(x => x.revenue));
+                                            const height = max > 0 ? (d.revenue / max) * 100 : 0;
+                                            return (
+                                                <div key={i} className="flex-1 group relative">
+                                                    <div className="bg-green-500/50 hover:bg-green-500/80 rounded-t transition-colors w-full" style={{ height: `${Math.max(height, 2)}%` }} />
+                                                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block bg-zinc-800 text-xs px-2 py-1 rounded whitespace-nowrap z-10">
+                                                        ${d.revenue.toFixed(0)} -- {d.date}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`${cardClass} overflow-hidden`}>
+                                <div className="px-6 py-4 border-b border-white/5"><h3 className="font-semibold">Top Selling Products</h3></div>
+                                <table className="w-full text-sm">
+                                    <thead><tr className="text-left text-xs text-zinc-500 uppercase tracking-wider border-b border-white/5">
+                                        <th className="px-6 py-3">#</th><th className="px-6 py-3">Product</th>
+                                        <th className="px-6 py-3 text-right">Units Sold</th><th className="px-6 py-3 text-right">Revenue</th>
+                                    </tr></thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {topProducts.slice(0, 10).map((p, i) => (
+                                            <tr key={i} className="hover:bg-white/[0.02]">
+                                                <td className="px-6 py-3 text-zinc-500">{i + 1}</td>
+                                                <td className="px-6 py-3 font-medium">{p.name}</td>
+                                                <td className="px-6 py-3 text-right">{p.totalSold}</td>
+                                                <td className="px-6 py-3 text-right text-green-400">${p.totalRevenue.toLocaleString()}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                {topProducts.length === 0 && <EmptyState icon={BarChart3} title="No sales data yet" description="Sales data will appear here once orders start coming in." />}
+                            </div>
+                        </>
+                    )}
+
+                    {/* RFM Sub-Tab */}
+                    {subTab === "rfm" && rfmData && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[
+                                    { label: "Total Customers", value: rfmData.summary?.totalCustomers || 0, color: "text-blue-400" },
+                                    { label: "Avg Recency", value: `${rfmData.summary?.avgRecency || 0}d`, color: "text-green-400" },
+                                    { label: "Avg Frequency", value: rfmData.summary?.avgFrequency || 0, color: "text-purple-400" },
+                                    { label: "Avg Monetary", value: `$${(rfmData.summary?.avgMonetary || 0).toFixed(2)}`, color: "text-green-500" },
+                                ].map((s, i) => (
+                                    <div key={i} className={`${cardClass} p-5`}>
+                                        <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">{s.label}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className={`${cardClass} p-5`}>
+                                <h3 className="text-sm font-bold uppercase tracking-wider mb-4">Segment Distribution</h3>
+                                {Object.entries(rfmData.segments || {}).length === 0 ? (
+                                    <p className="text-zinc-500 text-sm text-center py-4">No segments yet. Customers will be segmented once they place orders.</p>
+                                ) : (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                        {Object.entries(rfmData.segments || {}).sort((a: any, b: any) => b[1].count - a[1].count).map(([name, seg]: [string, any]) => (
+                                            <button key={name} onClick={() => setSegmentFilter(segmentFilter === name ? "" : name)}
+                                                className={`p-3 rounded-lg border text-left transition-all ${segmentFilter === name ? "ring-2 ring-green-500" : ""} ${segmentColors[name] || segmentColors.Other}`}
+                                            >
+                                                <p className="text-sm font-bold">{name}</p>
+                                                <p className="text-lg font-black">{seg.count}</p>
+                                                <p className="text-[10px] opacity-70">Avg ${seg.avgSpend.toFixed(0)} / {seg.avgOrders.toFixed(1)} orders</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className={`${cardClass} p-5`}>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider">Customers ({(rfmData.customers || []).filter((c: any) => {
+                                        if (segmentFilter && c.segment !== segmentFilter) return false;
+                                        if (searchQuery) { const q = searchQuery.toLowerCase(); return (c.email?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q)); }
+                                        return true;
+                                    }).length})</h3>
+                                    <div className="flex gap-2">
+                                        <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..."
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-zinc-600 focus:outline-none focus:border-green-500/50 w-40"
+                                        />
+                                        <select value={segmentFilter} onChange={e => setSegmentFilter(e.target.value)}
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-green-500/50"
+                                        >
+                                            <option value="">All Segments</option>
+                                            {Object.keys(rfmData.segments || {}).map(s => <option key={s} value={s}>{s}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead><tr className="border-b border-white/5 text-zinc-500 text-xs uppercase tracking-wider">
+                                            <th className="text-left py-2 pr-3">Customer</th><th className="text-left py-2 pr-3">Segment</th>
+                                            <th className="text-center py-2 pr-3 cursor-pointer select-none" onClick={() => toggleSort("rScore")}>R {sortField === "rScore" ? (sortDir === "desc" ? "v" : "^") : ""}</th>
+                                            <th className="text-center py-2 pr-3 cursor-pointer select-none" onClick={() => toggleSort("fScore")}>F {sortField === "fScore" ? (sortDir === "desc" ? "v" : "^") : ""}</th>
+                                            <th className="text-center py-2 pr-3 cursor-pointer select-none" onClick={() => toggleSort("mScore")}>M {sortField === "mScore" ? (sortDir === "desc" ? "v" : "^") : ""}</th>
+                                            <th className="text-right py-2 cursor-pointer select-none" onClick={() => toggleSort("monetary")}>Spent {sortField === "monetary" ? (sortDir === "desc" ? "v" : "^") : ""}</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            {(rfmData.customers || []).filter((c: any) => {
+                                                if (segmentFilter && c.segment !== segmentFilter) return false;
+                                                if (searchQuery) { const q = searchQuery.toLowerCase(); return (c.email?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q)); }
+                                                return true;
+                                            }).sort((a: any, b: any) => {
+                                                const aVal = a[sortField] ?? 0; const bVal = b[sortField] ?? 0;
+                                                return sortDir === "desc" ? bVal - aVal : aVal - bVal;
+                                            }).slice(0, 50).map((c: any) => (
+                                                <tr key={c.userId} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                                    <td className="py-2 pr-3"><p className="font-medium text-sm">{c.name || "Anonymous"}</p><p className="text-zinc-500 text-xs">{c.email || "--"}</p></td>
+                                                    <td className="py-2 pr-3"><span className={`${badgeClass} ${segmentColors[c.segment] || segmentColors.Other}`}>{c.segment}</span></td>
+                                                    <td className="py-2 pr-3 text-center"><span className={`font-bold ${c.rScore >= 4 ? "text-green-400" : c.rScore >= 3 ? "text-amber-400" : "text-red-400"}`}>{c.rScore}</span></td>
+                                                    <td className="py-2 pr-3 text-center"><span className={`font-bold ${c.fScore >= 4 ? "text-green-400" : c.fScore >= 3 ? "text-amber-400" : "text-red-400"}`}>{c.fScore}</span></td>
+                                                    <td className="py-2 pr-3 text-center"><span className={`font-bold ${c.mScore >= 4 ? "text-green-400" : c.mScore >= 3 ? "text-amber-400" : "text-red-400"}`}>{c.mScore}</span></td>
+                                                    <td className="py-2 text-right font-bold text-green-400">${c.monetary.toFixed(2)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Top Products */}
-                    <div className="bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
-                        <div className="px-6 py-4 border-b border-white/5">
-                            <h3 className="font-semibold">Top Selling Products</h3>
-                        </div>
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="text-left text-xs text-zinc-500 uppercase tracking-wider border-b border-white/5">
-                                    <th className="px-6 py-3">#</th>
-                                    <th className="px-6 py-3">Product</th>
-                                    <th className="px-6 py-3 text-right">Units Sold</th>
-                                    <th className="px-6 py-3 text-right">Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {topProducts.slice(0, 10).map((p, i) => (
-                                    <tr key={i} className="hover:bg-white/[0.02]">
-                                        <td className="px-6 py-3 text-zinc-500">{i + 1}</td>
-                                        <td className="px-6 py-3 font-medium">{p.name}</td>
-                                        <td className="px-6 py-3 text-right">{p.totalSold}</td>
-                                        <td className="px-6 py-3 text-right text-green-400">${p.totalRevenue.toLocaleString()}</td>
-                                    </tr>
+                    {/* CLV Sub-Tab */}
+                    {subTab === "clv" && clvData && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[
+                                    { label: "Avg Predicted CLV", value: `$${(clvData.summary?.avgCLV || 0).toFixed(2)}`, color: "text-green-400" },
+                                    { label: "Median CLV", value: `$${(clvData.summary?.medianCLV || 0).toFixed(2)}`, color: "text-purple-400" },
+                                    { label: "Total Revenue", value: `$${(clvData.summary?.totalRevenue || 0).toFixed(2)}`, color: "text-green-500" },
+                                    { label: "Avg Order Value", value: `$${(clvData.summary?.avgOrderValue || 0).toFixed(2)}`, color: "text-blue-400" },
+                                ].map((s, i) => (
+                                    <div key={i} className={`${cardClass} p-5`}>
+                                        <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">{s.label}</p>
+                                    </div>
                                 ))}
-                            </tbody>
-                        </table>
-                        {topProducts.length === 0 && (
-                            <EmptyState icon={BarChart3} title="No sales data yet" description="Sales data will appear here once orders start coming in." />
-                        )}
-                    </div>
+                            </div>
+                            <div className={`${cardClass} p-5`}>
+                                <h3 className="text-sm font-bold uppercase tracking-wider mb-4">CLV Tiers</h3>
+                                {Object.entries(clvData.summary?.tiers || {}).length === 0 ? (
+                                    <p className="text-zinc-500 text-sm text-center py-4">No tier data yet.</p>
+                                ) : (
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                        {Object.entries(clvData.summary?.tiers || {}).sort((a: any, b: any) => b[1].avgCLV - a[1].avgCLV).map(([tier, info]: [string, any]) => (
+                                            <button key={tier} onClick={() => setTierFilter(tierFilter === tier ? "" : tier)}
+                                                className={`p-4 rounded-lg border text-left transition-all ${tierFilter === tier ? "ring-2 ring-green-500" : ""} ${tierColors[tier] || tierColors.bronze}`}
+                                            >
+                                                <p className="text-sm font-bold uppercase">{tier}</p>
+                                                <p className="text-lg font-black">{info.count} customers</p>
+                                                <p className="text-[10px] opacity-70">Avg CLV: ${info.avgCLV.toFixed(0)}</p>
+                                                <p className="text-[10px] opacity-70">Revenue: ${info.totalRevenue.toFixed(0)}</p>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className={`${cardClass} p-5`}>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider">Customers</h3>
+                                    <div className="flex gap-2">
+                                        <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..."
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-zinc-600 focus:outline-none focus:border-green-500/50 w-40"
+                                        />
+                                        <select value={tierFilter} onChange={e => setTierFilter(e.target.value)}
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-green-500/50"
+                                        >
+                                            <option value="">All Tiers</option>
+                                            {["platinum", "gold", "silver", "bronze"].map(t => <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead><tr className="border-b border-white/5 text-zinc-500 text-xs uppercase tracking-wider">
+                                            <th className="text-left py-2 pr-3">Customer</th><th className="text-left py-2 pr-3">Tier</th>
+                                            <th className="text-right py-2 pr-3">Total Spent</th><th className="text-right py-2 pr-3">Orders</th>
+                                            <th className="text-right py-2 pr-3">AOV</th><th className="text-right py-2 pr-3">Freq/mo</th>
+                                            <th className="text-right py-2">Predicted CLV</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            {(clvData.customers || []).filter((c: any) => {
+                                                if (tierFilter && c.clvTier !== tierFilter) return false;
+                                                if (searchQuery) { const q = searchQuery.toLowerCase(); return (c.email?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q)); }
+                                                return true;
+                                            }).slice(0, 50).map((c: any) => (
+                                                <tr key={c.userId} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                                    <td className="py-2 pr-3"><p className="font-medium text-sm">{c.name || "Anonymous"}</p><p className="text-zinc-500 text-xs">{c.email || "--"}</p></td>
+                                                    <td className="py-2 pr-3"><span className={`${badgeClass} ${tierColors[c.clvTier] || tierColors.bronze}`}>{c.clvTier}</span></td>
+                                                    <td className="py-2 pr-3 text-right font-medium">${c.totalSpent.toFixed(2)}</td>
+                                                    <td className="py-2 pr-3 text-right text-zinc-400">{c.totalOrders}</td>
+                                                    <td className="py-2 pr-3 text-right text-zinc-400">${c.avgOrderValue.toFixed(2)}</td>
+                                                    <td className="py-2 pr-3 text-right text-zinc-400">{c.purchaseFrequency.toFixed(2)}</td>
+                                                    <td className="py-2 text-right font-bold text-green-400">${c.predictedCLV.toFixed(2)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Churn Sub-Tab */}
+                    {subTab === "churn" && churnData && (
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                                {[
+                                    { label: "At Risk", value: churnData.summary?.totalAtRisk || 0, color: "text-red-400" },
+                                    { label: "Critical", value: churnData.summary?.criticalCount || 0, color: "text-red-500" },
+                                    { label: "High Risk", value: churnData.summary?.highCount || 0, color: "text-orange-400" },
+                                    { label: "Medium Risk", value: churnData.summary?.mediumCount || 0, color: "text-amber-400" },
+                                    { label: "Revenue at Risk", value: `$${(churnData.summary?.potentialRevenueLoss || 0).toFixed(0)}`, color: "text-red-400" },
+                                ].map((s, i) => (
+                                    <div key={i} className={`${cardClass} p-5`}>
+                                        <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                                        <p className="text-[10px] text-zinc-500 uppercase tracking-wider mt-1">{s.label}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            {(churnData.customers || []).length > 0 && (
+                                <div className={`${cardClass} p-5`}>
+                                    <h3 className="text-sm font-bold uppercase tracking-wider mb-3">Risk Distribution</h3>
+                                    <div className="flex h-8 rounded-lg overflow-hidden">
+                                        {churnData.summary?.criticalCount > 0 && <div className="bg-red-500 flex items-center justify-center text-[10px] font-bold text-white" style={{ width: `${(churnData.summary.criticalCount / churnData.customers.length) * 100}%` }}>{churnData.summary.criticalCount}</div>}
+                                        {churnData.summary?.highCount > 0 && <div className="bg-orange-500 flex items-center justify-center text-[10px] font-bold text-white" style={{ width: `${(churnData.summary.highCount / churnData.customers.length) * 100}%` }}>{churnData.summary.highCount}</div>}
+                                        {churnData.summary?.mediumCount > 0 && <div className="bg-amber-500 flex items-center justify-center text-[10px] font-bold text-black" style={{ width: `${(churnData.summary.mediumCount / churnData.customers.length) * 100}%` }}>{churnData.summary.mediumCount}</div>}
+                                        {churnData.summary?.lowCount > 0 && <div className="bg-green-500 flex items-center justify-center text-[10px] font-bold text-white" style={{ width: `${(churnData.summary.lowCount / churnData.customers.length) * 100}%` }}>{churnData.summary.lowCount}</div>}
+                                    </div>
+                                    <div className="flex gap-4 mt-2 text-[10px] text-zinc-500">
+                                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> Critical</span>
+                                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500" /> High</span>
+                                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> Medium</span>
+                                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> Low</span>
+                                    </div>
+                                </div>
+                            )}
+                            <div className={`${cardClass} p-5`}>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                                    <h3 className="text-sm font-bold uppercase tracking-wider">Churn Risk</h3>
+                                    <div className="flex gap-2">
+                                        <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search..."
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm placeholder:text-zinc-600 focus:outline-none focus:border-green-500/50 w-40"
+                                        />
+                                        <select value={riskFilter} onChange={e => setRiskFilter(e.target.value)}
+                                            className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-green-500/50"
+                                        >
+                                            <option value="">All Risk Levels</option>
+                                            {["critical", "high", "medium", "low"].map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead><tr className="border-b border-white/5 text-zinc-500 text-xs uppercase tracking-wider">
+                                            <th className="text-left py-2 pr-3">Customer</th><th className="text-left py-2 pr-3">Risk</th>
+                                            <th className="text-center py-2 pr-3">Score</th><th className="text-right py-2 pr-3">Days Since Order</th>
+                                            <th className="text-right py-2 pr-3">Avg Interval</th><th className="text-right py-2 pr-3">Total Spent</th>
+                                            <th className="text-left py-2">Suggested Action</th>
+                                        </tr></thead>
+                                        <tbody>
+                                            {(churnData.customers || []).filter((c: any) => {
+                                                if (riskFilter && c.riskLevel !== riskFilter) return false;
+                                                if (searchQuery) { const q = searchQuery.toLowerCase(); return (c.email?.toLowerCase().includes(q) || c.name?.toLowerCase().includes(q)); }
+                                                return true;
+                                            }).slice(0, 50).map((c: any) => (
+                                                <tr key={c.userId} className="border-b border-white/5 hover:bg-white/[0.02]">
+                                                    <td className="py-2 pr-3"><p className="font-medium text-sm">{c.name || "Anonymous"}</p><p className="text-zinc-500 text-xs">{c.email || "--"}</p></td>
+                                                    <td className="py-2 pr-3"><span className={`${badgeClass} ${riskColors[c.riskLevel]}`}>{c.riskLevel}</span></td>
+                                                    <td className="py-2 pr-3 text-center">
+                                                        <div className="flex items-center justify-center gap-1">
+                                                            <div className="w-12 h-2 bg-white/5 rounded-full overflow-hidden">
+                                                                <div className={`h-full rounded-full ${c.churnScore >= 75 ? "bg-red-500" : c.churnScore >= 50 ? "bg-orange-500" : c.churnScore >= 30 ? "bg-amber-500" : "bg-green-500"}`} style={{ width: `${c.churnScore}%` }} />
+                                                            </div>
+                                                            <span className="text-xs text-zinc-400 w-8">{c.churnScore}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-2 pr-3 text-right text-zinc-400">{c.daysSinceLastOrder}d</td>
+                                                    <td className="py-2 pr-3 text-right text-zinc-400">{c.avgDaysBetweenOrders}d</td>
+                                                    <td className="py-2 pr-3 text-right font-medium">${c.totalSpent.toFixed(2)}</td>
+                                                    <td className="py-2 text-left text-xs text-zinc-500 max-w-[200px] truncate">{c.suggestedAction}</td>
+                                                </tr>
+                                            ))}
+                                            {(churnData.customers || []).length === 0 && (
+                                                <tr><td colSpan={7} className="text-center text-zinc-500 py-8">No customers found (need at least 2 orders per customer for churn analysis)</td></tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Empty state for RFM/CLV/Churn when no data */}
+                    {subTab === "rfm" && !rfmData && <EmptyState icon={BarChart3} title="No RFM data" description="RFM analysis will appear once customers have placed orders." />}
+                    {subTab === "clv" && !clvData && <EmptyState icon={BarChart3} title="No CLV data" description="CLV predictions will appear once customers have order history." />}
+                    {subTab === "churn" && !churnData && <EmptyState icon={BarChart3} title="No churn data" description="Churn predictions will appear once customers have multiple orders." />}
                 </>
             )}
         </div>

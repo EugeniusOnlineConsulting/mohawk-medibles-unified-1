@@ -85,10 +85,10 @@ export default function Footer() {
                     <p className="font-bold text-sm tracking-widest uppercase text-white">Shop</p>
                     <ul className="space-y-2 text-sm text-cream/80">
                         <li><Link href="/shop" className="hover:text-lime transition-colors">All Collections</Link></li>
-                        <li><Link href="/shop?category=Flower" className="hover:text-lime transition-colors">Premium Flower</Link></li>
-                        <li><Link href="/shop?category=Edibles" className="hover:text-lime transition-colors">Artisan Edibles</Link></li>
-                        <li><Link href="/shop?category=Concentrates" className="hover:text-lime transition-colors">Pure Concentrates</Link></li>
-                        <li><Link href="/shop?category=Vapes" className="hover:text-lime transition-colors">Elite Vapes</Link></li>
+                        <li><Link href="/shop?category=Flower" className="hover:text-lime transition-colors">Flower</Link></li>
+                        <li><Link href="/shop?category=Edibles" className="hover:text-lime transition-colors">Edibles</Link></li>
+                        <li><Link href="/shop?category=Concentrates" className="hover:text-lime transition-colors">Concentrates</Link></li>
+                        <li><Link href="/shop?category=Vapes" className="hover:text-lime transition-colors">Vapes</Link></li>
                         <li><Link href="/shop?category=Hash" className="hover:text-lime transition-colors">Hash</Link></li>
                         <li><Link href="/shop?category=Pre-Rolls" className="hover:text-lime transition-colors">Pre-Rolls</Link></li>
                         <li><Link href="/shop?category=CBD" className="hover:text-lime transition-colors">CBD</Link></li>

@@ -50,8 +50,7 @@ export default function ProductImage({
                         variant === "hero" ? "object-contain p-6"
                             : variant === "bento" ? "object-cover group-hover:scale-110 transition-transform duration-700"
                             : "object-cover",
-                        variant !== "bento" && "group-hover:scale-105 transition-transform duration-300",
-                        "dark:mix-blend-multiply dark:brightness-90 dark:contrast-105"
+                        variant !== "bento" && "group-hover:scale-105 transition-transform duration-300"
                     )}
                     sizes={sizes}
                     priority={priority}

@@ -36,15 +36,15 @@ function useCountdown(targetHour = 23, targetMinute = 59) {
 
 const DEALS = [
   {
-    title: "AAAA Premium Flower",
-    originalPrice: 120,
-    salePrice: 65,
+    title: "$40 Ounces",
+    originalPrice: 80,
+    salePrice: 40,
     unit: "/oz",
     badge: "BEST SELLER",
     gradient: "from-[#1a3a0e]/90 to-[#0f2a0b]/80",
     span: "md:col-span-2 md:row-span-2",
-    image: "https://mohawkmedibles.ca/wp-content/uploads/2025/09/Sun-Rock-04-with-logo.png",
-    alt: "AAAA Premium Sun Rock flower deal — $65 per ounce",
+    image: "https://mohawkmedibles.ca/wp-content/uploads/2025/09/Goat-with-logo.png",
+    alt: "$40 ounce deal — premium cannabis flower, 3 for $100",
   },
   {
     title: "1000mg Gummies",
@@ -58,15 +58,15 @@ const DEALS = [
     alt: "1000mg Rainbow Pieces gummies deal — 50% off",
   },
   {
-    title: "Premium Shatter",
-    originalPrice: 40,
-    salePrice: 30,
+    title: "Zillionaire Shatter",
+    originalPrice: 15,
+    salePrice: 10,
     unit: "/g",
-    badge: "25% OFF",
+    badge: "HOT DEAL",
     gradient: "from-[#2a1e34]/90 to-[#1a1525]/80",
     span: "",
     image: "https://mohawkmedibles.ca/wp-content/uploads/2025/07/Zillionaire-Shatter-Photoroom.png",
-    alt: "Zillionaire premium shatter deal — $30 per gram",
+    alt: "Zillionaire shatter deal — $10 per gram",
   },
 ];
 

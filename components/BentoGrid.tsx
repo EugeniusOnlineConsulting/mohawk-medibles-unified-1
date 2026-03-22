@@ -5,14 +5,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Leaf, ArrowRight, Sparkles, Moon, Zap, Brain, Smile, Heart, Coffee, Palette, Utensils, Eye, Shield } from "lucide-react";
-import { getFeaturedProducts, getShortName, PRODUCTS, type Product } from "@/lib/productData";
+import { getShortName, PRODUCTS, type Product } from "@/lib/productData";
 import { useLocale } from "@/components/LocaleProvider";
 
-// Use featured products for hero cards, fill rest from catalog
+// Curated top sellers — one per core category for visual variety
+const TOP_SELLER_SLUGS = [
+    "goat-65oz-or-1753oz-canada",                            // Flower
+    "dozo-dont-trip-thc-a-trippy-diamond-cartridges-canada", // Cartridges
+    "sleebd-calm-cbd-capsules-2",                            // Capsules/CBD
+    "straight-goods-3g-disposable-thc-vape-canada",          // Disposables
+    "pineapple-express-meds-pem-baby-jeffery-pre-roll-30-pack-canada", // Pre-Rolls
+    "zillionaire-shatter-1g-canada",                         // Concentrates
+];
+
 const gridProducts = (() => {
-    const featured = getFeaturedProducts();
-    const rest = PRODUCTS.filter((p) => !p.featured).slice(0, 2);
-    return [...featured, ...rest].slice(0, 6);
+    const curated = TOP_SELLER_SLUGS
+        .map(slug => PRODUCTS.find(p => p.slug === slug))
+        .filter(Boolean) as Product[];
+    // Fallback: fill with first products if slugs don't match
+    if (curated.length < 4) {
+        const rest = PRODUCTS.filter(p => !curated.includes(p)).slice(0, 6 - curated.length);
+        return [...curated, ...rest].slice(0, 6);
+    }
+    return curated.slice(0, 6);
 })();
 
 // Gradient map by category

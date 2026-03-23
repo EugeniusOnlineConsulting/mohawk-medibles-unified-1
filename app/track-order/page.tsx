@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Track Order | Mohawk Medibles",
+  title: "Track Order",
   description:
     "Track your Mohawk Medibles order status and delivery. Enter your order number to see real-time updates.",
 };

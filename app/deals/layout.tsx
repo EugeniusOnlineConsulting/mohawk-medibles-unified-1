@@ -14,7 +14,7 @@ const dealsFaqJsonLd = faqSchema([
 ]);
 
 export const metadata: Metadata = {
-    title: "Cannabis Deals & Promotions | Mohawk Medibles",
+    title: "Cannabis Deals & Promotions",
     description:
         "Save on premium cannabis at Mohawk Medibles. Free shipping on orders over $199, mix & match edible discounts, ounce deals starting at $40 CAD. Indigenous-owned, Empire Standard™ quality. Ships Canada-wide.",
     keywords: [
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
         "cannabis bulk savings",
     ],
     openGraph: {
-        title: "Cannabis Deals & Promotions | Mohawk Medibles",
+        title: "Cannabis Deals & Promotions",
         description:
             "Save on premium cannabis at Mohawk Medibles. Free shipping, mix & match discounts, bulk ounce deals. Indigenous-owned, Empire Standard™ quality.",
         url: "https://mohawkmedibles.ca/deals",

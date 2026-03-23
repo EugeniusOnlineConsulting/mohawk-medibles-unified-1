@@ -18,7 +18,7 @@ import TerpeneGuideClient from "./TerpeneGuideClient";
 
 export const metadata: Metadata = {
   title:
-    "Cannabis Terpene Guide — Effects, Flavors & Benefits | Mohawk Medibles",
+    "Cannabis Terpene Guide — Effects, Flavors & Benefits",
   description:
     "Explore the 10 most important cannabis terpenes — myrcene, limonene, caryophyllene, linalool, pinene & more. Learn their aromas, effects, therapeutic benefits, and which strains contain them.",
   alternates: {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title:
-      "Cannabis Terpene Guide — Effects, Flavors & Benefits | Mohawk Medibles",
+      "Cannabis Terpene Guide — Effects, Flavors & Benefits",
     description:
       "The complete guide to cannabis terpenes. Learn which terpenes create specific effects and how to choose strains by their terpene profile.",
     url: "https://mohawkmedibles.ca/terpene-guide",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Cannabis Terpene Guide — Effects, Flavors & Benefits | Mohawk Medibles",
+      "Cannabis Terpene Guide — Effects, Flavors & Benefits",
     description:
       "Explore 10 major cannabis terpenes — aromas, effects, therapeutic benefits & which strains contain them.",
     images: [

@@ -4,7 +4,7 @@ import { getAllProducts, type Product } from "@/lib/products";
 import BundlesClient from "./BundlesClient";
 
 export const metadata: Metadata = {
-    title: "Cannabis Bundles & Combo Deals | Mohawk Medibles — Save Up to 25%",
+    title: "Cannabis Bundles & Combo Deals — Save Up to 25%",
     description:
         "Save up to 25% with curated cannabis bundles from Mohawk Medibles. Starter packs, edible samplers, hash bundles & premium combos. Indigenous-owned dispensary, free shipping over $199.",
     keywords: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         "cannabis variety pack",
     ],
     openGraph: {
-        title: "Cannabis Bundles & Combo Deals | Mohawk Medibles",
+        title: "Cannabis Bundles & Combo Deals",
         description:
             "Save up to 25% with curated cannabis bundles. Starter packs, edible samplers, hash bundles & premium combos.",
         url: "https://mohawkmedibles.ca/bundles",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Cannabis Bundles | Mohawk Medibles",
+        title: "Cannabis Bundles",
         description:
             "Curated cannabis bundles — save up to 25%. Free shipping over $199 Canada-wide.",
     },

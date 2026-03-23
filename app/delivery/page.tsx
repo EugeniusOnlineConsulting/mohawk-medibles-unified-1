@@ -20,7 +20,7 @@ import PostalLookup from "@/components/PostalLookup";
 // ─── Metadata ────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Cannabis Delivery Across Canada — All Provinces & Territories | Mohawk Medibles",
+  title: "Cannabis Delivery Across Canada — All Provinces & Territories",
   description:
     "Order premium cannabis online and get it delivered to your door across Canada. Fast, discreet shipping to all provinces & territories. Lab-tested flower, edibles, concentrates & more.",
   alternates: {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "discreet cannabis shipping",
   ],
   openGraph: {
-    title: "Cannabis Delivery Across Canada | Mohawk Medibles",
+    title: "Cannabis Delivery Across Canada",
     description:
       "Fast, discreet cannabis delivery to all Canadian provinces. Order premium, lab-tested products online.",
     url: "https://mohawkmedibles.ca/delivery",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cannabis Delivery Across Canada | Mohawk Medibles",
+    title: "Cannabis Delivery Across Canada",
     description: "Fast, discreet delivery to all provinces. Order premium cannabis online.",
   },
 };

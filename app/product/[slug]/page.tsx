@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             "cannabis canada",
         ],
         openGraph: {
-            title: `${product.name} | Mohawk Medibles`,
+            title: `${product.name}`,
             description: product.metaDescription,
             url: `https://mohawkmedibles.ca/shop/${slug}`,
             images: [{ url: `/api/og?type=product&slug=${slug}`, width: 1200, height: 630, alt: product.altText }],

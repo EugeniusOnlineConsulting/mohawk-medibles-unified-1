@@ -29,7 +29,7 @@ import { faqSchema, breadcrumbSchema, articleSchema, buildSchemaGraph } from "@/
 const PAGE_URL = "https://mohawkmedibles.ca/indigenous-cannabis-rights-canada";
 
 export const metadata: Metadata = {
-    title: "Indigenous Cannabis Rights Canada | Sovereignty & Treaty Rights | Mohawk Medibles",
+    title: "Indigenous Cannabis Rights Canada | Sovereignty & Treaty Rights",
     description:
         "Explore Indigenous cannabis rights in Canada — how treaty rights, Section 35 sovereignty, and the Haudenosaunee Confederacy intersect with cannabis law. Learn about Six Nations cannabis operations, self-governance, and economic empowerment on First Nations territory.",
     keywords: [
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
         "tyendinaga cannabis rights",
     ],
     openGraph: {
-        title: "Indigenous Cannabis Rights Canada | Sovereignty & Treaty Rights | Mohawk Medibles",
+        title: "Indigenous Cannabis Rights Canada | Sovereignty & Treaty Rights",
         description:
             "How treaty rights, Section 35 sovereignty, and First Nations self-governance shape Indigenous cannabis operations in Canada. An educational deep-dive from Mohawk Medibles.",
         url: PAGE_URL,

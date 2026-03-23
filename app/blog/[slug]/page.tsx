@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         description: post.metaDescription,
         keywords: post.tags,
         openGraph: {
-            title: `${post.title} | Mohawk Medibles`,
+            title: `${post.title}`,
             description: post.metaDescription,
             url: `https://mohawkmedibles.ca/blog/${slug}`,
             type: "article",

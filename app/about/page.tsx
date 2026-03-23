@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import AboutClientContent from "./AboutClientContent";
 
 export const metadata: Metadata = {
-    title: "About Us | Mohawk Medibles — Indigenous-Owned Cannabis Dispensary",
+    title: "About Us — Indigenous-Owned Cannabis Dispensary",
     description:
         "Learn about Mohawk Medibles — an Indigenous-owned cannabis dispensary operating from Six Nations of the Grand River Territory, serving Canada since 2019.",
     keywords: [

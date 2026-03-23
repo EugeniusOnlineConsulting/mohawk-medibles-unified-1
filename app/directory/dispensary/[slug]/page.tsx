@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!dispensary) {
         return {
-            title: "Dispensary Not Found | Mohawk Medibles",
+            title: "Dispensary Not Found",
         };
     }
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ShieldAlert } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Access Denied | Mohawk Medibles",
+    title: "Access Denied",
     description: "You do not have permission to access this page.",
     robots: { index: false, follow: false },
 };

@@ -10,74 +10,74 @@ import ShopClient from "./ShopClient";
 
 const CATEGORY_SEO: Record<string, { title: string; description: string }> = {
     Flower: {
-        title: "Premium Cannabis Flower | Buy AAAA Weed Online | Mohawk Medibles",
+        title: "Premium Cannabis Flower | Buy AAAA Weed Online",
         description:
             "Shop premium AAAA cannabis flower at Mohawk Medibles. Indica, Sativa & Hybrid strains. Lab-tested, terpene-profiled, Indigenous-owned. Free shipping over $199. Ships Canada-wide via Xpresspost.",
     },
     Edibles: {
-        title: "Cannabis Edibles | THC Gummies, Chocolates & More | Mohawk Medibles",
+        title: "Cannabis Edibles | THC Gummies, Chocolates & More",
         description:
             "Browse THC gummies, chocolates, beverages and cannabis edibles at Mohawk Medibles. Lab-tested dosing, premium ingredients. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     Concentrates: {
-        title: "Cannabis Concentrates | Shatter, Wax, Live Resin | Mohawk Medibles",
+        title: "Cannabis Concentrates | Shatter, Wax, Live Resin",
         description:
             "Shop premium cannabis concentrates including shatter, wax, live resin, diamonds and budder. Lab-tested potency. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     Vapes: {
-        title: "Cannabis Vapes & Cartridges | 510 Thread & Disposable | Mohawk Medibles",
+        title: "Cannabis Vapes & Cartridges | 510 Thread & Disposable",
         description:
             "Shop 510 thread cartridges, disposable vape pens and cannabis vaporizers at Mohawk Medibles. Lab-tested, solvent-free. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     Hash: {
-        title: "Premium Hash | Imported & Domestic | Mohawk Medibles",
+        title: "Premium Hash | Imported & Domestic",
         description:
             "Shop premium imported and domestic hash at Mohawk Medibles. Hand-pressed, bubble hash, temple balls and more. Lab-tested. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     "Pre-Rolls": {
-        title: "Pre-Rolled Joints | Cannabis Pre-Rolls Canada | Mohawk Medibles",
+        title: "Pre-Rolled Joints | Cannabis Pre-Rolls Canada",
         description:
             "Shop pre-rolled joints and cannabis pre-rolls at Mohawk Medibles. Singles, multi-packs, infused pre-rolls. Lab-tested flower. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     CBD: {
-        title: "CBD Products | Oils, Topicals & Edibles | Mohawk Medibles",
+        title: "CBD Products | Oils, Topicals & Edibles",
         description:
             "Shop CBD oils, topicals, edibles and capsules at Mohawk Medibles. Third-party lab-tested, full-spectrum and isolate options. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     Mushrooms: {
-        title: "Magic Mushrooms & Psilocybin | Microdose to Macro | Mohawk Medibles",
+        title: "Magic Mushrooms & Psilocybin | Microdose to Macro",
         description:
             "Shop 9+ mushroom products at Mohawk Medibles. Microdose capsules, dried shrooms, chocolate bars. Lab-tested. Discreet packaging. Canada-wide delivery.",
     },
     Disposables: {
-        title: "Disposable Vape Pens | Premium Cannabis Vapes | Mohawk Medibles",
+        title: "Disposable Vape Pens | Premium Cannabis Vapes",
         description:
             "Shop 19+ premium disposable vape pens at Mohawk Medibles. High-potency, solvent-free, lab-tested. Indigenous-owned. Free shipping over $199 Canada-wide.",
     },
     "Enhancement Pills": {
-        title: "Enhancement Pills & Supplements | Mohawk Medibles",
+        title: "Enhancement Pills & Supplements",
         description:
             "Shop enhancement pills and natural supplements at Mohawk Medibles. Discreet packaging, fast shipping. Indigenous-owned. Ships Canada-wide.",
     },
     Nicotine: {
-        title: "Nicotine Vapes & E-Cigarettes | Mohawk Medibles",
+        title: "Nicotine Vapes & E-Cigarettes",
         description:
             "Shop nicotine vapes, disposable e-cigarettes, and pods at Mohawk Medibles. Top brands like Geek Bar, Elf Bar, and more. Fast Canada-wide shipping.",
     },
     Accessories: {
-        title: "Cannabis Accessories | Pipes, Papers & Gear | Mohawk Medibles",
+        title: "Cannabis Accessories | Pipes, Papers & Gear",
         description:
             "Shop cannabis accessories at Mohawk Medibles. Rolling papers, pipes, grinders, batteries, and more. Fast Canada-wide shipping. Indigenous-owned.",
     },
     Capsules: {
-        title: "Cannabis Capsules | THC & CBD Pills | Mohawk Medibles",
+        title: "Cannabis Capsules | THC & CBD Pills",
         description:
             "Shop THC and CBD capsules at Mohawk Medibles. Precise dosing, lab-tested potency. Discreet and convenient. Free shipping over $199 Canada-wide.",
     },
 };
 
 const DEFAULT_SEO = {
-    title: "Shop Premium Cannabis Products | 344+ Items | Mohawk Medibles",
+    title: "Shop Premium Cannabis Products | 344+ Items",
     description:
         "Browse 344+ premium cannabis products at Mohawk Medibles. Lab-tested flower, edibles, concentrates, vapes, and accessories. Indigenous-owned, Empire Standard\u2122 quality. Ships Canada-wide via Xpresspost.",
 };

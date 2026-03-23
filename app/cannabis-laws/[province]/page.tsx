@@ -612,12 +612,12 @@ export async function generateMetadata({
 
   if (!law) {
     return {
-      title: "Province Not Found | Mohawk Medibles",
+      title: "Province Not Found",
       description: "The cannabis law guide for this province was not found.",
     };
   }
 
-  const title = `Cannabis Laws in ${law.name} 2026 | ${law.legalAge}+, ${law.possessionLimit} | Mohawk Medibles`;
+  const title = `Cannabis Laws in ${law.name} 2026 | ${law.legalAge}+, ${law.possessionLimit}`;
   const description = `Complete guide to cannabis laws in ${law.name} for 2026. Legal age ${law.legalAge}+, possession limit ${law.possessionLimit}, consumption rules, home growing, delivery laws, and driving regulations. Everything you need to know about ${law.name} cannabis regulations.`;
   const canonical = `https://mohawkmedibles.ca/cannabis-laws/${law.slug}`;
 
@@ -638,7 +638,7 @@ export async function generateMetadata({
       `${law.name.toLowerCase()} cannabis regulations 2026`,
     ],
     openGraph: {
-      title: `Cannabis Laws in ${law.name} — Complete 2026 Guide | Mohawk Medibles`,
+      title: `Cannabis Laws in ${law.name} — Complete 2026 Guide`,
       description,
       url: canonical,
       type: "website",
@@ -655,7 +655,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `Cannabis Laws in ${law.name} 2026 | Mohawk Medibles`,
+      title: `Cannabis Laws in ${law.name} 2026`,
       description,
       images: [
         {

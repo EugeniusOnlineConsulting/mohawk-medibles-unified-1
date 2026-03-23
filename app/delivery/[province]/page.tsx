@@ -40,7 +40,7 @@ export async function generateMetadata({
 
 	if (!province) {
 		return {
-			title: "Province Not Found | Mohawk Medibles",
+			title: "Province Not Found",
 			description: "The province you're looking for doesn't exist.",
 		};
 	}
@@ -51,7 +51,7 @@ export async function generateMetadata({
 
 	// Quebec gets French-language metadata
 	if (province.slug === "quebec") {
-		const title = `Cannabis Delivery ${province.name} | Free Shipping Over $199 to ${cityCount} Cities | Mohawk Medibles`;
+		const title = `Cannabis Delivery ${province.name} | Free Shipping Over $199 to ${cityCount} Cities`;
 		const description = `Livraison de cannabis premium au Quebec. Fleurs, comestibles, concentres et plus. Livraison rapide a ${cityCount} villes dont Montreal et Quebec. Age legal ${province.legalAge}+.`;
 		const ogAlt = "Livraison de Cannabis au Quebec - Mohawk Medibles";
 
@@ -65,7 +65,7 @@ export async function generateMetadata({
 				},
 			},
 			openGraph: {
-				title: "Livraison de Cannabis au Quebec | Mohawk Medibles",
+				title: "Livraison de Cannabis au Quebec",
 				description: `Cannabis premium livre a votre porte partout au Quebec. Livraison discrete a Montreal, Quebec, Laval, Gatineau et ${cityCount - 4} autres villes. Age legal ${province.legalAge}+.`,
 				type: "website",
 				url: canonical,
@@ -83,7 +83,7 @@ export async function generateMetadata({
 			},
 			twitter: {
 				card: "summary_large_image",
-				title: "Livraison de Cannabis au Quebec | Mohawk Medibles",
+				title: "Livraison de Cannabis au Quebec",
 				description,
 				images: [
 					{
@@ -109,7 +109,7 @@ export async function generateMetadata({
 	}
 
 	// All other provinces
-	const title = `Cannabis Delivery ${province.name} | Free Shipping Over $199 to ${cityCount} Cities | Mohawk Medibles`;
+	const title = `Cannabis Delivery ${province.name} | Free Shipping Over $199 to ${cityCount} Cities`;
 	const description = `Premium cannabis delivery to ${province.name}. Lab-tested flower, edibles, concentrates & more. Free shipping over $199 to ${cityCount}+ cities. Legal age ${province.legalAge}+. Empire Standard quality.`;
 	const ogAlt = `Cannabis Delivery to ${province.name} - Mohawk Medibles`;
 

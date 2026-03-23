@@ -114,13 +114,13 @@ const en = {
 
         // Trust Pillars
         whyMohawk: "Why Mohawk Medibles",
-        trustedBy: "Trusted by 47,000+ Canadians since 2018",
+        trustedBy: "Trusted by 47,000+ Canadians since 2019",
         labTested: "Lab Tested",
         everyBatch: "Every Batch",
         labTestedDesc: "Third-party lab tested for potency, purity, and safety. Empire Standard™ certified.",
         indigenousOwned: "Indigenous Owned",
         andOperated: "& Operated",
-        indigenousDesc: "Proudly serving from Tyendinaga Mohawk Territory since 2018. Sovereign quality.",
+        indigenousDesc: "Proudly serving from Tyendinaga Mohawk Territory since 2019. Sovereign quality.",
         discreetShipping: "Discreet Shipping",
         smellProof: "Smell-Proof",
         shippingDesc: "Vacuum-sealed, odor-proof packaging. No external branding. Your privacy guaranteed.",

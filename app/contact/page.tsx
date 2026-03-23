@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import ContactClientContent from "./ContactClientContent";
 
 export const metadata: Metadata = {
-    title: "Contact Us | Mohawk Medibles — Get In Touch",
+    title: "Contact Us — Get In Touch",
     description:
         "Contact Mohawk Medibles for questions about orders, products, wholesale, or anything else. Email, phone, or visit us at Tyendinaga Mohawk Territory.",
     keywords: ["mohawk medibles contact", "cannabis dispensary contact", "mohawk medibles phone", "mohawk medibles email"],

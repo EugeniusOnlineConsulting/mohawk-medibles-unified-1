@@ -124,7 +124,7 @@ const moh: DictionarySchema = {
         labTestedDesc: "Teieiéstahkhwa ne kashatste, tsi niió:re tánon tsi niiakorihwí:io. Empire Standard™.",
         indigenousOwned: "Onkwehón:we",
         andOperated: "Raotirihwá:ke",
-        indigenousDesc: "Tyendinaga Mohawk Territory — 2018 tsi náhe. Onkwarihwá:ke ioianérehst.",
+        indigenousDesc: "Tyendinaga Mohawk Territory — 2019 tsi náhe. Onkwarihwá:ke ioianérehst.",
         discreetShipping: "Ionkwaterihwahkhwáhson",
         smellProof: "Iáh teiotsiá:ton",
         shippingDesc: "Ionkwaterihwahkhwáhson. Iáh ó:ia tekakwénion. Sanikonhrí:io.",

@@ -15,7 +15,7 @@ const FAQ_ITEMS = [
 ];
 
 export const metadata: Metadata = {
-    title: "FAQ | Mohawk Medibles — Frequently Asked Questions",
+    title: "FAQ — Frequently Asked Questions",
     description:
         "Get answers to common questions about buying cannabis online from Mohawk Medibles. Shipping times, payment methods, lab testing, return policy, and more.",
     keywords: [
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         "cannabis shipping faq",
     ],
     openGraph: {
-        title: "FAQ | Mohawk Medibles",
+        title: "FAQ",
         description:
             "Frequently asked questions about ordering cannabis online, shipping across Canada, lab testing, and our Empire Standard\u2122 quality guarantee.",
         url: "https://mohawkmedibles.ca/faq",

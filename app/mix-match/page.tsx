@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { Package, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Mix & Match Bulk Pricing | Mohawk Medibles — Save More, Buy More",
+    title: "Mix & Match Bulk Pricing — Save More, Buy More",
     description:
         "Mix and match cannabis products for bulk savings at Mohawk Medibles. The more you buy, the bigger the discount. Indigenous-owned dispensary shipping Canada-wide.",
     keywords: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
         "dispensary bulk savings",
     ],
     openGraph: {
-        title: "Mix & Match Bulk Pricing | Mohawk Medibles",
+        title: "Mix & Match Bulk Pricing",
         description:
             "Buy more, save more with our bulk pricing deals on premium cannabis products.",
         url: "https://mohawkmedibles.ca/mix-match",

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { getAllProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
-    title: "Cannabis Deals & Promotions | Mohawk Medibles — Save on Premium Weed",
+    title: "Cannabis Deals & Promotions — Save on Premium Weed",
     description:
         "Save on premium lab-tested cannabis with active deals from Mohawk Medibles. Free shipping over $199, bulk discounts, staff picks & best sellers. Indigenous-owned dispensary.",
     keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         "best weed deals online",
     ],
     openGraph: {
-        title: "Cannabis Deals & Promotions | Mohawk Medibles",
+        title: "Cannabis Deals & Promotions",
         description:
             "Save on 344+ premium cannabis products. Free shipping over $199, bulk discounts, and daily deals.",
         url: "https://mohawkmedibles.ca/deals",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Cannabis Deals | Mohawk Medibles",
+        title: "Cannabis Deals",
         description: "Premium cannabis deals. Free shipping over $199 Canada-wide.",
     },
     alternates: {

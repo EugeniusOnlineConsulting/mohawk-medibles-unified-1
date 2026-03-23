@@ -3,11 +3,11 @@ import { Truck, Package, Home as HomeIcon, Mailbox, CalendarDays } from "lucide-
 /** Benefits bar from .cc — 5-column trust signals below hero */
 export function BenefitsBar() {
   const benefits = [
-    { icon: <Truck className="w-4 h-4 text-[var(--lime)]" />, text: "Free Shipping $149+" },
+    { icon: <Truck className="w-4 h-4 text-[var(--lime)]" />, text: "Free Shipping $199+" },
     { icon: <Package className="w-4 h-4 text-[var(--lime)]" />, text: "Discreet Packaging" },
     { icon: <HomeIcon className="w-4 h-4 text-[var(--lime)]" />, text: "Indigenous Owned" },
     { icon: <Mailbox className="w-4 h-4 text-[var(--lime)]" />, text: "2-5 Day Delivery" },
-    { icon: <CalendarDays className="w-4 h-4 text-[var(--lime)]" />, text: "Since 2018" },
+    { icon: <CalendarDays className="w-4 h-4 text-[var(--lime)]" />, text: "Since 2019" },
   ];
 
   return (

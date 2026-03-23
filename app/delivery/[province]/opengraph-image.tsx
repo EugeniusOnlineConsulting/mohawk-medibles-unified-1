@@ -8,7 +8,7 @@ import { ImageResponse } from "next/og";
 import { getProvince } from "@/lib/seo/city-delivery-data";
 
 export const runtime = "edge";
-export const alt = "Cannabis Delivery | Mohawk Medibles";
+export const alt = "Cannabis Delivery";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Star, ShieldCheck, Truck, ThumbsUp, Quote } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Customer Reviews | Mohawk Medibles — Real Reviews from Real Canadians",
+    title: "Customer Reviews — Real Reviews from Real Canadians",
     description:
         "Read verified customer reviews for Mohawk Medibles. See what thousands of Canadians say about our premium cannabis products, fast shipping, and Indigenous-owned dispensary experience.",
     keywords: ["mohawk medibles reviews", "cannabis dispensary reviews canada", "online dispensary reviews", "weed delivery reviews"],

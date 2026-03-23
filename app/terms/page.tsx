@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import TermsClient from "./TermsClient";
 
 export const metadata: Metadata = {
-    title: "Terms of Service | Mohawk Medibles — Online Cannabis Dispensary",
+    title: "Terms of Service — Online Cannabis Dispensary",
     description:
         "Terms and conditions for using Mohawk Medibles online cannabis dispensary. Age verification (19+), ordering, shipping, returns, and legal terms for Canadian customers.",
     keywords: [
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         "age verification cannabis",
     ],
     openGraph: {
-        title: "Terms of Service | Mohawk Medibles",
+        title: "Terms of Service",
         description: "Terms and conditions for ordering cannabis online. Age verification, shipping, and legal terms.",
         url: "https://mohawkmedibles.ca/terms",
         type: "website",

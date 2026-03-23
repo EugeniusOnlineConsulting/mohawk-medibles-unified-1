@@ -20,7 +20,7 @@ import { breadcrumbSchema, faqSchema } from "@/lib/seo/schemas";
 
 export const metadata: Metadata = {
   title:
-    "Cannabis Laws in Canada by Province | Mohawk Medibles — Complete 2026 Guide",
+    "Cannabis Laws in Canada by Province — Complete 2026 Guide",
   description:
     "Complete guide to cannabis laws in every Canadian province and territory for 2026. Legal ages, possession limits, consumption rules, home growing, delivery laws, and driving regulations across Ontario, BC, Alberta, Quebec, and all 13 provinces/territories.",
   alternates: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title:
-      "Cannabis Laws in Canada by Province — Complete 2026 Guide | Mohawk Medibles",
+      "Cannabis Laws in Canada by Province — Complete 2026 Guide",
     description:
       "Everything you need to know about cannabis laws in every Canadian province and territory. Legal ages, possession limits, consumption rules, growing, delivery, and driving laws.",
     url: "https://mohawkmedibles.ca/cannabis-laws",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title:
-      "Cannabis Laws in Canada by Province — Complete 2026 Guide | Mohawk Medibles",
+      "Cannabis Laws in Canada by Province — Complete 2026 Guide",
     description:
       "Complete guide to cannabis laws in all 13 Canadian provinces and territories for 2026. Legal ages, possession limits, and more.",
     images: [

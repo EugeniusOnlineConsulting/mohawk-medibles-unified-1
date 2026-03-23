@@ -5,7 +5,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Customer Support | Mohawk Medibles — Help Center & FAQ",
+    title: "Customer Support — Help Center & FAQ",
     description:
         "Get help with orders, shipping, payments, and product questions. Contact Mohawk Medibles by email, phone, or visit us at Tyendinaga Mohawk Territory.",
     keywords: [

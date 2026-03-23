@@ -5,7 +5,7 @@ import { DispensaryCard } from "@/components/directory/DispensaryCard";
 import { SearchFilters } from "@/components/directory/SearchFilters";
 
 export const metadata: Metadata = {
-    title: "Canadian Cannabis Directory | Find Dispensaries Near You | Mohawk Medibles",
+    title: "Canadian Cannabis Directory | Find Dispensaries Near You",
     description:
         "Explore Canada's most comprehensive cannabis directory. Find licensed dispensaries, Indigenous-owned retailers, and delivery services in every province and territory.",
     keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Canadian Cannabis Directory | Mohawk Medibles",
+        title: "Canadian Cannabis Directory",
         description: "Find dispensaries, retailers, and delivery services across Canada.",
     },
     alternates: {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Flash Sale | Mohawk Medibles — Limited-Time Cannabis Deals",
+    title: "Flash Sale — Limited-Time Cannabis Deals",
     description:
         "Grab limited-time flash sale deals on premium cannabis products at Mohawk Medibles. Huge discounts on flower, edibles, concentrates & more. Indigenous-owned dispensary. Ships Canada-wide.",
     keywords: [
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         "dispensary sale",
     ],
     openGraph: {
-        title: "Flash Sale | Mohawk Medibles",
+        title: "Flash Sale",
         description:
             "Limited-time flash sale on premium cannabis. Massive savings on flower, edibles, concentrates & more.",
         url: "https://mohawkmedibles.ca/flash-sale",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Flash Sale | Mohawk Medibles",
+        title: "Flash Sale",
         description:
             "Limited-time cannabis flash sale. Premium products at unbeatable prices.",
     },

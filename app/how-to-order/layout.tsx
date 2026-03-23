@@ -2,11 +2,11 @@ import { Metadata } from "next";
 import { breadcrumbSchema, faqSchema } from "@/lib/seo/schemas";
 
 export const metadata: Metadata = {
-    title: "How to Order Cannabis Online | Mohawk Medibles",
+    title: "How to Order Cannabis Online",
     description:
         "Simple 3-step guide to ordering cannabis online from Mohawk Medibles. Browse 344+ lab-tested products, secure checkout with multiple payment methods, fast Canada-wide shipping.",
     openGraph: {
-        title: "How to Order Cannabis Online | Mohawk Medibles",
+        title: "How to Order Cannabis Online",
         description:
             "Easy ordering guide: Browse products, checkout securely, receive fast delivery. Multiple payment options and Canada-wide shipping.",
         url: "https://mohawkmedibles.ca/how-to-order",

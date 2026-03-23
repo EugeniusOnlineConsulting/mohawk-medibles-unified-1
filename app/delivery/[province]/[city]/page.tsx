@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     // Tier 1 capitals get enhanced SEO titles
     const title = tier1
-        ? `Cannabis Delivery ${city.name} | Free Shipping Over $199 | Mohawk Medibles`
+        ? `Cannabis Delivery ${city.name} | Free Shipping Over $199`
         : `Cannabis Delivery ${city.name} | Mohawk Medibles - Fast Shipping Across ${province.abbreviation}`;
     const description = tier1
         ? `Order premium cannabis online in ${city.name}, ${province.abbreviation}. ${city.deliveryEstimate}. Lab-tested flower, edibles, concentrates & hash. Free shipping over $199. Discreet packaging.`

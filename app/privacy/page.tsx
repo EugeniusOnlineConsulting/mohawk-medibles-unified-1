@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import PrivacyClient from "./PrivacyClient";
 
 export const metadata: Metadata = {
-    title: "Privacy Policy | Mohawk Medibles — PIPEDA Compliant",
+    title: "Privacy Policy — PIPEDA Compliant",
     description:
         "How Mohawk Medibles collects, uses, and protects your personal information. PIPEDA compliant privacy practices for our online cannabis dispensary.",
     keywords: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         "cannabis privacy canada",
     ],
     openGraph: {
-        title: "Privacy Policy | Mohawk Medibles",
+        title: "Privacy Policy",
         description: "How we collect, use, and protect your personal information. PIPEDA compliant.",
         url: "https://mohawkmedibles.ca/privacy",
         type: "website",

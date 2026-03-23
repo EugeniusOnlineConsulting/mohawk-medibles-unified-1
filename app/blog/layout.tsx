@@ -3,7 +3,7 @@ import { getAllBlogPosts, getAllBlogCategories } from "@/data/blog/posts";
 import { breadcrumbSchema } from "@/lib/seo/schemas";
 
 export const metadata: Metadata = {
-    title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
+    title: "Cannabis Blog | Guides, News & Education",
     description:
         "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
     keywords: [
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         "cannabis news Canada",
     ],
     openGraph: {
-        title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
+        title: "Cannabis Blog | Guides, News & Education",
         description:
             "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
         url: "https://mohawkmedibles.ca/blog",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Cannabis Blog | Guides, News & Education | Mohawk Medibles",
+        title: "Cannabis Blog | Guides, News & Education",
         description:
             "Expert cannabis guides, dosage information, strain reviews, and industry news from Mohawk Medibles — Canada's trusted Indigenous-owned dispensary.",
     },

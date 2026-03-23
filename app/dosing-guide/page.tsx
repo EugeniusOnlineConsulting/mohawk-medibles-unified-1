@@ -17,7 +17,7 @@ import DosingGuideClient from "./DosingGuideClient";
 // ─── Metadata ────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Cannabis Edible Dosing Guide & Calculator | Mohawk Medibles",
+  title: "Cannabis Edible Dosing Guide & Calculator",
   description:
     "Find your ideal cannabis edible dose with our interactive calculator. Dosing chart from microdose (1mg) to experienced (50mg+), safety tips, first-timer advice, and the golden rule: start low, go slow.",
   alternates: {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "edible dosage chart canada",
   ],
   openGraph: {
-    title: "Cannabis Edible Dosing Guide & Calculator | Mohawk Medibles",
+    title: "Cannabis Edible Dosing Guide & Calculator",
     description:
       "Interactive edible dosing calculator with personalized recommendations based on experience level and desired effects. Plus safety tips and a complete dose chart.",
     url: "https://mohawkmedibles.ca/dosing-guide",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cannabis Edible Dosing Guide & Calculator | Mohawk Medibles",
+    title: "Cannabis Edible Dosing Guide & Calculator",
     description:
       "Find your ideal edible dose with our interactive calculator. Personalized recommendations, safety tips & complete dosing chart.",
     images: [

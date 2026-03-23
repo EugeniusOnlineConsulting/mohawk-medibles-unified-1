@@ -41,7 +41,7 @@ import { faqSchema, breadcrumbSchema, buildSchemaGraph } from "@/lib/seo/schemas
 const PAGE_URL = "https://mohawkmedibles.ca/buy-weed-online-canada";
 
 export const metadata: Metadata = {
-    title: "Buy Weed Online Canada | Mohawk Medibles — Free Shipping Over $199",
+    title: "Buy Weed Online Canada — Free Shipping Over $199",
     description:
         "Buy weed online in Canada from Mohawk Medibles. 344+ lab-tested products, free shipping over $199, discreet delivery. Shop now!",
     keywords: [
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
         "Mohawk Medibles",
     ],
     openGraph: {
-        title: "Buy Weed Online Canada | Mohawk Medibles — Free Shipping Over $199",
+        title: "Buy Weed Online Canada — Free Shipping Over $199",
         description:
             "Canada's trusted online dispensary. 344+ lab-tested products, AAAA flower, edibles, concentrates & more. Free shipping over $199. Indigenous-owned since 2019.",
         url: PAGE_URL,
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Buy Weed Online Canada | Mohawk Medibles",
+        title: "Buy Weed Online Canada",
         description:
             "344+ lab-tested cannabis products. Free shipping over $199. Indigenous-owned. Shop Canada's most trusted online dispensary.",
     },
@@ -242,7 +242,7 @@ function buildPageSchema(): string {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "@id": `${PAGE_URL}/#webpage`,
-        name: "Buy Weed Online Canada | Mohawk Medibles",
+        name: "Buy Weed Online Canada",
         description:
             "Buy weed online in Canada from Mohawk Medibles. 344+ lab-tested products, free shipping over $199, discreet delivery to all 13 provinces.",
         url: PAGE_URL,

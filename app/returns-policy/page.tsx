@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import ReturnsPolicyClient from "./ReturnsPolicyClient";
 
 export const metadata: Metadata = {
-    title: "Returns & Refund Policy | Mohawk Medibles — Satisfaction Guarantee",
+    title: "Returns & Refund Policy — Satisfaction Guarantee",
     description:
         "Mohawk Medibles return and refund policy. Report damaged or incorrect items within 48 hours for full replacement or refund. Customer satisfaction guarantee.",
     keywords: [
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
         "cannabis satisfaction guarantee",
     ],
     openGraph: {
-        title: "Returns & Refund Policy | Mohawk Medibles",
+        title: "Returns & Refund Policy",
         description: "Report issues within 48 hours for full replacement or refund. Customer satisfaction guarantee.",
         url: "https://mohawkmedibles.ca/returns-policy",
         type: "website",

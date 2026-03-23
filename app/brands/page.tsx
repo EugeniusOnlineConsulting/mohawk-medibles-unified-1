@@ -6,7 +6,7 @@ import { prisma } from "@/server/trpc/trpc";
 export async function generateMetadata(): Promise<Metadata> {
     const brandCount = await prisma.brand.count();
     return {
-        title: `Cannabis Brands (${brandCount || "All"}) | Mohawk Medibles — Brand Directory`,
+        title: `Cannabis Brands (${brandCount || "All"}) — Brand Directory`,
         description: `Browse ${brandCount || "all"} premium cannabis brands at Mohawk Medibles. Discover top-quality flower, edibles, concentrates & more from Canada's best producers. Indigenous-owned dispensary.`,
         keywords: [
             "cannabis brands canada",
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
             "best dispensary brands canada",
         ],
         openGraph: {
-            title: "Cannabis Brands | Mohawk Medibles",
+            title: "Cannabis Brands",
             description: `Browse ${brandCount || "all"} premium cannabis brands. Top-quality products from Canada's best producers.`,
             url: "https://mohawkmedibles.ca/brands",
             type: "website",
@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
         },
         twitter: {
             card: "summary_large_image",
-            title: "Cannabis Brands | Mohawk Medibles",
+            title: "Cannabis Brands",
             description: "Browse premium cannabis brands at Mohawk Medibles.",
         },
         alternates: {

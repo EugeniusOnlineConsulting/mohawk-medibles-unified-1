@@ -33,7 +33,7 @@ import { faqSchema, breadcrumbSchema, articleSchema, buildSchemaGraph } from "@/
 const PAGE_URL = "https://mohawkmedibles.ca/indigenous-cannabis-dispensary-canada";
 
 export const metadata: Metadata = {
-    title: "Indigenous Cannabis Dispensary Canada | Mohawk Medibles — Tyendinaga Mohawk Territory",
+    title: "Indigenous Cannabis Dispensary Canada — Tyendinaga Mohawk Territory",
     description:
         "Canada's trusted Indigenous-owned online cannabis dispensary. Shop 344+ premium products with free shipping over $199. Proudly serving all 13 provinces from Tyendinaga Mohawk Territory since 2019.",
     keywords: [
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
         "Native owned cannabis store Canada",
     ],
     openGraph: {
-        title: "Indigenous Cannabis Dispensary Canada | Mohawk Medibles",
+        title: "Indigenous Cannabis Dispensary Canada",
         description:
             "Canada's trusted Indigenous-owned online cannabis dispensary. 344+ premium products, free shipping over $199, proudly serving from Tyendinaga Mohawk Territory since 2019.",
         url: PAGE_URL,
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Indigenous Cannabis Dispensary Canada | Mohawk Medibles",
+        title: "Indigenous Cannabis Dispensary Canada",
         description:
             "Canada's trusted Indigenous-owned online cannabis dispensary. 344+ products from Tyendinaga Mohawk Territory.",
     },
@@ -224,7 +224,7 @@ const TESTIMONIALS = [
 function buildPageSchema(): string {
     return buildSchemaGraph(
         articleSchema({
-            title: "Indigenous Cannabis Dispensary Canada | Mohawk Medibles",
+            title: "Indigenous Cannabis Dispensary Canada",
             slug: "../indigenous-cannabis-dispensary-canada",
             description:
                 "Canada's trusted Indigenous-owned online cannabis dispensary. Shop 344+ premium products with free shipping over $199 from Tyendinaga Mohawk Territory.",

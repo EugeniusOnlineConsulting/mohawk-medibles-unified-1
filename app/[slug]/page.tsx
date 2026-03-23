@@ -69,8 +69,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         || `Premium cannabis delivery in ${provinceName}. Indigenous-owned, lab-tested products meet the Empire Standard™. Ships via Canada Post Xpresspost.`;
 
     const title = isDelivery
-        ? `Cannabis Delivery to ${provinceName} — Buy Weed Online | Mohawk Medibles`
-        : `${page.title} | Mohawk Medibles`;
+        ? `Cannabis Delivery to ${provinceName} — Buy Weed Online`
+        : `${page.title}`;
 
     const geoMeta = generateGEOMetaTags({
         title,

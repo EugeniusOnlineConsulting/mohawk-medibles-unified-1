@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import HowToOrderClient from "./HowToOrderClient";
 
 export const metadata: Metadata = {
-    title: "How to Order Cannabis Online | Mohawk Medibles — 3 Easy Steps",
+    title: "How to Order Cannabis Online — 3 Easy Steps",
     description:
         "Order cannabis online from Mohawk Medibles in 3 simple steps. Browse products, checkout securely with e-Transfer or credit card, and get fast Canada-wide delivery.",
     keywords: [

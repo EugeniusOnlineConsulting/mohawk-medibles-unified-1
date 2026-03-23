@@ -7,7 +7,7 @@ import AdminShell from "@/components/admin/AdminShell";
 import { TRPCProvider } from "@/components/TRPCProvider";
 
 export const metadata: Metadata = {
-    title: "Command Center | Mohawk Medibles",
+    title: "Command Center",
     description: "Manage orders, customers, inventory, POS, and shipping.",
     robots: "noindex, nofollow",
 };

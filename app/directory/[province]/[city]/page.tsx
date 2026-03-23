@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Cannabis Directory | Mohawk Medibles",
+    title: "Cannabis Directory",
     description: "Find cannabis dispensaries across Canada. Coming soon.",
 };
 

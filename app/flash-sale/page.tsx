@@ -18,12 +18,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const saleName = activeSale?.name ?? "Flash Sale";
 
     return {
-        title: `${saleName} | Mohawk Medibles — Limited-Time Deals`,
+        title: `${saleName} — Limited-Time Deals`,
         description: activeSale?.description
             ? activeSale.description.slice(0, 155)
             : "Grab limited-time flash sale deals on premium cannabis at Mohawk Medibles. Huge discounts on flower, edibles, concentrates & more. Ships Canada-wide.",
         openGraph: {
-            title: `${saleName} | Mohawk Medibles`,
+            title: `${saleName}`,
             description:
                 "Limited-time flash sale on premium cannabis products. Massive savings at Mohawk Medibles.",
             url: "https://mohawkmedibles.ca/flash-sale",

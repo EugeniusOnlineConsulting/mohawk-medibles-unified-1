@@ -8,7 +8,7 @@ import { ChevronRight } from "lucide-react";
 import SubscriptionClientContent from "./SubscriptionClientContent";
 
 export const metadata: Metadata = {
-    title: "Mohawk Monthly Cannabis Subscription Box | Mohawk Medibles",
+    title: "Mohawk Monthly Cannabis Subscription Box",
     description:
         "Subscribe to Mohawk Monthly — premium cannabis delivered to your door every month. Choose from 3 tiers: Seedling, Empire, or Sovereignty. Save 20-30% with exclusive drops, free shipping & cancel anytime.",
     keywords: [

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-    title: "Our Story | Mohawk Medibles — Indigenous-Owned Cannabis Since 2019",
+    title: "Our Story — Indigenous-Owned Cannabis Since 2019",
     description:
         "The story behind Mohawk Medibles — an Indigenous-owned cannabis dispensary rooted in Six Nations heritage. From community roots to serving all of Canada with 344+ lab-tested products meeting the Empire Standard.",
     keywords: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         "cannabis community support",
     ],
     openGraph: {
-        title: "Our Story | Mohawk Medibles",
+        title: "Our Story",
         description:
             "Indigenous-owned cannabis dispensary rooted in Six Nations heritage. Our story of community, quality, and sovereignty.",
         url: "https://mohawkmedibles.ca/our-story",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Our Story | Mohawk Medibles",
+        title: "Our Story",
         description:
             "Indigenous-owned cannabis dispensary from Six Nations of the Grand River.",
     },

@@ -117,13 +117,13 @@ const fr: DictionarySchema = {
 
         // Piliers de confiance
         whyMohawk: "Pourquoi Mohawk Medibles",
-        trustedBy: "La confiance de plus de 47 000 Canadiens depuis 2018",
+        trustedBy: "La confiance de plus de 47 000 Canadiens depuis 2019",
         labTested: "Testé en laboratoire",
         everyBatch: "Chaque lot",
         labTestedDesc: "Tests en laboratoire tiers pour la puissance, la pureté et la sécurité. Certifié Empire Standard™.",
         indigenousOwned: "Propriété autochtone",
         andOperated: "et exploité",
-        indigenousDesc: "Fièrement au service depuis le territoire mohawk de Tyendinaga depuis 2018. Qualité souveraine.",
+        indigenousDesc: "Fièrement au service depuis le territoire mohawk de Tyendinaga depuis 2019. Qualité souveraine.",
         discreetShipping: "Expédition discrète",
         smellProof: "Anti-odeurs",
         shippingDesc: "Emballage sous vide, anti-odeurs. Aucune marque extérieure. Votre vie privée est garantie.",

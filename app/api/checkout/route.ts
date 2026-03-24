@@ -13,6 +13,9 @@ import { log } from "@/lib/logger";
 import { prisma } from "@/lib/db";
 import { getCurrentTenant } from "@/lib/tenant";
 import { buildDigipayPaymentUrl } from "@/lib/digipay";
+import { runFraudCheck } from "@/lib/fraudDetection";
+import { sendOrderConfirmationSMS, sendAndLogSMS } from "@/lib/sms";
+import { autoEnterPurchaseContests } from "@/lib/contestDrawing";
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -195,6 +198,60 @@ export async function POST(req: NextRequest) {
                 note: `Order created via ${tenant.domain || "mohawkmedibles.ca"}. Payment: ${getPaymentTitle(body.payment_method)}`,
             },
         });
+
+        // ── Run fraud detection (non-blocking — don't fail checkout) ──
+        try {
+            const ipAddress = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+                || req.headers.get("x-real-ip")
+                || null;
+
+            await runFraudCheck({
+                orderId: order.id,
+                userId: user.id,
+                userEmail: body.billing.email,
+                total,
+                ipAddress,
+                billingData: order.billingData,
+                shippingData: order.shippingData,
+                userCreatedAt: user.createdAt,
+            });
+        } catch (fraudError) {
+            // Log but don't block checkout
+            log.checkout.error("Fraud check failed", {
+                orderId: order.id,
+                error: fraudError instanceof Error ? fraudError.message : "Unknown",
+            });
+        }
+
+        // ── Send SMS order confirmation (non-blocking) ─────
+        try {
+            const smsOptIn = await prisma.smsOptIn.findUnique({
+                where: { userId: user.id },
+            });
+            const smsPhone = smsOptIn?.optedIn ? smsOptIn.phone : (body.billing.phone || null);
+            if (smsPhone && smsOptIn?.optedIn) {
+                sendAndLogSMS({
+                    phone: smsPhone,
+                    message: `Your Mohawk Medibles order #${orderNumber} ($${total.toFixed(2)}) has been received! Track at mohawkmedibles.co/track-order`,
+                    type: "ORDER_CONFIRMATION",
+                    orderId: order.id,
+                    userId: user.id,
+                }).catch(() => {}); // Fire and forget
+            }
+        } catch (smsError) {
+            // Never block checkout for SMS failure
+            log.checkout.error("SMS notification failed", {
+                orderId: order.id,
+                error: smsError instanceof Error ? smsError.message : "Unknown",
+            });
+        }
+
+        // ── Auto-enter PURCHASE contests (non-blocking) ────
+        try {
+            autoEnterPurchaseContests(user.id, total).catch(() => {});
+        } catch {
+            // Never block checkout for contest entry
+        }
 
         // ── Route by payment method ────────────────────────
 

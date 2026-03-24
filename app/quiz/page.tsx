@@ -262,6 +262,7 @@ export default function QuizPage() {
             name: product.name,
             price: product.price,
             quantity: 1,
+            image: product.image,
         });
         toast.success(`${product.name} added to cart`);
     }

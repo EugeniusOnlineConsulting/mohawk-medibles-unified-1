@@ -2,12 +2,14 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { emitCartEvent } from "@/lib/medagent-events";
+import { decodeHtmlEntities } from "@/lib/utils";
 
 interface CartItem {
     id: string;
     name: string;
     price: number;
     quantity: number;
+    image?: string;
 }
 
 interface CartContextType {
@@ -27,7 +29,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     // Persist cart to local storage (Simple mock for now)
     useEffect(() => {
         const saved = localStorage.getItem("mohawk-cart");
-        if (saved) setItems(JSON.parse(saved));
+        if (saved) {
+            const parsed: CartItem[] = JSON.parse(saved);
+            // Decode any HTML entities left over from old cached names
+            setItems(parsed.map(item => ({ ...item, name: decodeHtmlEntities(item.name) })));
+        }
     }, []);
 
     useEffect(() => {

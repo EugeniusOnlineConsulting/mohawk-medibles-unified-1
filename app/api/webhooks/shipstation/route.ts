@@ -13,6 +13,7 @@ import { applyRateLimit, RATE_LIMITS } from "@/lib/rateLimit";
 import { ShipStationWebhook, validateBody } from "@/lib/validation";
 import { sendShippingNotification } from "@/lib/email";
 import { log } from "@/lib/logger";
+import { sendShippingUpdateSMS, sendDeliveryConfirmationSMS, sendAndLogSMS } from "@/lib/sms";
 
 function getWebhookSecret(): string {
     return process.env.SHIPSTATION_WEBHOOK_SECRET || "";
@@ -81,11 +82,9 @@ async function processWebhook(body: unknown): Promise<NextResponse> {
     try {
         // Fetch the actual shipment/order details from ShipStation
         const apiKey = process.env.SHIPSTATION_API_KEY || "";
-        const apiSecret = process.env.SHIPSTATION_API_SECRET || "";
-        const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
 
         const ssRes = await fetch(resource_url, {
-            headers: { Authorization: `Basic ${auth}` },
+            headers: { "api-key": apiKey },
         });
 
         if (!ssRes.ok) {
@@ -153,7 +152,8 @@ async function processWebhook(body: unknown): Promise<NextResponse> {
                     select: {
                         id: true,
                         status: true,
-                        user: { select: { name: true, email: true } },
+                        userId: true,
+                        user: { select: { id: true, name: true, email: true } },
                     },
                 });
 
@@ -180,6 +180,34 @@ async function processWebhook(body: unknown): Promise<NextResponse> {
                         } catch (emailErr) {
                             log.shipstation.error("Shipping email failed", { orderNumber, error: emailErr instanceof Error ? emailErr.message : "Unknown" });
                         }
+                    }
+
+                    // Send SMS notifications (non-blocking, fire and forget)
+                    try {
+                        const smsOptIn = await prisma.smsOptIn.findUnique({
+                            where: { userId: order.userId },
+                        });
+                        if (smsOptIn?.optedIn && smsOptIn.phone) {
+                            if (newStatus === "SHIPPED" && shipment.trackingNumber) {
+                                sendAndLogSMS({
+                                    phone: smsOptIn.phone,
+                                    message: `Your order #${orderNumber} has shipped via ${shipment.carrierCode || "Canada Post"}! Track: https://parcelsapp.com/en/tracking/${shipment.trackingNumber}`,
+                                    type: "SHIPPING_UPDATE",
+                                    orderId: order.id,
+                                    userId: order.userId,
+                                }).catch(() => {});
+                            } else if (newStatus === "DELIVERED") {
+                                sendAndLogSMS({
+                                    phone: smsOptIn.phone,
+                                    message: `Your order #${orderNumber} has been delivered! Enjoy \u{1F33F}`,
+                                    type: "DELIVERY",
+                                    orderId: order.id,
+                                    userId: order.userId,
+                                }).catch(() => {});
+                            }
+                        }
+                    } catch (smsErr) {
+                        log.shipstation.error("SMS notification failed", { orderNumber, error: smsErr instanceof Error ? smsErr.message : "Unknown" });
                     }
                 }
 

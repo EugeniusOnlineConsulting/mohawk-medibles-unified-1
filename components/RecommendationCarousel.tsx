@@ -45,7 +45,7 @@ export default function RecommendationCarousel({ title, products, loading }: Pro
     }
 
     function handleQuickAdd(p: RecommendedProduct) {
-        addItem({ id: String(p.id), name: p.name, price: p.price, quantity: 1 });
+        addItem({ id: String(p.id), name: p.name, price: p.price, quantity: 1, image: p.image });
     }
 
     if (loading) {

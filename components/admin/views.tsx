@@ -17,6 +17,7 @@ import {
     ChevronLeft, ChevronRight, X, Loader2, Copy, Check,
     Box, LayoutDashboard, Megaphone, Target, Send,
     Calendar, Clock, BarChart2, Repeat, UserPlus, Award,
+    Link2, MousePointerClick, Wallet, Ban,
 } from "lucide-react";
 import {
     StatusBadge, StatCard, EmptyState, LoadingSpinner, OrderTable,
@@ -1920,7 +1921,7 @@ export function SettingsView() {
 
     const services = [
         { service: "woocommerce", label: "WooCommerce (PayGo CC / Crypto / e-Transfer)", icon: DollarSign, color: "text-purple-400", envVars: ["WC_CONSUMER_KEY", "WC_CONSUMER_SECRET", "WC_STORE_URL"] },
-        { service: "shipstation", label: "ShipStation", icon: Truck, color: "text-cyan-400", envVars: ["SHIPSTATION_API_KEY", "SHIPSTATION_API_SECRET"] },
+        { service: "shipstation", label: "ShipStation", icon: Truck, color: "text-cyan-400", envVars: ["SHIPSTATION_API_KEY"] },
         { service: "resend", label: "Resend Email", icon: Mail, color: "text-blue-400", envVars: ["RESEND_API_KEY"] },
         { service: "openai", label: "OpenAI / Claude", icon: Zap, color: "text-green-400", envVars: ["OPENAI_API_KEY"] },
         { service: "google", label: "Google Services", icon: Globe, color: "text-amber-400", envVars: ["NEXT_PUBLIC_GA_MEASUREMENT_ID", "GOOGLE_SITE_VERIFICATION"] },
@@ -2819,6 +2820,365 @@ export function FinancialModelView() {
                             </motion.div>
                         ))}
                     </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AFFILIATES VIEW
+// ═══════════════════════════════════════════════════════════════
+
+export function AffiliatesView() {
+    const [activeTab, setActiveTab] = useState<"applications" | "affiliates" | "payouts">("applications");
+    const [applications, setApplications] = useState<any[]>([]);
+    const [affiliates, setAffiliates] = useState<any[]>([]);
+    const [payouts, setPayouts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [editingRate, setEditingRate] = useState<string | null>(null);
+    const [newRate, setNewRate] = useState("");
+
+    const fetchData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [appsRes, affsRes, payRes] = await Promise.all([
+                fetch("/api/admin/affiliates/applications").then(r => r.json()).catch(() => ({ applications: [] })),
+                fetch("/api/admin/affiliates/list").then(r => r.json()).catch(() => ({ affiliates: [] })),
+                fetch("/api/admin/affiliates/payouts").then(r => r.json()).catch(() => ({ payouts: [] })),
+            ]);
+            setApplications(appsRes.applications || []);
+            setAffiliates(affsRes.affiliates || []);
+            setPayouts(payRes.payouts || []);
+        } catch { /* silent */ }
+        setLoading(false);
+    }, []);
+
+    useEffect(() => { fetchData(); }, [fetchData]);
+
+    const handleApprove = async (id: string) => {
+        try {
+            await fetch("/api/admin/affiliates/approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ applicationId: id, commissionRate: 10 }),
+            });
+            fetchData();
+        } catch { /* silent */ }
+    };
+
+    const handleReject = async (id: string) => {
+        try {
+            await fetch("/api/admin/affiliates/reject", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ applicationId: id }),
+            });
+            fetchData();
+        } catch { /* silent */ }
+    };
+
+    const handleUpdateRate = async (affiliateId: string) => {
+        const rate = parseFloat(newRate);
+        if (isNaN(rate) || rate < 1 || rate > 50) return;
+        try {
+            await fetch("/api/admin/affiliates/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ affiliateId, commissionRate: rate }),
+            });
+            setEditingRate(null);
+            setNewRate("");
+            fetchData();
+        } catch { /* silent */ }
+    };
+
+    const handleUpdateStatus = async (affiliateId: string, status: string) => {
+        try {
+            await fetch("/api/admin/affiliates/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ affiliateId, status }),
+            });
+            fetchData();
+        } catch { /* silent */ }
+    };
+
+    const handleCompletePayout = async (payoutId: string) => {
+        try {
+            await fetch("/api/admin/affiliates/complete-payout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ payoutId }),
+            });
+            fetchData();
+        } catch { /* silent */ }
+    };
+
+    if (loading) return <LoadingSpinner />;
+
+    const tabs = [
+        { key: "applications" as const, label: "Applications", count: applications.filter(a => a.status === "PENDING").length },
+        { key: "affiliates" as const, label: "Affiliates", count: affiliates.length },
+        { key: "payouts" as const, label: "Payouts", count: payouts.filter(p => p.status === "PENDING").length },
+    ];
+
+    return (
+        <div className="space-y-8">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-bold">Affiliate Program</h2>
+                    <p className="text-zinc-500 text-sm">Manage affiliate applications, partners, and payouts.</p>
+                </div>
+                <button onClick={fetchData} className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                    <RefreshCw className="h-4 w-4" /> Refresh
+                </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2">
+                {tabs.map(tab => (
+                    <button
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-2 ${
+                            activeTab === tab.key
+                                ? "bg-amber-500/20 text-amber-400"
+                                : "bg-white/5 text-zinc-400 hover:bg-white/10"
+                        }`}
+                    >
+                        {tab.label}
+                        {tab.count > 0 && (
+                            <span className="bg-amber-500 text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                {tab.count}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* Applications Tab */}
+            {activeTab === "applications" && (
+                <div className="bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/5">
+                        <h3 className="font-semibold">Affiliate Applications</h3>
+                    </div>
+                    {applications.length > 0 ? (
+                        <div className="divide-y divide-white/5">
+                            {applications.map((app) => (
+                                <div key={app.id} className="px-6 py-4 flex items-center justify-between">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="font-semibold text-white">{app.name}</span>
+                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                app.status === "PENDING" ? "bg-amber-500/10 text-amber-400" :
+                                                app.status === "APPROVED" ? "bg-green-500/10 text-green-400" :
+                                                "bg-red-500/10 text-red-400"
+                                            }`}>{app.status}</span>
+                                        </div>
+                                        <div className="text-xs text-zinc-500 space-x-3">
+                                            <span>{app.email}</span>
+                                            {app.website && <span>| {app.website}</span>}
+                                            {app.audience && <span>| Audience: {app.audience}</span>}
+                                        </div>
+                                        {app.howPromote && (
+                                            <p className="text-xs text-zinc-400 mt-1 line-clamp-2">{app.howPromote}</p>
+                                        )}
+                                    </div>
+                                    {app.status === "PENDING" && (
+                                        <div className="flex gap-2 shrink-0 ml-4">
+                                            <button
+                                                onClick={() => handleApprove(app.id)}
+                                                className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-xs font-bold hover:bg-green-500/30 transition-colors flex items-center gap-1"
+                                            >
+                                                <CheckCircle className="h-3.5 w-3.5" /> Approve
+                                            </button>
+                                            <button
+                                                onClick={() => handleReject(app.id)}
+                                                className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/30 transition-colors flex items-center gap-1"
+                                            >
+                                                <X className="h-3.5 w-3.5" /> Reject
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState icon={UserPlus} title="No Applications" description="No affiliate applications yet." />
+                    )}
+                </div>
+            )}
+
+            {/* Affiliates Tab */}
+            {activeTab === "affiliates" && (
+                <div className="bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/5">
+                        <h3 className="font-semibold">Active Affiliates</h3>
+                    </div>
+                    {affiliates.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="text-left text-zinc-500 text-xs uppercase tracking-wider border-b border-white/5">
+                                        <th className="px-6 py-3">Affiliate</th>
+                                        <th className="px-6 py-3">Code</th>
+                                        <th className="px-6 py-3">Commission</th>
+                                        <th className="px-6 py-3">Earnings</th>
+                                        <th className="px-6 py-3">Clicks</th>
+                                        <th className="px-6 py-3">Conversions</th>
+                                        <th className="px-6 py-3">Status</th>
+                                        <th className="px-6 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {affiliates.map((aff) => (
+                                        <tr key={aff.id} className="hover:bg-white/[0.02]">
+                                            <td className="px-6 py-3">
+                                                <div className="font-semibold text-white">{aff.user?.name || "—"}</div>
+                                                <div className="text-xs text-zinc-500">{aff.user?.email || ""}</div>
+                                            </td>
+                                            <td className="px-6 py-3 font-mono text-amber-400 text-xs">{aff.code}</td>
+                                            <td className="px-6 py-3">
+                                                {editingRate === aff.id ? (
+                                                    <div className="flex items-center gap-1">
+                                                        <input
+                                                            type="number"
+                                                            value={newRate}
+                                                            onChange={(e) => setNewRate(e.target.value)}
+                                                            className="w-16 px-2 py-1 bg-white/10 rounded text-xs text-white"
+                                                            min={1}
+                                                            max={50}
+                                                        />
+                                                        <button
+                                                            onClick={() => handleUpdateRate(aff.id)}
+                                                            className="text-green-400 hover:text-green-300"
+                                                        >
+                                                            <Check className="h-3.5 w-3.5" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setEditingRate(null); setNewRate(""); }}
+                                                            className="text-red-400 hover:text-red-300"
+                                                        >
+                                                            <X className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => { setEditingRate(aff.id); setNewRate(String(aff.commissionRate)); }}
+                                                        className="text-white hover:text-amber-400 transition-colors"
+                                                    >
+                                                        {aff.commissionRate}%
+                                                    </button>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-3 font-bold text-green-400">${(aff.totalEarnings || 0).toFixed(2)}</td>
+                                            <td className="px-6 py-3">{aff.totalClicks || 0}</td>
+                                            <td className="px-6 py-3">{aff._count?.conversions || 0}</td>
+                                            <td className="px-6 py-3">
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                    aff.status === "ACTIVE" ? "bg-green-500/10 text-green-400" :
+                                                    aff.status === "PAUSED" ? "bg-amber-500/10 text-amber-400" :
+                                                    "bg-red-500/10 text-red-400"
+                                                }`}>{aff.status}</span>
+                                            </td>
+                                            <td className="px-6 py-3">
+                                                <div className="flex gap-1">
+                                                    {aff.status === "ACTIVE" ? (
+                                                        <button
+                                                            onClick={() => handleUpdateStatus(aff.id, "PAUSED")}
+                                                            className="p-1.5 rounded-lg bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition-colors"
+                                                            title="Pause"
+                                                        >
+                                                            <Clock className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    ) : aff.status === "PAUSED" ? (
+                                                        <button
+                                                            onClick={() => handleUpdateStatus(aff.id, "ACTIVE")}
+                                                            className="p-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors"
+                                                            title="Reactivate"
+                                                        >
+                                                            <CheckCircle className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    ) : null}
+                                                    {aff.status !== "BANNED" && (
+                                                        <button
+                                                            onClick={() => handleUpdateStatus(aff.id, "BANNED")}
+                                                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                                                            title="Ban"
+                                                        >
+                                                            <Ban className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <EmptyState icon={Link2} title="No Affiliates" description="No affiliates have been approved yet." />
+                    )}
+                </div>
+            )}
+
+            {/* Payouts Tab */}
+            {activeTab === "payouts" && (
+                <div className="bg-[#0f0f18] border border-white/5 rounded-2xl overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/5">
+                        <h3 className="font-semibold">Payout Requests</h3>
+                    </div>
+                    {payouts.length > 0 ? (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="text-left text-zinc-500 text-xs uppercase tracking-wider border-b border-white/5">
+                                        <th className="px-6 py-3">Affiliate</th>
+                                        <th className="px-6 py-3">Amount</th>
+                                        <th className="px-6 py-3">Method</th>
+                                        <th className="px-6 py-3">Requested</th>
+                                        <th className="px-6 py-3">Status</th>
+                                        <th className="px-6 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {payouts.map((payout) => (
+                                        <tr key={payout.id} className="hover:bg-white/[0.02]">
+                                            <td className="px-6 py-3">
+                                                <div className="font-semibold text-white">{payout.affiliate?.user?.name || "—"}</div>
+                                                <div className="text-xs text-zinc-500">{payout.affiliate?.user?.email || ""}</div>
+                                            </td>
+                                            <td className="px-6 py-3 font-bold text-green-400">${payout.amount.toFixed(2)}</td>
+                                            <td className="px-6 py-3">
+                                                {payout.method === "ETRANSFER" ? "e-Transfer" : "Crypto"}
+                                            </td>
+                                            <td className="px-6 py-3 text-zinc-400">
+                                                {new Date(payout.createdAt).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-3">
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                                    payout.status === "COMPLETED" ? "bg-green-500/10 text-green-400" : "bg-amber-500/10 text-amber-400"
+                                                }`}>{payout.status}</span>
+                                            </td>
+                                            <td className="px-6 py-3">
+                                                {payout.status === "PENDING" && (
+                                                    <button
+                                                        onClick={() => handleCompletePayout(payout.id)}
+                                                        className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-xs font-bold hover:bg-green-500/30 transition-colors flex items-center gap-1"
+                                                    >
+                                                        <Wallet className="h-3.5 w-3.5" /> Mark Paid
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <EmptyState icon={Wallet} title="No Payouts" description="No payout requests yet." />
+                    )}
                 </div>
             )}
         </div>

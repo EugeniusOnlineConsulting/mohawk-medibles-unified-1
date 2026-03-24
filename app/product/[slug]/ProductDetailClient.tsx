@@ -17,6 +17,8 @@ import { trackProductView, trackServerEvent } from "@/lib/sage/behavioral";
 import { trackViewItem, trackAddToCart } from "@/lib/analytics";
 import WishlistButton from "@/components/WishlistButton";
 import RecommendationCarousel from "@/components/RecommendationCarousel";
+import BulkPricingTiers from "@/components/BulkPricingTiers";
+import type { BulkPricingTier } from "@/lib/bulkPricing";
 
 interface ReviewData {
     id: number;
@@ -66,6 +68,7 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
     const [qty, setQty] = useState(1);
     const [activeTab, setActiveTab] = useState<"details" | "specs" | "reviews" | "faq">("details");
     const [added, setAdded] = useState(false);
+    const [selectedTier, setSelectedTier] = useState<BulkPricingTier | null>(null);
 
     // Reviews state
     const [reviews, setReviews] = useState<ReviewData[]>([]);
@@ -181,14 +184,22 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
 
     const inCart = items.find((i) => i.id === String(product.id));
 
+    const displayPrice = selectedTier ? selectedTier.totalPrice : product.price;
+    const displayName = selectedTier ? `${product.name} (${selectedTier.weight})` : product.name;
+
+    function handleTierSelect(tier: BulkPricingTier) {
+        setSelectedTier(tier);
+    }
+
     function handleAdd() {
         addItem({
-            id: String(product.id),
-            name: product.name,
-            price: product.price,
+            id: selectedTier ? `${product.id}-${selectedTier.grams}g` : String(product.id),
+            name: displayName,
+            price: displayPrice,
             quantity: qty,
+            image: product.image,
         });
-        trackAddToCart({ id: String(product.id), name: product.name, price: product.price, category: product.category, quantity: qty });
+        trackAddToCart({ id: String(product.id), name: displayName, price: displayPrice, category: product.category, quantity: qty });
         setAdded(true);
         setTimeout(() => setAdded(false), 2000);
     }
@@ -264,7 +275,7 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
                         {/* Price + Stock Status */}
                         <div className="flex items-center gap-4 mb-6">
                             <div className="text-3xl font-bold text-forest dark:text-leaf">
-                                {product.price > 0 ? `$${product.price.toFixed(2)} CAD` : "Contact for Pricing"}
+                                {displayPrice > 0 ? `$${displayPrice.toFixed(2)} CAD` : "Contact for Pricing"}
                             </div>
                             {stockStatus === "in_stock" && (
                                 <span className="px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold border border-green-200 dark:border-green-800">
@@ -292,6 +303,16 @@ export default function ProductDetailClient({ product, related, shortName, faqs,
                                 </span>
                             </div>
                         )}
+
+                        {/* Bulk Pricing Tiers */}
+                        <BulkPricingTiers
+                            product={{
+                                price: product.price,
+                                category: product.category,
+                                specs: { weight: product.specs.weight },
+                            }}
+                            onTierSelect={handleTierSelect}
+                        />
 
                         {/* THC / CBD / Weight badges */}
                         <div className="flex flex-wrap gap-3 mb-6">

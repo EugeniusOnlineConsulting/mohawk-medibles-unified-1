@@ -67,8 +67,7 @@ export const ShipOrderRequest = z.object({
 
 export const TrackingRequest = z.object({
     action: z.literal("track"),
-    carrier: z.string().min(1).max(50),
-    trackingNumber: z.string().min(1).max(100),
+    labelId: z.string().min(1).max(100),
 });
 
 export const AdminOrderAction = z.discriminatedUnion("action", [

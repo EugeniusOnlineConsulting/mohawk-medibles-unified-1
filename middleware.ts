@@ -91,9 +91,32 @@ export async function middleware(request: NextRequest) {
         return response;
     }
 
+    // ── Affiliate referral tracking ─────────────────────────
+    // Check for ?ref=CODE parameter and set a 30-day cookie
+    const refCode = request.nextUrl.searchParams.get("ref");
+    function withAffiliateCookie(response: NextResponse): NextResponse {
+        if (refCode && !request.cookies.get("mm-affiliate-ref")) {
+            response.cookies.set("mm-affiliate-ref", refCode, {
+                path: "/",
+                httpOnly: false,
+                sameSite: "lax",
+                maxAge: 60 * 60 * 24 * 30, // 30 days
+            });
+            // Fire-and-forget: track the click via internal API
+            // We do this asynchronously so it doesn't block the response
+            const trackUrl = new URL("/api/track/affiliate", request.url);
+            fetch(trackUrl.toString(), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: refCode, page: pathname }),
+            }).catch(() => { /* silent */ });
+        }
+        return response;
+    }
+
     // ── Skip public paths ───────────────────────────────────
     if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
-        const response = withTenantHeaders(applySecurityHeaders(NextResponse.next()));
+        const response = withAffiliateCookie(withTenantHeaders(applySecurityHeaders(NextResponse.next())));
         // MedAgent-specific headers for /api/sage/* routes
         if (pathname.startsWith("/api/sage")) {
             response.headers.set("X-MedAgent-Version", "2.2.0");
@@ -110,7 +133,7 @@ export async function middleware(request: NextRequest) {
         pathname.includes(".") ||
         !PROTECTED_PATHS.some((p) => pathname.startsWith(p))
     ) {
-        return withTenantHeaders(applySecurityHeaders(NextResponse.next()));
+        return withAffiliateCookie(withTenantHeaders(applySecurityHeaders(NextResponse.next())));
     }
 
     // ── Extract session token ───────────────────────────────
@@ -167,7 +190,7 @@ export async function middleware(request: NextRequest) {
         response.headers.set("x-user-role", payload.role);
         response.headers.set("x-user-email", payload.email || "");
 
-        return withTenantHeaders(applySecurityHeaders(response));
+        return withAffiliateCookie(withTenantHeaders(applySecurityHeaders(response)));
     } catch {
         if (pathname.startsWith("/api/")) {
             return NextResponse.json(

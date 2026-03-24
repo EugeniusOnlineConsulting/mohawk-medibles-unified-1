@@ -100,8 +100,8 @@ function buildStaticCommands(push: (path: string) => void): CommandItem[] {
     },
     {
       id: "mix-match",
-      label: "Mix & Match",
-      description: "Build your own bundle",
+      label: "Build Your Own Ounce",
+      description: "Mix & match strains — save up to 20%",
       icon: <Package size={18} />,
       action: () => push("/mix-match"),
       group: "Navigation",

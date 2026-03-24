@@ -6,7 +6,6 @@ import { toast } from "sonner";
 
 const STORAGE_KEY = "mohawk_ftb_dismissed";
 const COUPON_CODE = "WELCOME15";
-const DELAY_MS = 8000;
 
 export function FirstTimeBuyerPopup() {
   const [visible, setVisible] = useState(false);
@@ -19,8 +18,8 @@ export function FirstTimeBuyerPopup() {
     if (localStorage.getItem(STORAGE_KEY)) return;
     if (window.location.pathname.startsWith("/admin")) return;
 
-    const timer = setTimeout(() => setVisible(true), DELAY_MS);
-    return () => clearTimeout(timer);
+    // Show immediately — delay is handled by LazyWidgets stagger system
+    setVisible(true);
   }, []);
 
   const dismiss = () => {

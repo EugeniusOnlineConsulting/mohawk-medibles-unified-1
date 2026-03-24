@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
 import ProductImage from "@/components/ProductImage";
+import WishlistSharePanel from "@/components/WishlistSharePanel";
 
 export default function WishlistPage() {
     const { items, removeItem, clearWishlist } = useWishlist();
@@ -17,13 +18,14 @@ export default function WishlistPage() {
             name: item.name,
             price: item.price,
             quantity: 1,
+            image: item.image,
         });
     }
 
     return (
         <div className="min-h-screen bg-background">
             <div className="max-w-6xl mx-auto px-4 py-12">
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                     <div>
                         <h1 className="text-3xl font-bold">My Wishlist</h1>
                         <p className="text-muted-foreground mt-1">
@@ -32,14 +34,19 @@ export default function WishlistPage() {
                                 : `${items.length} saved product${items.length === 1 ? "" : "s"}`}
                         </p>
                     </div>
-                    {items.length > 0 && (
-                        <button
-                            onClick={clearWishlist}
-                            className="text-sm text-muted-foreground hover:text-red-400 transition-colors"
-                        >
-                            Clear All
-                        </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {items.length > 0 && (
+                            <>
+                                <WishlistSharePanel />
+                                <button
+                                    onClick={clearWishlist}
+                                    className="text-sm text-muted-foreground hover:text-red-400 transition-colors"
+                                >
+                                    Clear All
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {items.length === 0 ? (

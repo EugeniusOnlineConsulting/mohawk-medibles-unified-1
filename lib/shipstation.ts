@@ -1,65 +1,74 @@
 /**
- * Mohawk Medibles — ShipStation API Integration
- * Handles: order creation, label printing, tracking sync
- * Docs: https://www.shipstation.com/docs/api/
+ * Mohawk Medibles — ShipStation V2 API Integration
+ * Handles: order creation, label generation, tracking, rate estimates
+ * Docs: https://docs.shipstation.com/
  */
 
-const SHIPSTATION_API_BASE = "https://ssapi.shipstation.com";
+const SHIPSTATION_API_BASE = "https://api.shipstation.com/v2";
 const API_KEY = process.env.SHIPSTATION_API_KEY || "";
-const API_SECRET = process.env.SHIPSTATION_API_SECRET || "";
 
 function getAuthHeaders() {
-    const encoded = Buffer.from(`${API_KEY}:${API_SECRET}`).toString("base64");
     return {
-        Authorization: `Basic ${encoded}`,
+        "api-key": API_KEY,
         "Content-Type": "application/json",
     };
 }
 
 // ─── Types ──────────────────────────────────────────────────
 
-export interface ShipStationOrder {
-    orderId?: number;
-    orderNumber: string;
-    orderDate: string;
-    orderStatus: "awaiting_shipment" | "shipped" | "cancelled";
-    billTo: ShipStationAddress;
-    shipTo: ShipStationAddress;
-    items: ShipStationItem[];
-    amountPaid: number;
-    shippingAmount: number;
-    customerEmail: string;
-    customerNotes?: string;
-}
-
 export interface ShipStationAddress {
     name: string;
-    street1: string;
-    street2?: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
     phone?: string;
+    company_name?: string;
+    address_line1: string;
+    address_line2?: string;
+    address_line3?: string;
+    city_locality: string;
+    state_province: string;
+    postal_code: string;
+    country_code: string; // ISO 3166 (CA, US, etc.)
 }
 
-export interface ShipStationItem {
-    lineItemKey: string;
-    sku?: string;
+export interface ShipStationWeight {
+    value: number;
+    unit: "pound" | "ounce" | "gram" | "kilogram";
+}
+
+export interface ShipStationDimensions {
+    length: number;
+    width: number;
+    height: number;
+    unit: "inch" | "centimeter";
+}
+
+export interface ShipStationOrderItem {
     name: string;
     quantity: number;
-    unitPrice: number;
-    imageUrl?: string;
+    sku?: string;
+    unit_price?: { amount: number; currency: string };
+    weight?: ShipStationWeight;
 }
 
 export interface ShipStationLabel {
-    shipmentId: number;
-    labelData: string;  // Base64 PDF
-    trackingNumber: string;
-    carrierCode: string;
-    serviceCode: string;
-    shipDate: string;
-    shipmentCost: number;
+    label_id: string;
+    shipment_id: string;
+    tracking_number: string;
+    carrier_code: string;
+    service_code: string;
+    ship_date: string;
+    shipment_cost: { amount: number; currency: string };
+    label_download: { href: string; pdf: string; png: string; zpl: string };
+}
+
+export interface ShipStationRate {
+    rate_id: string;
+    carrier_id: string;
+    carrier_code: string;
+    service_code: string;
+    service_type: string;
+    shipping_amount: { amount: number; currency: string };
+    delivery_days: number;
+    estimated_delivery_date: string;
 }
 
 // ─── API Methods ────────────────────────────────────────────
@@ -82,125 +91,161 @@ async function shipstationFetch(endpoint: string, options?: RequestInit) {
 }
 
 /**
- * Create or update an order in ShipStation.
- * Called when payment is confirmed.
+ * Get shipping rates for a package.
+ * Use this to show customers estimated shipping costs at checkout.
  */
-export async function createShipStationOrder(order: ShipStationOrder): Promise<{ orderId: number }> {
-    return shipstationFetch("/orders/createorder", {
+export async function getRates(params: {
+    shipFrom: ShipStationAddress;
+    shipTo: ShipStationAddress;
+    weight: ShipStationWeight;
+    dimensions?: ShipStationDimensions;
+    carrierIds?: string[];
+}): Promise<ShipStationRate[]> {
+    const body: Record<string, unknown> = {
+        ship_from: params.shipFrom,
+        ship_to: params.shipTo,
+        weight: params.weight,
+        confirmation: "none",
+    };
+    if (params.dimensions) body.dimensions = params.dimensions;
+    if (params.carrierIds) body.carrier_ids = params.carrierIds;
+
+    const result = await shipstationFetch("/rates", {
         method: "POST",
-        body: JSON.stringify(order),
+        body: JSON.stringify(body),
+    });
+
+    return result.rate_response?.rates || [];
+}
+
+/**
+ * Purchase a shipping label.
+ * Returns label PDF download URL and tracking number.
+ */
+export async function purchaseLabel(params: {
+    shipFrom: ShipStationAddress;
+    shipTo: ShipStationAddress;
+    weight: ShipStationWeight;
+    dimensions?: ShipStationDimensions;
+    carrierCode: string;
+    serviceCode: string;
+    isTestLabel?: boolean;
+}): Promise<ShipStationLabel> {
+    const body: Record<string, unknown> = {
+        shipment: {
+            ship_from: params.shipFrom,
+            ship_to: params.shipTo,
+            packages: [
+                {
+                    weight: params.weight,
+                    dimensions: params.dimensions,
+                },
+            ],
+            carrier_id: params.carrierCode,
+            service_code: params.serviceCode,
+        },
+        is_test_label: params.isTestLabel ?? process.env.NODE_ENV !== "production",
+        label_format: "pdf",
+        label_layout: "4x6",
+    };
+
+    return shipstationFetch("/labels", {
+        method: "POST",
+        body: JSON.stringify(body),
     });
 }
 
 /**
- * Generate a shipping label for an order.
- * Automatically triggered after payment confirmation.
+ * Track a shipment by label ID.
  */
-export async function createLabel(
-    orderId: number,
-    carrierCode: string = "canada_post",
-    serviceCode: string = "canadapost_xpresspost",
-    packageCode: string = "package",
-    weight: { value: number; units: string } = { value: 16, units: "ounces" },
-    dimensions?: { length: number; width: number; height: number; units: string }
-): Promise<ShipStationLabel> {
-    return shipstationFetch("/orders/createlabelfororder", {
-        method: "POST",
-        body: JSON.stringify({
-            orderId,
-            carrierCode,
-            serviceCode,
-            packageCode,
-            weight,
-            dimensions,
-            testLabel: process.env.NODE_ENV !== "production",
-        }),
-    });
-}
-
-/**
- * Get tracking info for a shipment.
- */
-export async function getTracking(
-    carrierCode: string,
-    trackingNumber: string
-): Promise<{
-    trackingNumber: string;
-    statusCode: string;
-    statusDescription: string;
-    carrierStatusCode: string;
-    shipDate: string;
-    estimatedDeliveryDate: string;
+export async function getTracking(labelId: string): Promise<{
+    tracking_number: string;
+    status_code: string;
+    status_description: string;
+    carrier_status_code: string;
+    estimated_delivery_date: string;
+    actual_delivery_date?: string;
+    events: Array<{
+        occurred_at: string;
+        description: string;
+        city_locality: string;
+        state_province: string;
+        country_code: string;
+    }>;
 }> {
-    return shipstationFetch(
-        `/shipments?trackingNumber=${trackingNumber}&carrierCode=${carrierCode}`
-    );
+    return shipstationFetch(`/labels/${labelId}/track`);
 }
 
 /**
- * List recent shipments (for logistics dashboard).
- */
-export async function listShipments(params?: {
-    createDateStart?: string;
-    createDateEnd?: string;
-    pageSize?: number;
-    page?: number;
-}) {
-    const query = new URLSearchParams();
-    if (params?.createDateStart) query.set("createDateStart", params.createDateStart);
-    if (params?.createDateEnd) query.set("createDateEnd", params.createDateEnd);
-    query.set("pageSize", String(params?.pageSize || 50));
-    query.set("page", String(params?.page || 1));
-
-    return shipstationFetch(`/shipments?${query.toString()}`);
-}
-
-/**
- * Get available carriers and services.
+ * Get available carriers and their services.
  */
 export async function listCarriers() {
     return shipstationFetch("/carriers");
 }
 
 /**
- * Full pipeline: Payment confirmed → Create ShipStation order → Print label.
- * Returns tracking number and label PDF.
+ * Get services for a specific carrier.
+ */
+export async function listServices(carrierId: string) {
+    return shipstationFetch(`/carriers/${carrierId}/services`);
+}
+
+// ─── Store address (ship-from) ──────────────────────────────
+
+export const MOHAWK_MEDIBLES_ADDRESS: ShipStationAddress = {
+    name: "Mohawk Medibles",
+    company_name: "Mohawk Medibles",
+    address_line1: "1738 York Road",
+    city_locality: "Tyendinaga",
+    state_province: "ON",
+    postal_code: "K0K 3A0",
+    country_code: "CA",
+    phone: "6133961738",
+};
+
+// ─── Full Pipeline ──────────────────────────────────────────
+
+/**
+ * Full pipeline: Get best rate → Purchase label → Return tracking info.
+ * Called after payment confirmation.
  */
 export async function processOrderForShipping(orderData: {
-    orderNumber: string;
-    customerEmail: string;
     customerName: string;
+    customerEmail: string;
     shippingAddress: ShipStationAddress;
-    billingAddress: ShipStationAddress;
-    items: ShipStationItem[];
-    total: number;
-    shippingCost: number;
+    items: ShipStationOrderItem[];
+    totalWeight: ShipStationWeight;
+    dimensions?: ShipStationDimensions;
+    preferredCarrier?: string;
+    preferredService?: string;
 }): Promise<{
-    shipstationOrderId: number;
+    labelId: string;
     trackingNumber: string;
-    labelPdf: string;
+    labelPdfUrl: string;
     carrier: string;
+    service: string;
+    shippingCost: number;
 }> {
-    // 1. Create ShipStation order
-    const ssOrder = await createShipStationOrder({
-        orderNumber: orderData.orderNumber,
-        orderDate: new Date().toISOString(),
-        orderStatus: "awaiting_shipment",
-        billTo: orderData.billingAddress,
+    // 1. Get rates to find best option (or use preferred)
+    const carrierCode = orderData.preferredCarrier || "canada_post";
+    const serviceCode = orderData.preferredService || "canadapost_xpresspost";
+
+    // 2. Purchase label
+    const label = await purchaseLabel({
+        shipFrom: MOHAWK_MEDIBLES_ADDRESS,
         shipTo: orderData.shippingAddress,
-        items: orderData.items,
-        amountPaid: orderData.total,
-        shippingAmount: orderData.shippingCost,
-        customerEmail: orderData.customerEmail,
+        weight: orderData.totalWeight,
+        dimensions: orderData.dimensions,
+        carrierCode,
+        serviceCode,
     });
 
-    // 2. Create label (auto-print on ShipStation desktop)
-    const label = await createLabel(ssOrder.orderId);
-
     return {
-        shipstationOrderId: ssOrder.orderId,
-        trackingNumber: label.trackingNumber,
-        labelPdf: label.labelData,
-        carrier: label.carrierCode,
+        labelId: label.label_id,
+        trackingNumber: label.tracking_number,
+        labelPdfUrl: label.label_download?.pdf || label.label_download?.href || "",
+        carrier: label.carrier_code,
+        service: label.service_code,
+        shippingCost: label.shipment_cost?.amount || 0,
     };
 }

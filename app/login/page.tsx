@@ -53,13 +53,13 @@ export default function LoginPage() {
                     <p className="text-muted-foreground mt-2">Sign in to your Mohawk Medibles account</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="bg-white dark:bg-card rounded-2xl border border-border p-8 space-y-6 shadow-sm">
+                <form onSubmit={handleSubmit} className="bg-white dark:bg-card rounded-2xl border border-border dark:border-zinc-700 p-8 space-y-6 shadow-sm">
                     {error && (
-                        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg text-sm">{error}</div>
+                        <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">{error}</div>
                     )}
 
                     <div>
-                        <label htmlFor="email" className="text-sm font-medium text-forest dark:text-cream mb-1.5 block">Email</label>
+                        <label htmlFor="email" className="text-sm font-medium text-forest dark:text-zinc-100 mb-1.5 block">Email</label>
                         <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <input
@@ -68,7 +68,7 @@ export default function LoginPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                className="w-full pl-10 pr-4 py-3 rounded-lg border border-border dark:border-zinc-600 bg-muted dark:bg-zinc-800 text-foreground dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-leaf/40 dark:focus:ring-leaf/50 outline-none transition"
                                 placeholder="you@email.com"
                             />
                         </div>
@@ -76,8 +76,8 @@ export default function LoginPage() {
 
                     <div>
                         <div className="flex justify-between mb-1.5">
-                            <label htmlFor="password" className="text-sm font-medium text-forest dark:text-cream">Password</label>
-                            <Link href="/forgot-password" className="text-xs text-forest/70 hover:text-forest">Forgot password?</Link>
+                            <label htmlFor="password" className="text-sm font-medium text-forest dark:text-zinc-100">Password</label>
+                            <Link href="/forgot-password" className="text-xs text-forest/70 dark:text-leaf hover:text-forest dark:hover:text-leaf/80">Forgot password?</Link>
                         </div>
                         <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -87,13 +87,13 @@ export default function LoginPage() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-10 pr-12 py-3 rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                className="w-full pl-10 pr-12 py-3 rounded-lg border border-border dark:border-zinc-600 bg-muted dark:bg-zinc-800 text-foreground dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-leaf/40 dark:focus:ring-leaf/50 outline-none transition"
                                 placeholder="••••••••"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPass(!showPass)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-forest"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-leaf"
                             >
                                 {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
@@ -105,7 +105,7 @@ export default function LoginPage() {
                         {loading ? "Signing in..." : "Sign In"}
                     </Button>
 
-                    <p className="text-center text-sm text-muted-foreground">
+                    <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
                         Don&apos;t have an account?{" "}
                         <Link href="/register" className="text-forest dark:text-leaf font-medium hover:underline">Create one</Link>
                     </p>

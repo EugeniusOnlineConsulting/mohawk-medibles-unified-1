@@ -21,9 +21,8 @@ export default function ConsentBanner() {
         const saved = getConsentStatus();
         setStatus(saved);
         if (saved === "pending") {
-            // Small delay so it doesn't block first paint
-            const timer = setTimeout(() => setVisible(true), 1500);
-            return () => clearTimeout(timer);
+            // Show immediately — delay is handled by LazyWidgets stagger system
+            setVisible(true);
         }
     }, []);
 

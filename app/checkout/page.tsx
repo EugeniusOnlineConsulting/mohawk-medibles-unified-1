@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
     ShoppingCart, Trash2, Plus, Minus, CreditCard,
     Shield, Truck, ArrowLeft, Loader2, Tag, X, CheckCircle, User, LogIn,
@@ -12,7 +13,11 @@ import {
 } from "lucide-react";
 import FreeShippingBar from "@/components/FreeShippingBar";
 import { CartUpsellNudge } from "@/components/CartUpsellNudge";
+import GiftTierProgress from "@/components/GiftTierProgress";
 import { DeliveryConfidence } from "@/components/DeliveryConfidence";
+import { ComboSuggestions } from "@/components/ComboSuggestions";
+import SmsOptIn from "@/components/SmsOptIn";
+import ClickAndCollect, { type DeliveryMethod } from "@/components/ClickAndCollect";
 import { trackBeginCheckout } from "@/lib/analytics";
 
 interface CouponResult {
@@ -51,6 +56,10 @@ export default function CheckoutPage() {
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Delivery method state (ship vs pickup)
+    const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("ship");
+    const [pickupTime, setPickupTime] = useState("10:00 AM");
 
     // Billing form state
     const [billing, setBilling] = useState({
@@ -131,7 +140,8 @@ export default function CheckoutPage() {
     const discount = appliedCoupon?.valid ? (appliedCoupon.discount || 0) : 0;
     const subtotalAfterDiscount = Math.max(0, total - discount);
     const hasFreeShipping = appliedCoupon?.valid && appliedCoupon.freeShipping;
-    const shipping = hasFreeShipping ? 0 : (total >= 199 ? 0 : 15);
+    const isPickup = deliveryMethod === "pickup";
+    const shipping = isPickup ? 0 : (hasFreeShipping ? 0 : (total >= 199 ? 0 : 15));
     const tax = 0; // Tax-free — Indigenous sovereignty (Tyendinaga Mohawk Territory)
     const grandTotal = +(subtotalAfterDiscount + shipping + tax).toFixed(2);
 
@@ -177,9 +187,11 @@ export default function CheckoutPage() {
         if (!billing.first_name.trim()) return "First name is required";
         if (!billing.last_name.trim()) return "Last name is required";
         if (!billing.email.trim() || !billing.email.includes("@")) return "Valid email is required";
-        if (!billing.address_1.trim()) return "Address is required";
-        if (!billing.city.trim()) return "City is required";
-        if (!billing.postcode.trim()) return "Postal code is required";
+        if (deliveryMethod === "ship") {
+            if (!billing.address_1.trim()) return "Address is required";
+            if (!billing.city.trim()) return "City is required";
+            if (!billing.postcode.trim()) return "Postal code is required";
+        }
         return null;
     }
 
@@ -348,6 +360,8 @@ export default function CheckoutPage() {
                 {/* Free Shipping Progress */}
                 <div className="mb-6 space-y-4">
                     <CartUpsellNudge subtotal={total} />
+                    <GiftTierProgress cartTotal={total} />
+                    <ComboSuggestions />
                     <DeliveryConfidence />
                 </div>
 
@@ -365,8 +379,19 @@ export default function CheckoutPage() {
                                     exit={{ opacity: 0, x: 20 }}
                                     className="bg-white dark:bg-card rounded-xl border border-border p-4 flex items-center gap-4"
                                 >
-                                    <div className="w-20 h-20 bg-forest/5 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <ShoppingCart className="h-8 w-8 text-forest/20" />
+                                    <div className="w-20 h-20 bg-forest/5 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        {item.image ? (
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                width={80}
+                                                height={80}
+                                                className="w-full h-full object-cover"
+                                                unoptimized
+                                            />
+                                        ) : (
+                                            <ShoppingCart className="h-8 w-8 text-forest/20" />
+                                        )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-bold text-forest dark:text-cream truncate">{item.name}</h3>
@@ -416,9 +441,21 @@ export default function CheckoutPage() {
                             ))}
                         </div>
 
+                        {/* Delivery Method */}
+                        <div className="bg-white dark:bg-card rounded-xl border border-border p-6">
+                            <h2 className="text-xl font-bold text-forest dark:text-cream mb-4">Delivery Method</h2>
+                            <ClickAndCollect
+                                onMethodChange={setDeliveryMethod}
+                                onPickupTimeChange={setPickupTime}
+                                defaultMethod={deliveryMethod}
+                            />
+                        </div>
+
                         {/* Billing Information */}
                         <div className="bg-white dark:bg-card rounded-xl border border-border p-6">
-                            <h2 className="text-xl font-bold text-forest dark:text-cream mb-4">Billing Information</h2>
+                            <h2 className="text-xl font-bold text-forest dark:text-cream mb-4">
+                                {isPickup ? "Contact Information" : "Billing Information"}
+                            </h2>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-muted-foreground mb-1">First Name *</label>
@@ -459,71 +496,78 @@ export default function CheckoutPage() {
                                         className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
                                     />
                                 </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Address *</label>
-                                    <input
-                                        type="text"
-                                        value={billing.address_1}
-                                        onChange={(e) => setBilling({ ...billing, address_1: e.target.value })}
-                                        className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
-                                        placeholder="Street address"
-                                        required
-                                    />
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Address Line 2</label>
-                                    <input
-                                        type="text"
-                                        value={billing.address_2}
-                                        onChange={(e) => setBilling({ ...billing, address_2: e.target.value })}
-                                        className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
-                                        placeholder="Apartment, suite, etc."
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-muted-foreground mb-1">City *</label>
-                                    <input
-                                        type="text"
-                                        value={billing.city}
-                                        onChange={(e) => setBilling({ ...billing, city: e.target.value })}
-                                        className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Province *</label>
-                                    <select
-                                        value={billing.state}
-                                        onChange={(e) => setBilling({ ...billing, state: e.target.value })}
-                                        className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
-                                    >
-                                        <option value="AB">Alberta</option>
-                                        <option value="BC">British Columbia</option>
-                                        <option value="MB">Manitoba</option>
-                                        <option value="NB">New Brunswick</option>
-                                        <option value="NL">Newfoundland and Labrador</option>
-                                        <option value="NS">Nova Scotia</option>
-                                        <option value="NT">Northwest Territories</option>
-                                        <option value="NU">Nunavut</option>
-                                        <option value="ON">Ontario</option>
-                                        <option value="PE">Prince Edward Island</option>
-                                        <option value="QC">Quebec</option>
-                                        <option value="SK">Saskatchewan</option>
-                                        <option value="YT">Yukon</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Postal Code *</label>
-                                    <input
-                                        type="text"
-                                        value={billing.postcode}
-                                        onChange={(e) => setBilling({ ...billing, postcode: e.target.value.toUpperCase() })}
-                                        className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition uppercase"
-                                        placeholder="A1A 1A1"
-                                        required
-                                    />
-                                </div>
+                                {!isPickup && (
+                                    <>
+                                        <div className="sm:col-span-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-1">Address *</label>
+                                            <input
+                                                type="text"
+                                                value={billing.address_1}
+                                                onChange={(e) => setBilling({ ...billing, address_1: e.target.value })}
+                                                className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                                placeholder="Street address"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="sm:col-span-2">
+                                            <label className="block text-sm font-medium text-muted-foreground mb-1">Address Line 2</label>
+                                            <input
+                                                type="text"
+                                                value={billing.address_2}
+                                                onChange={(e) => setBilling({ ...billing, address_2: e.target.value })}
+                                                className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                                placeholder="Apartment, suite, etc."
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-muted-foreground mb-1">City *</label>
+                                            <input
+                                                type="text"
+                                                value={billing.city}
+                                                onChange={(e) => setBilling({ ...billing, city: e.target.value })}
+                                                className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-muted-foreground mb-1">Province *</label>
+                                            <select
+                                                value={billing.state}
+                                                onChange={(e) => setBilling({ ...billing, state: e.target.value })}
+                                                className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition"
+                                            >
+                                                <option value="AB">Alberta</option>
+                                                <option value="BC">British Columbia</option>
+                                                <option value="MB">Manitoba</option>
+                                                <option value="NB">New Brunswick</option>
+                                                <option value="NL">Newfoundland and Labrador</option>
+                                                <option value="NS">Nova Scotia</option>
+                                                <option value="NT">Northwest Territories</option>
+                                                <option value="NU">Nunavut</option>
+                                                <option value="ON">Ontario</option>
+                                                <option value="PE">Prince Edward Island</option>
+                                                <option value="QC">Quebec</option>
+                                                <option value="SK">Saskatchewan</option>
+                                                <option value="YT">Yukon</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-muted-foreground mb-1">Postal Code *</label>
+                                            <input
+                                                type="text"
+                                                value={billing.postcode}
+                                                onChange={(e) => setBilling({ ...billing, postcode: e.target.value.toUpperCase() })}
+                                                className="w-full px-3 py-2.5 text-sm rounded-lg border border-border bg-muted focus:ring-2 focus:ring-forest/30 outline-none transition uppercase"
+                                                placeholder="A1A 1A1"
+                                                required
+                                            />
+                                        </div>
+                                    </>
+                                )}
                             </div>
+
+                            {/* SMS Opt-In */}
+                            <SmsOptIn phone={billing.phone} isAuthenticated={isAuthenticated} />
                         </div>
 
                         {/* Payment Method Selection */}
@@ -595,11 +639,13 @@ export default function CheckoutPage() {
                                 )}
 
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Shipping (Xpresspost)</span>
+                                    <span className="text-muted-foreground">
+                                        {isPickup ? "Pickup (In-Store)" : "Shipping (Xpresspost)"}
+                                    </span>
                                     <span className="font-medium">
                                         {shipping === 0 ? (
                                             <span className="text-green-600">
-                                                FREE {hasFreeShipping && <span className="text-[10px]">(coupon)</span>}
+                                                FREE {isPickup ? <span className="text-[10px]">(pickup)</span> : hasFreeShipping && <span className="text-[10px]">(coupon)</span>}
                                             </span>
                                         ) : (
                                             `$${shipping.toFixed(2)}`

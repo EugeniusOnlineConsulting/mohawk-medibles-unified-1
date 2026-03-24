@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { CreditCard, Bitcoin, ShieldCheck, Zap, Loader2, Check } from "lucide-react";
+import { GoogleReviewsBadge } from "@/components/GoogleReviewsWidget";
 
 const provinces = [
     { name: "Alberta", slug: "alberta" },
@@ -105,6 +106,7 @@ export default function Footer() {
                         <li><Link href="/returns-policy" className="hover:text-lime transition-colors">Returns Policy</Link></li>
                         <li><Link href="/privacy" className="hover:text-lime transition-colors">Privacy Policy</Link></li>
                         <li><Link href="/terms" className="hover:text-lime transition-colors">Terms of Service</Link></li>
+                        <li><Link href="/price-match" className="hover:text-lime transition-colors">Price Match Guarantee</Link></li>
                     </ul>
                 </div>
 
@@ -118,6 +120,7 @@ export default function Footer() {
                             <li><Link href="/buy-weed-online-canada" className="hover:text-lime transition-colors">Buy Weed Online</Link></li>
                             <li><Link href="/cannabis-laws" className="hover:text-lime transition-colors">Cannabis Laws</Link></li>
                             <li><Link href="/blog" className="hover:text-lime transition-colors">Blog</Link></li>
+                            <li><Link href="/locations" className="hover:text-lime transition-colors">Visit Our Store</Link></li>
                         </ul>
                     </div>
                     <div className="space-y-3">
@@ -211,6 +214,7 @@ export default function Footer() {
                     <span>(613) 396 6728</span>
                     <span>info@mohawkmedibles.ca</span>
                 </div>
+                <GoogleReviewsBadge />
                 <div>
                     &copy; 2026 Mohawk Medibles &bull; Indigenous Sovereignty &bull; 19+ Only
                 </div>

@@ -41,6 +41,7 @@ model User {
     loyaltyPoints      LoyaltyPoint[]
     referralsMade      Referral[]        @relation("ReferralsMade")
     wishlistItems      WishlistItem[]
+    wishlistShare      WishlistShare?
     subscriptions      Subscription[]
     couponUsages       CouponUsage[]
     customerNotifications CustomerNotification[]
@@ -49,6 +50,27 @@ model User {
     twoFactorAuth      TwoFactorAuth?
     passwordResetTokens PasswordResetToken[]
     userPreference     UserPreference?
+
+    // Affiliate relations
+    affiliateApplication AffiliateApplication?
+    affiliate            Affiliate?
+
+    // Push notification subscriptions
+    pushSubscriptions PushSubscription[]
+
+    // SMS opt-in
+    smsOptIn           SmsOptIn?
+
+    // Contests
+    contestEntries     ContestEntry[]
+    contestsWon        Contest[]      @relation("ContestWinner")
+
+    // Wholesale relations
+    wholesaleApplication WholesaleApplication?
+    wholesaleAccount     WholesaleAccount?
+
+    // Price match requests
+    priceMatchRequests PriceMatchRequest[]
 
     @@index([email])
     @@index([role])
@@ -144,6 +166,7 @@ model Product {
     shortDescription String
     longDescription String?
     featured        Boolean   @default(false)
+    grade           String?   // Quality grade: AA, AAA, AAA+, AAAA, Craft (null for non-flower)
     status          ProductStatus @default(ACTIVE)
     createdAt       DateTime  @default(now())
     updatedAt       DateTime  @updatedAt
@@ -263,6 +286,7 @@ model Order {
     items         OrderItem[]
     statusHistory OrderStatusHistory[]
     supportTickets SupportTicket[]
+    fraudChecks   FraudCheck[]
 
     @@index([userId])
     @@index([status])
@@ -300,6 +324,7 @@ model OrderStatusHistory {
 
 enum OrderStatus {
     PENDING
+    PENDING_REVIEW
     PROCESSING
     PAYMENT_CONFIRMED
     LABEL_PRINTED
@@ -1176,6 +1201,43 @@ model WishlistItem {
 
     @@unique([userId, productId])
     @@index([userId])
+}
+
+// ─── Wishlist Sharing ────────────────────────────────────
+
+model WishlistShare {
+    id        Int      @id @default(autoincrement())
+    userId    String   @unique
+    shareCode String   @unique
+    isPublic  Boolean  @default(false)
+    title     String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([shareCode])
+}
+
+// ─── Daily Deals ─────────────────────────────────────────
+
+model DailyDeal {
+    id           Int      @id @default(autoincrement())
+    productSlug  String
+    originalPrice Float
+    dealPrice    Float
+    title        String
+    description  String?  @db.Text
+    startDate    DateTime
+    endDate      DateTime
+    featured     Boolean  @default(false)
+    active       Boolean  @default(true)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    @@index([active])
+    @@index([featured])
+    @@index([startDate, endDate])
 }
 
 // ─── Back In Stock Subscriptions ─────────────────────────
@@ -2275,4 +2337,452 @@ model SessionEvent {
     recording SessionRecording @relation(fields: [recordingId], references: [id], onDelete: Cascade)
 
     @@index([recordingId])
+}
+
+// ─── Fraud Detection ────────────────────────────────────────
+
+model FraudCheck {
+    id          String      @id @default(cuid())
+    orderId     String
+    score       Int         @default(0)   // 0-100
+    flags       Json        @default("[]") // JSON array of string reasons
+    status      FraudStatus @default(CLEAN)
+    reviewedBy  String?     // Admin user ID who reviewed
+    reviewedAt  DateTime?
+    createdAt   DateTime    @default(now())
+
+    order Order @relation(fields: [orderId], references: [id])
+
+    @@index([orderId])
+    @@index([status])
+    @@index([score])
+    @@index([createdAt])
+}
+
+enum FraudStatus {
+    CLEAN
+    SUSPICIOUS
+    BLOCKED
+}
+
+// ═══════════════════════════════════════════════════════════
+// ═══ AFFILIATE PROGRAM ════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+
+enum AffiliateApplicationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum AffiliateStatus {
+    ACTIVE
+    PAUSED
+    BANNED
+}
+
+enum AffiliateConversionStatus {
+    PENDING
+    APPROVED
+    PAID
+}
+
+enum AffiliatePayoutStatus {
+    PENDING
+    COMPLETED
+}
+
+enum AffiliatePayoutMethod {
+    ETRANSFER
+    CRYPTO
+}
+
+model AffiliateApplication {
+    id          String                     @id @default(cuid())
+    userId      String                     @unique
+    name        String
+    email       String
+    website     String?
+    socialMedia String?                    // JSON: social media links
+    audience    String?                    // Audience size range
+    howPromote  String?                    @db.Text
+    status      AffiliateApplicationStatus @default(PENDING)
+    adminNote   String?
+    createdAt   DateTime                   @default(now())
+    updatedAt   DateTime                   @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([status])
+    @@index([createdAt])
+}
+
+model Affiliate {
+    id             String          @id @default(cuid())
+    userId         String          @unique
+    code           String          @unique  // e.g. "MOHAWK-JOHN"
+    commissionRate Float           @default(10)  // percentage
+    totalEarnings  Float           @default(0)
+    totalReferrals Int             @default(0)
+    totalClicks    Int             @default(0)
+    status         AffiliateStatus @default(ACTIVE)
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+
+    user        User                  @relation(fields: [userId], references: [id])
+    clicks      AffiliateClick[]
+    conversions AffiliateConversion[]
+    payouts     AffiliatePayout[]
+
+    @@index([code])
+    @@index([status])
+    @@index([userId])
+}
+
+model AffiliateClick {
+    id          String   @id @default(cuid())
+    affiliateId String
+    ip          String?
+    userAgent   String?
+    referrer    String?
+    page        String?
+    createdAt   DateTime @default(now())
+
+    affiliate Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+    @@index([affiliateId])
+    @@index([createdAt])
+}
+
+model AffiliateConversion {
+    id          String                    @id @default(cuid())
+    affiliateId String
+    orderId     String
+    orderTotal  Float
+    commission  Float
+    status      AffiliateConversionStatus @default(PENDING)
+    createdAt   DateTime                  @default(now())
+    updatedAt   DateTime                  @updatedAt
+
+    affiliate Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+    @@index([affiliateId])
+    @@index([orderId])
+    @@index([status])
+    @@index([createdAt])
+}
+
+model AffiliatePayout {
+    id          String                @id @default(cuid())
+    affiliateId String
+    amount      Float
+    method      AffiliatePayoutMethod @default(ETRANSFER)
+    status      AffiliatePayoutStatus @default(PENDING)
+    note        String?
+    createdAt   DateTime              @default(now())
+    completedAt DateTime?
+
+    affiliate Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+    @@index([affiliateId])
+    @@index([status])
+    @@index([createdAt])
+}
+
+// ─── Google Reviews ──────────────────────────────────────────
+
+model GoogleReview {
+    id             String   @id @default(cuid())
+    authorName     String
+    authorPhoto    String?
+    rating         Int      // 1-5
+    text           String
+    relativeTime   String   // e.g. "2 weeks ago"
+    googleReviewId String   @unique
+    createdAt      DateTime @default(now())
+
+    @@index([rating])
+    @@index([createdAt])
+}
+
+model GoogleReviewMeta {
+    id            String   @id @default("main") // singleton
+    placeId       String
+    averageRating Float    @default(0)
+    totalReviews  Int      @default(0)
+    lastSyncedAt  DateTime @default(now())
+}
+
+// ─── Happy Hours (Flash Promotions) ─────────────────────────
+
+model HappyHour {
+    id              String   @id @default(cuid())
+    name            String
+    discountPercent Int      // e.g. 15 = 15% off
+    categorySlug    String?  // null = all products
+    startHour       Int      // 0-23
+    endHour         Int      // 0-23
+    daysOfWeek      Json     // array of ints: 0=Sun..6=Sat
+    active          Boolean  @default(true)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    @@index([active])
+    @@index([categorySlug])
+}
+
+// ─── Web Push Notifications ──────────────────────────────────
+
+model PushSubscription {
+    id        String   @id @default(cuid())
+    userId    String
+    endpoint  String   @unique
+    p256dh    String
+    auth      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([endpoint])
+}
+
+// ─── SMS Logs (Twilio Integration) ───────────────────────
+
+model SmsLog {
+    id                Int       @id @default(autoincrement())
+    phone             String
+    message           String    @db.Text
+    status            String    @default("QUEUED") // SENT, FAILED, QUEUED
+    type              String    // ORDER_CONFIRMATION, SHIPPING_UPDATE, DELIVERY, PROMO, CUSTOM
+    orderId           String?
+    error             String?   @db.Text
+    providerMessageId String?
+    createdAt         DateTime  @default(now())
+
+    @@index([status])
+    @@index([type])
+    @@index([orderId])
+    @@index([createdAt])
+}
+
+// ─── SMS Opt-In Preferences ─────────────────────────────
+
+model SmsOptIn {
+    id        Int      @id @default(autoincrement())
+    userId    String   @unique
+    phone     String
+    optedIn   Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([optedIn])
+}
+
+// ─── Wholesale / B2B ────────────────────────────────────────
+
+enum WholesaleBusinessType {
+    DISPENSARY
+    DELIVERY
+    RETAILER
+    OTHER
+}
+
+enum WholesaleApplicationStatus {
+    PENDING
+    APPROVED
+    REJECTED
+}
+
+enum WholesaleTier {
+    BRONZE
+    SILVER
+    GOLD
+    PLATINUM
+}
+
+enum WholesaleOrderStatus {
+    PENDING
+    CONFIRMED
+    SHIPPED
+    DELIVERED
+    CANCELLED
+}
+
+enum WholesalePaymentStatus {
+    UNPAID
+    PAID
+    OVERDUE
+}
+
+model WholesaleApplication {
+    id                    String                      @id @default(cuid())
+    userId                String                      @unique
+    businessName          String
+    businessType          WholesaleBusinessType
+    taxId                 String?
+    website               String?
+    phone                 String
+    email                 String
+    estimatedMonthlyVolume String?
+    message               String?                     @db.Text
+    status                WholesaleApplicationStatus  @default(PENDING)
+    createdAt             DateTime                    @default(now())
+    updatedAt             DateTime                    @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([status])
+    @@index([createdAt])
+}
+
+model WholesaleAccount {
+    id              String        @id @default(cuid())
+    userId          String        @unique
+    businessName    String
+    taxId           String?
+    tier            WholesaleTier @default(BRONZE)
+    discountPercent Int           @default(10)
+    creditLimit     Float         @default(0)
+    netTerms        Int           @default(0)
+    approved        Boolean       @default(true)
+    approvedAt      DateTime?
+    createdAt       DateTime      @default(now())
+    updatedAt       DateTime      @updatedAt
+
+    user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    orders WholesaleOrder[]
+
+    @@index([tier])
+    @@index([approved])
+}
+
+model WholesaleOrder {
+    id                  String                  @id @default(cuid())
+    wholesaleAccountId  String
+    orderNumber         String                  @unique
+    items               Json
+    subtotal            Float
+    discount            Float
+    total               Float
+    status              WholesaleOrderStatus    @default(PENDING)
+    paymentStatus       WholesalePaymentStatus  @default(UNPAID)
+    paymentDueDate      DateTime?
+    notes               String?                 @db.Text
+    createdAt           DateTime                @default(now())
+    updatedAt           DateTime                @updatedAt
+
+    wholesaleAccount WholesaleAccount @relation(fields: [wholesaleAccountId], references: [id], onDelete: Cascade)
+
+    @@index([wholesaleAccountId])
+    @@index([status])
+    @@index([paymentStatus])
+    @@index([orderNumber])
+    @@index([createdAt])
+}
+
+// ─── Contests & Giveaways ──────────────────────────────
+
+enum ContestStatus {
+    DRAFT
+    ACTIVE
+    ENDED
+}
+
+enum ContestEntryMethod {
+    FREE
+    PURCHASE
+    SIGNUP
+    POINTS
+}
+
+model Contest {
+    id                 Int                @id @default(autoincrement())
+    title              String
+    description        String             @db.Text
+    prize              String
+    prizeImage         String?
+    entryMethod        ContestEntryMethod @default(FREE)
+    minPurchaseAmount  Float?
+    pointsCost         Int?               // Points required for POINTS entry method
+    startDate          DateTime
+    endDate            DateTime
+    status             ContestStatus      @default(DRAFT)
+    maxEntries         Int?               // Max total entries (null = unlimited)
+    winnerId           String?
+    winnerAnnouncedAt  DateTime?
+    createdAt          DateTime           @default(now())
+    updatedAt          DateTime           @updatedAt
+
+    winner  User?          @relation("ContestWinner", fields: [winnerId], references: [id])
+    entries ContestEntry[]
+
+    @@index([status])
+    @@index([endDate])
+}
+
+model ContestEntry {
+    id        Int      @id @default(autoincrement())
+    contestId Int
+    userId    String
+    entries   Int      @default(1) // Bonus entries (e.g. each $50 = 1 extra)
+    createdAt DateTime @default(now())
+
+    contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([contestId, userId])
+    @@index([contestId])
+    @@index([userId])
+}
+
+// ─── Gift Tiers (Spending Threshold Rewards) ────────────────
+
+model GiftTier {
+    id              Int      @id @default(autoincrement())
+    threshold       Float    // Minimum cart total to unlock (e.g. 250.00)
+    giftName        String   // e.g. "Free Pre-Roll (1g)"
+    giftDescription String   // Short description shown to customers
+    giftImage       String?  // Optional image URL
+    active          Boolean  @default(true)
+    sortOrder       Int      @default(0)
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
+
+    @@index([active])
+    @@index([threshold])
+}
+
+// ─── Price Match Requests ─────────────────────────────────────
+
+model PriceMatchRequest {
+    id              Int                @id @default(autoincrement())
+    userId          String?
+    email           String
+    productName     String
+    competitorUrl   String
+    competitorPrice Float
+    screenshotUrl   String?
+    status          PriceMatchStatus   @default(PENDING)
+    adminNote       String?
+    matchedPrice    Float?
+    createdAt       DateTime           @default(now())
+    updatedAt       DateTime           @updatedAt
+
+    user User? @relation(fields: [userId], references: [id])
+
+    @@index([status])
+    @@index([email])
+    @@index([createdAt])
+}
+
+enum PriceMatchStatus {
+    PENDING
+    APPROVED
+    REJECTED
+    EXPIRED
 }

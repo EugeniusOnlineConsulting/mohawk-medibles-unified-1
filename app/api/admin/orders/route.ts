@@ -119,6 +119,7 @@ export async function POST(req: NextRequest) {
                 const order = await prisma.order.update({
                     where: { id: data.orderId },
                     data: { status: data.status },
+                    include: { user: { select: { id: true } } },
                 });
                 // Add to status history
                 await prisma.orderStatusHistory.create({
@@ -129,53 +130,48 @@ export async function POST(req: NextRequest) {
                         changedBy: auth.userId,
                     },
                 });
+                // Send push notification for order status change
+                if (order.userId) {
+                    import("@/lib/webpush").then(({ notifyOrderStatusChange }) => {
+                        notifyOrderStatusChange(order.userId!, order.orderNumber, data.status).catch(() => {});
+                    });
+                }
                 return NextResponse.json({ success: true, order });
             }
 
             case "ship-order": {
                 const od = data.orderData;
+                const totalWeight = od.items.reduce((sum, i) => sum + (i.weight || 1) * i.quantity, 0);
                 const result = await processOrderForShipping({
-                    orderNumber: od.orderId,
                     customerEmail: "",
                     customerName: od.recipientName,
                     shippingAddress: {
                         name: od.recipientName,
-                        street1: od.street1,
-                        street2: od.street2,
-                        city: od.city,
-                        state: od.province,
-                        postalCode: od.postalCode,
-                        country: od.country,
+                        address_line1: od.street1,
+                        address_line2: od.street2,
+                        city_locality: od.city,
+                        state_province: od.province,
+                        postal_code: od.postalCode,
+                        country_code: od.country || "CA",
                         phone: od.phone,
                     },
-                    billingAddress: {
-                        name: od.recipientName,
-                        street1: od.street1,
-                        street2: od.street2,
-                        city: od.city,
-                        state: od.province,
-                        postalCode: od.postalCode,
-                        country: od.country,
-                        phone: od.phone,
-                    },
-                    items: od.items.map((item, idx) => ({
-                        lineItemKey: `item-${idx}`,
+                    items: od.items.map((item) => ({
                         name: item.name,
                         quantity: item.quantity,
-                        unitPrice: item.price,
-                        weight: { value: item.weight || 1, units: "ounces" as const },
+                        sku: (item as Record<string, unknown>).sku as string || undefined,
+                        unit_price: { amount: item.price, currency: "CAD" },
+                        weight: { value: item.weight || 1, unit: "ounce" as const },
                     })),
-                    total: od.items.reduce((sum, i) => sum + i.price * i.quantity, 0),
-                    shippingCost: 0,
+                    totalWeight: { value: totalWeight, unit: "ounce" },
                 });
-                if (result.shipstationOrderId) {
+                if (result.labelId) {
                     await prisma.order.update({
                         where: { id: od.orderId },
                         data: {
-                            shipstationId: String(result.shipstationOrderId),
+                            shipstationId: result.labelId,
                             trackingNumber: result.trackingNumber || undefined,
                             carrier: result.carrier || undefined,
-                            shippingLabel: result.labelPdf || undefined,
+                            shippingLabel: result.labelPdfUrl || undefined,
                             status: "LABEL_PRINTED",
                         },
                     });
@@ -184,7 +180,7 @@ export async function POST(req: NextRequest) {
             }
 
             case "track": {
-                const trackingInfo = await getTracking(data.carrier, data.trackingNumber);
+                const trackingInfo = await getTracking(data.labelId);
                 return NextResponse.json(trackingInfo);
             }
         }

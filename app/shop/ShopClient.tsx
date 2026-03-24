@@ -7,9 +7,12 @@ import { Button } from "@/components/ui/button";
 import {
     Filter, ChevronDown, Sparkles, Search, ShoppingCart,
     Check, ArrowUpDown, X, MessageCircle, Star,
+    Cloud, Zap, Leaf, Moon, Heart,
 } from "lucide-react";
 import { PRODUCTS, getAllCategories, getShortName, type Product } from "@/lib/productData";
+import { INTENTS, filterByIntent, type ShoppingIntent } from "@/lib/intentMapping";
 import { decodeHtmlEntities } from "@/lib/utils";
+import { getLowestPricePerGram } from "@/lib/bulkPricing";
 import ProductImage from "@/components/ProductImage";
 import { useCart } from "@/hooks/useCart";
 import FreeShippingBar from "@/components/FreeShippingBar";
@@ -18,6 +21,14 @@ import { trackCategoryView, trackSearch, trackProductView, trackServerEvent } fr
 import { trackViewItemList, trackAddToCart as trackGA4AddToCart, trackSearch as trackGA4Search } from "@/lib/analytics";
 import RecommendationCarousel from "@/components/RecommendationCarousel";
 import RecentlyViewed from "@/components/RecentlyViewed";
+import CompareButton from "@/components/CompareButton";
+import GradeBadge from "@/components/GradeBadge";
+import GradeExplainer from "@/components/GradeExplainer";
+import GiftTierProgress from "@/components/GiftTierProgress";
+import { getProductGrade, ALL_GRADES, type GradeKey } from "@/lib/gradeMapping";
+import { isTerritoryGrown } from "@/lib/territoryGrown";
+import TerritoryGrownBadge from "@/components/TerritoryGrownBadge";
+import PriceMatchBadge from "@/components/PriceMatchBadge";
 
 const CATEGORIES = ["All", ...getAllCategories()];
 const PRODUCTS_PER_PAGE = 24;
@@ -33,22 +44,81 @@ const SORT_LABELS: Record<SortOption, string> = {
     newest: "Newest First",
 };
 
+// ── Intent / Mood icon mapping ──
+const INTENT_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    Cloud, Zap, Leaf, Moon, Heart,
+};
+
+function IntentPillBar({
+    activeIntent,
+    onIntentChange,
+}: {
+    activeIntent: ShoppingIntent | "all";
+    onIntentChange: (intent: ShoppingIntent | "all") => void;
+}) {
+    return (
+        <div className="mb-6">
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
+                {/* All pill */}
+                <button
+                    onClick={() => onIntentChange("all")}
+                    className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex-shrink-0 ${
+                        activeIntent === "all"
+                            ? "bg-white/10 text-white ring-1 ring-white/20 shadow-lg dark:bg-white/10 dark:text-white"
+                            : "text-muted-foreground hover:bg-muted dark:hover:bg-white/5"
+                    }`}
+                >
+                    All
+                </button>
+                {INTENTS.map((intent) => {
+                    const Icon = INTENT_ICONS[intent.icon] ?? Leaf;
+                    const isActive = activeIntent === intent.key;
+                    return (
+                        <button
+                            key={intent.key}
+                            onClick={() => onIntentChange(intent.key)}
+                            className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 flex-shrink-0 ${
+                                isActive
+                                    ? intent.pillActive
+                                    : "text-muted-foreground hover:bg-muted dark:hover:bg-white/5"
+                            }`}
+                        >
+                            <Icon className="w-3.5 h-3.5" />
+                            {intent.label}
+                        </button>
+                    );
+                })}
+            </div>
+            {activeIntent !== "all" && (
+                <p className="text-xs text-muted-foreground mt-2">
+                    Showing products matched to the <span className="font-medium">{INTENTS.find(i => i.key === activeIntent)?.label}</span> mood
+                </p>
+            )}
+        </div>
+    );
+}
+
 export default function ShopClient() {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
     const searchParam = searchParams.get("search");
+    const intentParam = searchParams.get("intent");
 
     const [activeCategory, setActiveCategory] = useState("All");
+    const [activeIntent, setActiveIntent] = useState<ShoppingIntent | "all">("all");
     const [sortBy, setSortBy] = useState<SortOption>("featured");
     const [sortOpen, setSortOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
-    const { addItem, items } = useCart();
+    const { addItem, items, total } = useCart();
     const [addedIds, setAddedIds] = useState<Set<number>>(new Set());
     const [reviewStats, setReviewStats] = useState<Record<number, { avg: number; count: number }>>({});
     const [personalizedRecs, setPersonalizedRecs] = useState<any[]>([]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
     const [strainType, setStrainType] = useState("All");
+    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+    const [gradeFilter, setGradeFilter] = useState<GradeKey | "All">("All");
+    const [territoryGrownOnly, setTerritoryGrownOnly] = useState(false);
 
     // ── Fetch review stats + personalized recommendations ──
     useEffect(() => {
@@ -76,9 +146,21 @@ export default function ShopClient() {
         }
     }, [searchParam]);
 
+    // ── Read ?intent= from URL ──
+    useEffect(() => {
+        if (intentParam && INTENTS.some((i) => i.key === intentParam)) {
+            setActiveIntent(intentParam as ShoppingIntent);
+        }
+    }, [intentParam]);
+
     // ── Filter → Search → Sort pipeline ──────────────────────
     const processedProducts = useMemo(() => {
         let result: Product[] = PRODUCTS;
+
+        // Intent/mood filter
+        if (activeIntent !== "all") {
+            result = filterByIntent(result, activeIntent);
+        }
 
         // Category filter
         if (activeCategory !== "All") {
@@ -92,6 +174,19 @@ export default function ShopClient() {
 
         // Price range filter
         result = result.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+
+        // Grade filter
+        if (gradeFilter !== "All") {
+            result = result.filter(p => {
+                const grade = getProductGrade({ grade: null, price: p.price, category: p.category, specs: { weight: p.specs.weight } });
+                return grade === gradeFilter;
+            });
+        }
+
+        // Territory Grown filter
+        if (territoryGrownOnly) {
+            result = result.filter(p => isTerritoryGrown(p));
+        }
 
         // Search filter
         if (searchQuery.trim()) {
@@ -133,7 +228,7 @@ export default function ShopClient() {
         }
 
         return result;
-    }, [activeCategory, searchQuery, sortBy, priceRange, strainType]);
+    }, [activeCategory, searchQuery, sortBy, priceRange, strainType, activeIntent, gradeFilter, territoryGrownOnly]);
 
     const visibleProducts = processedProducts.slice(0, visibleCount);
     const hasMore = visibleCount < processedProducts.length;
@@ -145,6 +240,7 @@ export default function ShopClient() {
             name: product.name,
             price: product.price,
             quantity: 1,
+            image: product.image,
         });
         trackGA4AddToCart({ id: String(product.id), name: product.name, price: product.price, category: product.category, quantity: 1 });
         setAddedIds(prev => new Set(prev).add(product.id));
@@ -183,16 +279,186 @@ export default function ShopClient() {
     return (
         <div className="min-h-screen page-glass pt-20">
             <div className="container mx-auto px-6 py-12">
-                <h1 className="text-4xl font-bold text-forest dark:text-cream mb-8">Full Collection</h1>
+                <h1 className="text-4xl font-bold text-forest dark:text-cream mb-6">Full Collection</h1>
+
+                {/* ── Intent / Mood Pill Bar ── */}
+                <IntentPillBar activeIntent={activeIntent} onIntentChange={(intent) => { setActiveIntent(intent); setVisibleCount(PRODUCTS_PER_PAGE); }} />
 
                 {/* Free Shipping Progress Bar */}
                 <div className="mb-8">
                     <FreeShippingBar />
                 </div>
 
+                {/* ── Mobile: Horizontal Category Pills + Filter Button ── */}
+                <div className="lg:hidden space-y-4 mb-6">
+                    {/* Search (mobile) */}
+                    <div className="relative" role="search">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        <label htmlFor="shop-search-mobile" className="sr-only">Search products</label>
+                        <input
+                            id="shop-search-mobile"
+                            type="search"
+                            value={searchQuery}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            placeholder="Search products..."
+                            className="w-full pl-10 pr-9 py-2.5 rounded-lg border border-border bg-white dark:bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-forest/50"
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => handleSearchChange("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Horizontal scrollable category pills */}
+                    <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
+                        {CATEGORIES.map((cat) => {
+                            const count = cat === "All"
+                                ? PRODUCTS.length
+                                : PRODUCTS.filter(p => p.category === cat).length;
+                            return (
+                                <button
+                                    key={cat}
+                                    onClick={() => handleCategoryChange(cat)}
+                                    className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex-shrink-0 ${activeCategory === cat
+                                        ? "bg-forest text-white dark:bg-leaf dark:text-forest shadow-md"
+                                        : "bg-white dark:bg-card text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                        }`}
+                                >
+                                    <span>{cat}</span>
+                                    <span className="text-[10px] opacity-75">({count})</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Expandable filter drawer (strain type + price) */}
+                    <button
+                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-white dark:bg-card text-sm font-medium text-forest dark:text-cream hover:bg-muted transition-colors w-full justify-between"
+                    >
+                        <span className="flex items-center gap-2">
+                            <Filter className="h-4 w-4" />
+                            More Filters
+                            {(strainType !== "All" || priceRange[0] > 0 || priceRange[1] < 500) && (
+                                <span className="w-2 h-2 rounded-full bg-lime-500" />
+                            )}
+                        </span>
+                        <ChevronDown className={`h-4 w-4 transition-transform ${mobileFiltersOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {mobileFiltersOpen && (
+                        <div className="bg-white dark:bg-card rounded-xl border border-border p-4 space-y-5 animate-in slide-in-from-top-2 duration-200">
+                            {/* Strain Type */}
+                            <div className="space-y-2">
+                                <h3 className="font-bold text-sm text-forest dark:text-cream">Strain Type</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {(["All", "Indica", "Sativa", "Hybrid"] as const).map((type) => (
+                                        <button
+                                            key={type}
+                                            onClick={() => { setStrainType(type); setVisibleCount(PRODUCTS_PER_PAGE); }}
+                                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${strainType === type
+                                                ? "bg-forest/10 text-forest dark:text-leaf border border-forest/30 dark:border-leaf/30"
+                                                : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                                }`}
+                                        >
+                                            {type}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Quality Grade (mobile) */}
+                            <div className="space-y-2">
+                                <h3 className="font-bold text-sm text-forest dark:text-cream">Quality Grade</h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {(["All", ...ALL_GRADES] as const).map((grade) => (
+                                        <button
+                                            key={grade}
+                                            onClick={() => { setGradeFilter(grade as GradeKey | "All"); setVisibleCount(PRODUCTS_PER_PAGE); }}
+                                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${gradeFilter === grade
+                                                ? "bg-forest/10 text-forest dark:text-leaf border border-forest/30 dark:border-leaf/30"
+                                                : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                                }`}
+                                        >
+                                            {grade}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Price Range */}
+                            <div className="space-y-2">
+                                <h3 className="font-bold text-sm text-forest dark:text-cream">Price Range</h3>
+                                <div className="px-1 space-y-3">
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="text-muted-foreground">Min: <span className="font-medium text-lime-600 dark:text-lime-400">${priceRange[0]}</span></span>
+                                        <span className="text-muted-foreground">Max: <span className="font-medium text-lime-600 dark:text-lime-400">${priceRange[1]}</span></span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <input
+                                            type="range"
+                                            min={0}
+                                            max={500}
+                                            step={5}
+                                            value={priceRange[0]}
+                                            onChange={(e) => {
+                                                const val = Number(e.target.value);
+                                                setPriceRange(([, max]) => [Math.min(val, max), max]);
+                                            }}
+                                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-muted [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lime-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-lime-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+                                            aria-label="Minimum price"
+                                        />
+                                        <input
+                                            type="range"
+                                            min={0}
+                                            max={500}
+                                            step={5}
+                                            value={priceRange[1]}
+                                            onChange={(e) => {
+                                                const val = Number(e.target.value);
+                                                setPriceRange(([min]) => [min, Math.max(val, min)]);
+                                            }}
+                                            className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-muted [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lime-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-lime-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
+                                            aria-label="Maximum price"
+                                        />
+                                    </div>
+                                    {(priceRange[0] > 0 || priceRange[1] < 500) && (
+                                        <button
+                                            onClick={() => setPriceRange([0, 500])}
+                                            className="text-xs text-lime-600 dark:text-lime-400 hover:underline"
+                                        >
+                                            Reset price filter
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Territory Grown Toggle (mobile) */}
+                            <div className="space-y-2">
+                                <h3 className="font-bold text-sm text-forest dark:text-cream">Collection</h3>
+                                <button
+                                    onClick={() => { setTerritoryGrownOnly(!territoryGrownOnly); setVisibleCount(PRODUCTS_PER_PAGE); }}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                                        territoryGrownOnly
+                                            ? "bg-amber-700/10 text-amber-800 dark:text-amber-400 border border-amber-500/30"
+                                            : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                    }`}
+                                >
+                                    <Leaf className="h-3.5 w-3.5" />
+                                    Territory Grown Only
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 <div className="flex flex-col lg:flex-row gap-12">
-                    {/* ── Sidebar ──────────────────────────────── */}
-                    <aside className="w-full lg:w-64 space-y-8 flex-shrink-0" aria-label="Product filters">
+                    {/* ── Desktop Sidebar (hidden on mobile) ──────── */}
+                    <aside className="hidden lg:block w-64 space-y-8 flex-shrink-0" aria-label="Product filters">
                         {/* Search */}
                         <div className="relative" role="search">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -312,6 +578,49 @@ export default function ShopClient() {
                             </div>
                         </div>
 
+                        {/* Quality Grade Filter */}
+                        <div className="space-y-4">
+                            <h3 className="font-bold flex items-center gap-2 text-forest dark:text-cream">
+                                <Filter className="h-4 w-4" /> Quality Grade
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {(["All", ...ALL_GRADES] as const).map((grade) => (
+                                    <button
+                                        key={grade}
+                                        onClick={() => { setGradeFilter(grade as GradeKey | "All"); setVisibleCount(PRODUCTS_PER_PAGE); }}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${gradeFilter === grade
+                                            ? "bg-forest/10 text-forest dark:text-leaf border border-forest/30 dark:border-leaf/30"
+                                            : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                            }`}
+                                    >
+                                        {grade}
+                                    </button>
+                                ))}
+                            </div>
+                            <GradeExplainer />
+                        </div>
+
+                        {/* Territory Grown Toggle */}
+                        <div className="space-y-3">
+                            <button
+                                onClick={() => { setTerritoryGrownOnly(!territoryGrownOnly); setVisibleCount(PRODUCTS_PER_PAGE); }}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                                    territoryGrownOnly
+                                        ? "bg-amber-700/10 dark:bg-amber-600/15 text-amber-800 dark:text-amber-400 border border-amber-500/30"
+                                        : "bg-white dark:bg-card text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
+                                }`}
+                            >
+                                <Leaf className={`h-4 w-4 ${territoryGrownOnly ? "text-amber-700 dark:text-amber-400" : ""}`} />
+                                Territory Grown Only
+                                <span className={`ml-auto w-8 h-5 rounded-full transition-colors ${territoryGrownOnly ? "bg-amber-600" : "bg-muted"} relative`}>
+                                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${territoryGrownOnly ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                                </span>
+                            </button>
+                        </div>
+
+                        {/* Gift Tier Progress (shows cart-based rewards) */}
+                        <GiftTierProgress cartTotal={total} compact />
+
                         {/* MedAgent Recommendation */}
                         <div className="p-4 bg-cream dark:bg-card rounded-xl border border-secondary/20">
                             <div className="flex items-center gap-2 mb-2">
@@ -414,7 +723,7 @@ export default function ShopClient() {
                                 <p className="text-muted-foreground text-sm mb-4">
                                     Try a different search term or browse a category.
                                 </p>
-                                <Button variant="outline" size="sm" onClick={() => { handleSearchChange(""); handleCategoryChange("All"); setStrainType("All"); setPriceRange([0, 500]); }}>
+                                <Button variant="outline" size="sm" onClick={() => { handleSearchChange(""); handleCategoryChange("All"); setStrainType("All"); setPriceRange([0, 500]); setActiveIntent("all"); setGradeFilter("All"); }}>
                                     Clear Filters
                                 </Button>
                             </div>
@@ -430,10 +739,16 @@ export default function ShopClient() {
                                             alt={product.altText || product.name}
                                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                         >
-                                            <div className="absolute top-3 left-3 bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded text-xs font-medium text-forest dark:text-cream z-20">
-                                                {product.specs.type}
+                                            <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5">
+                                                <div className="bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded text-xs font-medium text-forest dark:text-cream">
+                                                    {product.specs.type}
+                                                </div>
+                                                <GradeBadge
+                                                    product={{ grade: null, price: product.price, category: product.category, specs: { weight: product.specs.weight } }}
+                                                    size="sm"
+                                                />
                                             </div>
-                                            <div className={`absolute ${product.featured ? "top-3 right-12" : "top-3 right-3"} z-20`}>
+                                            <div className={`absolute ${product.featured ? "top-3 right-12" : "top-3 right-3"} z-20 flex flex-col gap-1.5`}>
                                                 <WishlistButton
                                                     product={{
                                                         id: product.id,
@@ -444,6 +759,7 @@ export default function ShopClient() {
                                                         category: product.category,
                                                     }}
                                                 />
+                                                <CompareButton slug={product.slug} />
                                             </div>
                                             {product.featured && (
                                                 <div className="absolute top-3 right-3 bg-yellow-500/90 backdrop-blur px-2 py-1 rounded text-xs font-medium text-white flex items-center gap-1 z-20">
@@ -467,8 +783,11 @@ export default function ShopClient() {
                                         </ProductImage>
                                     </Link>
                                     <div className="p-4">
-                                        <div className="text-sm text-foreground/80 dark:text-cream/80 mb-1 font-medium">
-                                            {product.category}{product.specs.thc && product.specs.thc !== "TBD" ? ` • ${product.specs.thc} THC` : ""}
+                                        <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                                            <span className="text-sm text-foreground/80 dark:text-cream/80 font-medium">
+                                                {product.category}{product.specs.thc && product.specs.thc !== "TBD" ? ` • ${product.specs.thc} THC` : ""}
+                                            </span>
+                                            {isTerritoryGrown(product) && <TerritoryGrownBadge size="sm" />}
                                         </div>
                                         <Link href={`/shop/${product.slug}`}>
                                             <h3 className="font-bold text-forest dark:text-cream mb-1 hover:text-leaf transition-colors line-clamp-1">
@@ -505,9 +824,19 @@ export default function ShopClient() {
                                         )}
 
                                         <div className="flex items-center justify-between gap-2">
-                                            <span className="font-bold text-lg text-forest dark:text-cream">
-                                                ${product.price.toFixed(2)}
-                                            </span>
+                                            <div>
+                                                <span className="font-bold text-lg text-forest dark:text-cream">
+                                                    ${product.price.toFixed(2)}
+                                                </span>
+                                                {(() => {
+                                                    const ppg = getLowestPricePerGram({ price: product.price, category: product.category, specs: { weight: product.specs.weight } });
+                                                    return ppg ? (
+                                                        <span className="block text-[10px] text-muted-foreground font-medium">
+                                                            From ${ppg.toFixed(2)}/g
+                                                        </span>
+                                                    ) : null;
+                                                })()}
+                                            </div>
                                             <div className="flex items-center gap-2">
                                                 {/* Quick Add to Cart */}
                                                 <Button

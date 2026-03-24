@@ -53,6 +53,7 @@ export default function BundlesClient({ bundles }: BundlesClientProps) {
                     name: product.name,
                     price: product.price,
                     quantity: product.quantity,
+                    image: product.image,
                 });
             }
 

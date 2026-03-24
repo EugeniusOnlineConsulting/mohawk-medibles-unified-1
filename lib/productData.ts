@@ -33,7 +33,7 @@ export interface Product {
     eeatNarrative: string;
 }
 
-export const PRODUCTS: Product[] = [
+const _RAW_PRODUCTS: Product[] = [
     {
         "id": 1,
         "slug": "bath-salts-canada",
@@ -14652,10 +14652,6 @@ export const PRODUCTS: Product[] = [
 
 
 
-export function getFeaturedProducts() {
-    return PRODUCTS.filter(p => p.featured);
-}
-
 /** Decode HTML entities inline (&#8211; → –, etc.) */
 function decodeEntities(str: string): string {
     if (!str || !str.includes("&")) return str;
@@ -14665,9 +14661,29 @@ function decodeEntities(str: string): string {
         .replace(/&quot;/g, '"').replace(/&apos;/g, "'");
 }
 
+/** Clean all user-facing text fields in a product */
+function cleanProduct(p: Product): Product {
+    return {
+        ...p,
+        name: decodeEntities(p.name),
+        altText: decodeEntities(p.altText),
+        metaDescription: decodeEntities(p.metaDescription),
+        shortDescription: decodeEntities(p.shortDescription),
+        eeatNarrative: decodeEntities(p.eeatNarrative),
+        sku: decodeEntities(p.sku),
+    };
+}
+
+/** All products with HTML entities decoded in user-facing text fields */
+export const PRODUCTS: Product[] = _RAW_PRODUCTS.map(cleanProduct);
+
 export function getShortName(product: Product) {
-    const name = decodeEntities(product.name);
+    const name = product.name;
     return name.length > 25 ? name.substring(0, 25) + "..." : name;
+}
+
+export function getFeaturedProducts() {
+    return PRODUCTS.filter(p => p.featured);
 }
 
 export function getProductBySlug(slug: string): Product | undefined {

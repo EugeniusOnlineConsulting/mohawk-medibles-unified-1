@@ -183,6 +183,9 @@ import ThemeProvider from "@/components/ThemeProvider";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import LocaleSEOHead from "@/components/LocaleSEOHead";
 import LazyWidgets from "@/components/LazyWidgets";
+import { CompareProvider } from "@/hooks/useCompare";
+import CompareBar from "@/components/CompareBar";
+import HappyHourBanner from "@/components/HappyHourBanner";
 
 export default async function RootLayout({
   children,
@@ -228,6 +231,7 @@ export default async function RootLayout({
             <LocaleSEOHead />
             <CartProvider>
             <WishlistProvider>
+            <CompareProvider>
               <TenantProvider tenant={tenant}>
               {/* Skip to main content — AODA accessibility requirement */}
               <a
@@ -237,12 +241,15 @@ export default async function RootLayout({
                 Skip to main content
               </a>
               <Header />
+              <HappyHourBanner />
               <main id="main-content">
                 {children}
               </main>
               <Footer />
+              <CompareBar />
               <LazyWidgets />
               </TenantProvider>
+            </CompareProvider>
             </WishlistProvider>
             </CartProvider>
           </LocaleProvider>

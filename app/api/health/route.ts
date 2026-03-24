@@ -26,12 +26,10 @@ export async function GET(req: NextRequest) {
     try {
         const start = Date.now();
         const apiKey = process.env.SHIPSTATION_API_KEY;
-        const apiSecret = process.env.SHIPSTATION_API_SECRET;
 
-        if (apiKey && apiSecret) {
-            const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
-            const res = await fetch("https://ssapi.shipstation.com/stores", {
-                headers: { Authorization: `Basic ${auth}` },
+        if (apiKey) {
+            const res = await fetch("https://api.shipstation.com/v2/carriers", {
+                headers: { "api-key": apiKey },
                 signal: AbortSignal.timeout(5000),
             });
             checks.shipstation = {

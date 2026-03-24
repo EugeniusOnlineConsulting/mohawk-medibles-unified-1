@@ -133,6 +133,71 @@ async function cacheFirst(request, cacheName) {
     }
 }
 
+// ─── Push Notifications ──────────────────────────────────
+
+/**
+ * Handle incoming push notifications from the server.
+ */
+self.addEventListener("push", (event) => {
+    if (!event.data) return;
+
+    let data;
+    try {
+        data = event.data.json();
+    } catch {
+        data = {
+            title: "Mohawk Medibles",
+            body: event.data.text(),
+            icon: "/icons/icon-192.png",
+            url: "https://mohawkmedibles.ca",
+        };
+    }
+
+    const options = {
+        body: data.body || "",
+        icon: data.icon || "/icons/icon-192.png",
+        badge: data.badge || "/icons/badge-72.png",
+        tag: data.tag || "mohawk-medibles",
+        renotify: true,
+        requireInteraction: false,
+        data: {
+            url: data.url || "https://mohawkmedibles.ca",
+        },
+        actions: [
+            { action: "open", title: "View" },
+            { action: "dismiss", title: "Dismiss" },
+        ],
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title || "Mohawk Medibles", options)
+    );
+});
+
+/**
+ * Handle notification click — open the target URL or focus existing tab.
+ */
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+
+    if (event.action === "dismiss") return;
+
+    const targetUrl = event.notification.data?.url || "https://mohawkmedibles.ca";
+
+    event.waitUntil(
+        clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+            for (const client of clientList) {
+                if (client.url === targetUrl && "focus" in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow(targetUrl);
+            }
+        })
+    );
+});
+
 // ─── Helpers ──────────────────────────────────────────────
 
 /**

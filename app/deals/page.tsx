@@ -3,11 +3,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getAllProducts } from "@/lib/products";
+import DealsClient from "./DealsClient";
 
 export const metadata: Metadata = {
     title: "Cannabis Deals & Promotions — Save on Premium Weed",
     description:
-        "Save on premium lab-tested cannabis with active deals from Mohawk Medibles. Free shipping over $199, bulk discounts, staff picks & best sellers. Indigenous-owned dispensary.",
+        "Save on premium lab-tested cannabis with active deals from Mohawk Medibles. Daily deals with countdown timers, free shipping over $199, bulk discounts, staff picks & best sellers. Indigenous-owned dispensary.",
     keywords: [
         "cannabis deals canada",
         "weed deals online",
@@ -19,11 +20,12 @@ export const metadata: Metadata = {
         "dispensary deals",
         "cannabis sale canada",
         "best weed deals online",
+        "daily deals cannabis",
     ],
     openGraph: {
         title: "Cannabis Deals & Promotions",
         description:
-            "Save on 344+ premium cannabis products. Free shipping over $199, bulk discounts, and daily deals.",
+            "Save on 344+ premium cannabis products. Daily deals with countdown timers, free shipping over $199, bulk discounts, and more.",
         url: "https://mohawkmedibles.ca/deals",
         type: "website",
         images: ["/og-image.png"],
@@ -38,26 +40,17 @@ export const metadata: Metadata = {
     },
 };
 
-/**
- * Cannabis Deals & Promotions Page
- * Showcases active offers and featured/best-selling products
- * Server component (no "use client")
- */
-
 export default async function DealsPage() {
     const products = await getAllProducts();
 
-    // Filter featured products (up to 4)
     const featuredProducts = products
         .filter((p) => p.featured)
         .slice(0, 4);
 
-    // Fallback to first 4 if no featured
     const staffPicks = featuredProducts.length > 0
         ? featuredProducts
         : products.slice(0, 4);
 
-    // Best sellers: next 4 products after staff picks
     const bestSellers = products.slice(4, 8);
 
     return (
@@ -69,10 +62,28 @@ export default async function DealsPage() {
                         Cannabis Deals & Promotions
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
-                        Save on premium, lab-tested cannabis with our active offers. From free shipping to bulk discounts,
-                        we&apos;re committed to making Empire Standard™ quality accessible to all Canadians.
+                        Save on premium, lab-tested cannabis with our active offers. From daily deals to bulk discounts,
+                        we&apos;re committed to making Empire Standard&trade; quality accessible to all Canadians.
                     </p>
                 </div>
+            </section>
+
+            {/* Daily Deals Section with Countdown Timers */}
+            <section className="container mx-auto px-6 mb-20">
+                <div className="flex items-center gap-3 mb-10">
+                    <div className="p-2 rounded-xl bg-orange-500/10 border border-orange-500/20">
+                        <span className="text-2xl">&#128293;</span>
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-bold text-foreground tracking-tight uppercase">
+                            Daily Deals
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                            Limited-time offers with countdown timers — grab them before they expire
+                        </p>
+                    </div>
+                </div>
+                <DealsClient />
             </section>
 
             {/* Active Offers Section */}
@@ -120,7 +131,6 @@ export default async function DealsPage() {
                             href={`/shop/${product.slug}`}
                             className="group relative h-[300px] rounded-2xl overflow-hidden glass-card border border-border hover:border-secondary/50 transition-all duration-500"
                         >
-                            {/* Product Image */}
                             {product.image && (
                                 <Image
                                     src={product.image}
@@ -130,21 +140,13 @@ export default async function DealsPage() {
                                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
                             )}
-
-                            {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/40 to-transparent" />
-
-                            {/* Category Badge (Top Left) */}
                             <div className="absolute top-4 left-4 bg-secondary/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white">
                                 {product.category}
                             </div>
-
-                            {/* Price Badge (Top Right) */}
                             <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-border px-3 py-1 rounded-full text-sm font-bold text-forest dark:text-lime">
                                 ${product.price.toFixed(2)}
                             </div>
-
-                            {/* Product Name (Bottom) */}
                             <div className="absolute bottom-0 left-0 right-0 p-4">
                                 <h3 className="text-lg font-bold text-white line-clamp-2">
                                     {product.name}
@@ -167,7 +169,6 @@ export default async function DealsPage() {
                             href={`/shop/${product.slug}`}
                             className="group relative h-[300px] rounded-2xl overflow-hidden glass-card border border-border hover:border-secondary/50 transition-all duration-500"
                         >
-                            {/* Product Image */}
                             {product.image && (
                                 <Image
                                     src={product.image}
@@ -177,21 +178,13 @@ export default async function DealsPage() {
                                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
                             )}
-
-                            {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/40 to-transparent" />
-
-                            {/* Category Badge (Top Left) */}
                             <div className="absolute top-4 left-4 bg-secondary/80 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white">
                                 {product.category}
                             </div>
-
-                            {/* Price Badge (Top Right) */}
                             <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm border border-border px-3 py-1 rounded-full text-sm font-bold text-forest dark:text-lime">
                                 ${product.price.toFixed(2)}
                             </div>
-
-                            {/* Product Name (Bottom) */}
                             <div className="absolute bottom-0 left-0 right-0 p-4">
                                 <h3 className="text-lg font-bold text-white line-clamp-2">
                                     {product.name}
@@ -209,7 +202,7 @@ export default async function DealsPage() {
                         Browse All 344+ Products
                     </h2>
                     <p className="text-muted-foreground mb-8 text-lg">
-                        Discover our complete selection of premium cannabis products, all meeting the Empire Standard™.
+                        Discover our complete selection of premium cannabis products, all meeting the Empire Standard&trade;.
                     </p>
                     <Link href="/shop">
                         <Button variant="brand" size="lg">

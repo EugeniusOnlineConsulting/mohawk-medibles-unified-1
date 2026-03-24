@@ -12,6 +12,7 @@ import { useLocale } from "@/components/LocaleProvider";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
+import DealOfTheDayBanner from "@/components/DealOfTheDayBanner";
 
 export default function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -35,10 +36,17 @@ export default function Header() {
 
     return (
         <>
-            {/* Shipping Banner — .cc style lime accent bar */}
-            <div role="banner" className="bg-lime text-black text-[9px] md:text-[11px] py-2 px-4 text-center font-bold tracking-wider uppercase relative z-[60] font-sans">
-                {t("nav.shippingBanner")}
+            {/* Shipping Banner — .cc style lime accent bar + Price Match */}
+            <div role="banner" className="bg-lime text-black text-[9px] md:text-[11px] py-2 px-4 text-center font-bold tracking-wider uppercase relative z-[60] font-sans flex items-center justify-center gap-3 flex-wrap">
+                <span>{t("nav.shippingBanner")}</span>
+                <span className="hidden sm:inline text-black/30">|</span>
+                <Link href="/price-match" className="inline-flex items-center gap-1 hover:underline">
+                    <span>Price Match + 5% Off</span>
+                </Link>
             </div>
+
+            {/* Deal of the Day Announcement Banner */}
+            <DealOfTheDayBanner />
 
             <nav
                 role="navigation"
@@ -61,7 +69,7 @@ export default function Header() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-[11px] font-bold tracking-[0.15em] uppercase font-sans">
-                        {(["Shop", "Deals", "About", "Blog", "Reviews", "FAQ", "Support"] as const).map((item) => (
+                        {(["Shop", "Deals", "About", "Blog", "FAQ", "Support"] as const).map((item) => (
                             <Link
                                 key={item}
                                 href={`/${item.toLowerCase()}`}
@@ -79,6 +87,66 @@ export default function Header() {
                                 }`} />
                             </Link>
                         ))}
+                        <Link
+                            href="/locations"
+                            className={`relative group transition-colors ${
+                                pathname === "/locations"
+                                    ? "text-lime"
+                                    : onHeroTransparent
+                                        ? "text-white/90 hover:text-lime"
+                                        : "text-charcoal-deep/80 dark:text-white/80 hover:text-forest dark:hover:text-lime"
+                            }`}
+                        >
+                            Visit Us
+                            <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-lime transition-all duration-300 ${
+                                pathname === "/locations" ? "w-full" : "w-0 group-hover:w-full"
+                            }`} />
+                        </Link>
+                        <Link
+                            href="/mix-match"
+                            className={`relative group transition-colors ${
+                                pathname === "/mix-match"
+                                    ? "text-lime"
+                                    : onHeroTransparent
+                                        ? "text-green-400 hover:text-lime"
+                                        : "text-green-600 dark:text-green-400 hover:text-forest dark:hover:text-lime"
+                            }`}
+                        >
+                            Build Your Oz
+                            <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-lime transition-all duration-300 ${
+                                pathname === "/mix-match" ? "w-full" : "w-0 group-hover:w-full"
+                            }`} />
+                        </Link>
+                        <Link
+                            href="/shop-by-mood"
+                            className={`relative group transition-colors ${
+                                pathname === "/shop-by-mood"
+                                    ? "text-lime"
+                                    : onHeroTransparent
+                                        ? "text-white/90 hover:text-lime"
+                                        : "text-charcoal-deep/80 dark:text-white/80 hover:text-forest dark:hover:text-lime"
+                            }`}
+                        >
+                            Mood
+                            <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-lime transition-all duration-300 ${
+                                pathname === "/shop-by-mood" ? "w-full" : "w-0 group-hover:w-full"
+                            }`} />
+                        </Link>
+                        <Link
+                            href="/territory-grown"
+                            className={`relative group transition-colors ${
+                                pathname === "/territory-grown"
+                                    ? "text-lime"
+                                    : onHeroTransparent
+                                        ? "text-amber-300 hover:text-lime"
+                                        : "text-amber-700 dark:text-amber-400 hover:text-forest dark:hover:text-lime"
+                            }`}
+                        >
+                            Territory Grown
+                            <span className={`absolute -bottom-1 left-0 h-[1.5px] bg-lime transition-all duration-300 ${
+                                pathname === "/territory-grown" ? "w-full" : "w-0 group-hover:w-full"
+                            }`} />
+                        </Link>
                     </div>
                 </div>
 
@@ -92,6 +160,10 @@ export default function Header() {
                                 <User className="h-4 w-4" />
                             </Button>
                         </Link>
+                    </div>
+                    {/* Mobile search trigger — full-screen overlay handled by SearchAutocomplete */}
+                    <div className="md:hidden">
+                        <SearchAutocomplete />
                     </div>
 
                     <Link href="/wishlist" className="relative" aria-label={`Wishlist${wishlistCount > 0 ? `, ${wishlistCount} items` : ""}`}>
@@ -146,6 +218,54 @@ export default function Header() {
                                 <div className="w-8 h-[1px] bg-border" />
                             </Link>
                         ))}
+                        <Link
+                            href="/locations"
+                            className={`flex items-center justify-between transition-colors ${
+                                pathname === "/locations"
+                                    ? "text-lime"
+                                    : "text-foreground dark:text-white hover:text-lime"
+                            }`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Visit Us
+                            <div className="w-8 h-[1px] bg-border" />
+                        </Link>
+                        <Link
+                            href="/shop-by-mood"
+                            className={`flex items-center justify-between transition-colors ${
+                                pathname === "/shop-by-mood"
+                                    ? "text-lime"
+                                    : "text-foreground dark:text-white hover:text-lime"
+                            }`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Shop by Mood
+                            <div className="w-8 h-[1px] bg-border" />
+                        </Link>
+                        <Link
+                            href="/territory-grown"
+                            className={`flex items-center justify-between transition-colors ${
+                                pathname === "/territory-grown"
+                                    ? "text-lime"
+                                    : "text-amber-600 dark:text-amber-400 hover:text-lime"
+                            }`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Territory Grown
+                            <div className="w-8 h-[1px] bg-amber-500/30" />
+                        </Link>
+                        <Link
+                            href="/mix-match"
+                            className={`flex items-center justify-between transition-colors ${
+                                pathname === "/mix-match"
+                                    ? "text-lime"
+                                    : "text-green-500 dark:text-green-400 hover:text-lime"
+                            }`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                            Build Your Oz
+                            <div className="w-8 h-[1px] bg-green-500/30" />
+                        </Link>
                         <div className="flex flex-col gap-3 pt-6 font-sans text-sm tracking-widest border-t border-border">
                             <div className="flex items-center gap-3">
                                 <LanguageSwitcher />

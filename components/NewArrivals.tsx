@@ -25,7 +25,7 @@ export default function NewArrivals() {
     }
 
     function handleQuickAdd(p: (typeof NEW_ARRIVALS)[0]) {
-        addItem({ id: String(p.id), name: p.name, price: p.price, quantity: 1 });
+        addItem({ id: String(p.id), name: p.name, price: p.price, quantity: 1, image: p.image });
     }
 
     if (NEW_ARRIVALS.length === 0) return null;

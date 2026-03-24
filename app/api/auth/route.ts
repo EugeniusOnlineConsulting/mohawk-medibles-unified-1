@@ -12,6 +12,7 @@ import { sendPasswordReset, sendWelcomeEmail } from "@/lib/email";
 import { verifyCaptcha, getClientIp } from "@/lib/captcha";
 import { verifyCsrf } from "@/lib/csrf";
 import { log } from "@/lib/logger";
+import { autoEnterSignupContests } from "@/lib/contestDrawing";
 
 export async function POST(req: NextRequest) {
     const limited = await applyRateLimit(req, RATE_LIMITS.auth);
@@ -114,6 +115,9 @@ export async function POST(req: NextRequest) {
                 sendWelcomeEmail(email, name).catch((err) =>
                     log.auth.error("Welcome email failed", { error: err instanceof Error ? err.message : "Unknown" })
                 );
+
+                // Auto-enter SIGNUP contests (non-blocking)
+                autoEnterSignupContests(user.id).catch(() => {});
 
                 return res;
             }

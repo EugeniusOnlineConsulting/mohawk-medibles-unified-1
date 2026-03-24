@@ -186,6 +186,7 @@ import LazyWidgets from "@/components/LazyWidgets";
 import { CompareProvider } from "@/hooks/useCompare";
 import CompareBar from "@/components/CompareBar";
 import HappyHourBanner from "@/components/HappyHourBanner";
+import { TRPCProvider } from "@/components/TRPCProvider";
 
 export default async function RootLayout({
   children,
@@ -227,6 +228,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: jsonLdGraph }}
         />
         <ThemeProvider>
+          <TRPCProvider>
           <LocaleProvider>
             <LocaleSEOHead />
             <CartProvider>
@@ -253,6 +255,7 @@ export default async function RootLayout({
             </WishlistProvider>
             </CartProvider>
           </LocaleProvider>
+          </TRPCProvider>
         </ThemeProvider>
         <Analytics />
       </body>

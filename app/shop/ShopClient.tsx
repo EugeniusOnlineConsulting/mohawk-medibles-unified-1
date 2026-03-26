@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
     Filter, ChevronDown, Sparkles, Search, ShoppingCart,
@@ -282,6 +283,54 @@ export default function ShopClient() {
             <div className="container mx-auto px-6 py-12">
                 <h1 className="text-4xl font-bold text-forest dark:text-cream mb-6">Full Collection</h1>
 
+                {/* ── Promo Deal Banner ── */}
+                <div className="mb-6 bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] rounded-lg overflow-hidden">
+                    <div className="flex animate-scroll whitespace-nowrap py-2.5 px-4">
+                        {["\ud83d\udd25 $40 OUNCES of Bud or 3 For $100", "\ud83d\udc8e Hash Starting at $140/OZ", "\ud83d\ude9a FREE Shipping on Orders Over $199", "\u26a1 25,000 Puff Elf Bar Vapes \u2014 $35 Each", "\ud83c\udf3f Premium Flower Starting at $40/OZ"].map((deal, i) => (
+                            <span key={i} className="inline-block mx-8 text-sm font-semibold text-lime">{deal}</span>
+                        ))}
+                        {["\ud83d\udd25 $40 OUNCES of Bud or 3 For $100", "\ud83d\udc8e Hash Starting at $140/OZ", "\ud83d\ude9a FREE Shipping on Orders Over $199", "\u26a1 25,000 Puff Elf Bar Vapes \u2014 $35 Each", "\ud83c\udf3f Premium Flower Starting at $40/OZ"].map((deal, i) => (
+                            <span key={`dup-${i}`} className="inline-block mx-8 text-sm font-semibold text-lime">{deal}</span>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ── Category Image Cards ── */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+                    {CATEGORIES.filter(c => c !== "All").slice(0, 6).map((cat) => {
+                        const count = PRODUCTS.filter(p => p.category === cat).length;
+                        const sampleProduct = PRODUCTS.find(p => p.category === cat);
+                        return (
+                            <button
+                                key={cat}
+                                onClick={() => handleCategoryChange(cat)}
+                                className={`relative overflow-hidden rounded-lg border transition-all duration-200 group ${
+                                    activeCategory === cat
+                                        ? "border-primary ring-2 ring-primary/20"
+                                        : "border-border hover:border-primary/50"
+                                }`}
+                            >
+                                <div className="aspect-[4/3] bg-card relative">
+                                    {sampleProduct?.image && (
+                                        <Image
+                                            src={sampleProduct.image}
+                                            alt={cat}
+                                            fill
+                                            className="object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-300"
+                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                                        />
+                                    )}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                                    <div className="absolute bottom-0 left-0 right-0 p-2">
+                                        <div className="text-xs font-bold text-white">{cat}</div>
+                                        <div className="text-[10px] text-white/70">{count} products</div>
+                                    </div>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
                 {/* ── Intent / Mood Pill Bar ── */}
                 <IntentPillBar activeIntent={activeIntent} onIntentChange={(intent) => { setActiveIntent(intent); setVisibleCount(PRODUCTS_PER_PAGE); }} />
 
@@ -290,8 +339,8 @@ export default function ShopClient() {
                     <FreeShippingBar />
                 </div>
 
-                {/* ── Mobile: Horizontal Category Pills + Filter Button ── */}
-                <div className="lg:hidden space-y-4 mb-6">
+                {/* ── Category Pills + Filter Bar (all screens) ── */}
+                <div className="space-y-4 mb-6">
                     {/* Search (mobile) */}
                     <div className="relative" role="search">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
@@ -457,204 +506,8 @@ export default function ShopClient() {
                     )}
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* ── Desktop Sidebar (hidden on mobile) ──────── */}
-                    <aside className="hidden lg:block w-64 space-y-8 flex-shrink-0" aria-label="Product filters">
-                        {/* Search */}
-                        <div className="relative" role="search">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                            <label htmlFor="shop-search" className="sr-only">Search products</label>
-                            <input
-                                id="shop-search"
-                                type="search"
-                                value={searchQuery}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                placeholder="Search products..."
-                                className="w-full pl-10 pr-9 py-2.5 rounded-lg border border-border bg-white dark:bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-forest/50"
-                            />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => handleSearchChange("")}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
-                            )}
-                        </div>
-
-                        {/* Category Filters */}
-                        <div className="space-y-4">
-                            <h3 className="font-bold flex items-center gap-2 text-forest dark:text-cream">
-                                <Filter className="h-4 w-4" /> Categories
-                            </h3>
-                            <div className="space-y-1">
-                                {CATEGORIES.map((cat) => {
-                                    const count = cat === "All"
-                                        ? PRODUCTS.length
-                                        : PRODUCTS.filter(p => p.category === cat).length;
-                                    return (
-                                        <button
-                                            key={cat}
-                                            onClick={() => handleCategoryChange(cat)}
-                                            className={`flex items-center justify-between w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${activeCategory === cat
-                                                ? "bg-forest/10 text-forest dark:text-leaf font-medium"
-                                                : "text-muted-foreground hover:bg-muted dark:hover:bg-white/5"
-                                                }`}
-                                        >
-                                            <span>{cat}</span>
-                                            <span className="text-xs opacity-75">{count}</span>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Strain Type Filter */}
-                        <div className="space-y-4">
-                            <h3 className="font-bold flex items-center gap-2 text-forest dark:text-cream">
-                                <Filter className="h-4 w-4" /> Strain Type
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {(["All", "Indica", "Sativa", "Hybrid"] as const).map((type) => (
-                                    <button
-                                        key={type}
-                                        onClick={() => { setStrainType(type); setVisibleCount(PRODUCTS_PER_PAGE); }}
-                                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${strainType === type
-                                            ? "bg-forest/10 text-forest dark:text-leaf border border-forest/30 dark:border-leaf/30"
-                                            : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
-                                            }`}
-                                    >
-                                        {type}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Price Range Filter */}
-                        <div className="space-y-4">
-                            <h3 className="font-bold flex items-center gap-2 text-forest dark:text-cream">
-                                <Filter className="h-4 w-4" /> Price Range
-                            </h3>
-                            <div className="px-1 space-y-3">
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-muted-foreground">Min: <span className="font-medium text-lime-600 dark:text-lime-400">${priceRange[0]}</span></span>
-                                    <span className="text-muted-foreground">Max: <span className="font-medium text-lime-600 dark:text-lime-400">${priceRange[1]}</span></span>
-                                </div>
-                                <div className="space-y-2">
-                                    <input
-                                        type="range"
-                                        min={0}
-                                        max={500}
-                                        step={5}
-                                        value={priceRange[0]}
-                                        onChange={(e) => {
-                                            const val = Number(e.target.value);
-                                            setPriceRange(([, max]) => [Math.min(val, max), max]);
-                                        }}
-                                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-muted [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lime-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-lime-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
-                                        aria-label="Minimum price"
-                                    />
-                                    <input
-                                        type="range"
-                                        min={0}
-                                        max={500}
-                                        step={5}
-                                        value={priceRange[1]}
-                                        onChange={(e) => {
-                                            const val = Number(e.target.value);
-                                            setPriceRange(([min]) => [min, Math.max(val, min)]);
-                                        }}
-                                        className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-muted [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lime-500 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-lime-500 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:shadow-md"
-                                        aria-label="Maximum price"
-                                    />
-                                </div>
-                                {(priceRange[0] > 0 || priceRange[1] < 500) && (
-                                    <button
-                                        onClick={() => setPriceRange([0, 500])}
-                                        className="text-xs text-lime-600 dark:text-lime-400 hover:underline"
-                                    >
-                                        Reset price filter
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Quality Grade Filter */}
-                        <div className="space-y-4">
-                            <h3 className="font-bold flex items-center gap-2 text-forest dark:text-cream">
-                                <Filter className="h-4 w-4" /> Quality Grade
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {(["All", ...ALL_GRADES] as const).map((grade) => (
-                                    <button
-                                        key={grade}
-                                        onClick={() => { setGradeFilter(grade as GradeKey | "All"); setVisibleCount(PRODUCTS_PER_PAGE); }}
-                                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${gradeFilter === grade
-                                            ? "bg-forest/10 text-forest dark:text-leaf border border-forest/30 dark:border-leaf/30"
-                                            : "text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
-                                            }`}
-                                    >
-                                        {grade}
-                                    </button>
-                                ))}
-                            </div>
-                            <GradeExplainer />
-                        </div>
-
-                        {/* Territory Grown Toggle */}
-                        <div className="space-y-3">
-                            <button
-                                onClick={() => { setTerritoryGrownOnly(!territoryGrownOnly); setVisibleCount(PRODUCTS_PER_PAGE); }}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                                    territoryGrownOnly
-                                        ? "bg-amber-700/10 dark:bg-amber-600/15 text-amber-800 dark:text-amber-400 border border-amber-500/30"
-                                        : "bg-white dark:bg-card text-muted-foreground border border-border hover:bg-muted dark:hover:bg-white/5"
-                                }`}
-                            >
-                                <Leaf className={`h-4 w-4 ${territoryGrownOnly ? "text-amber-700 dark:text-amber-400" : ""}`} />
-                                Territory Grown Only
-                                <span className={`ml-auto w-8 h-5 rounded-full transition-colors ${territoryGrownOnly ? "bg-amber-600" : "bg-muted"} relative`}>
-                                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${territoryGrownOnly ? "translate-x-3.5" : "translate-x-0.5"}`} />
-                                </span>
-                            </button>
-                        </div>
-
-                        {/* Gift Tier Progress (shows cart-based rewards) */}
-                        <GiftTierProgress cartTotal={total} compact />
-
-                        {/* MedAgent Recommendation */}
-                        <div className="p-4 bg-cream dark:bg-card rounded-xl border border-secondary/20">
-                            <div className="flex items-center gap-2 mb-2">
-                                <MessageCircle className="h-4 w-4 text-secondary" />
-                                <h4 className="font-semibold text-secondary">Need a recommendation?</h4>
-                            </div>
-                            <p className="text-xs text-secondary/80 mb-3">
-                                Ask MedAgent to find the perfect product for your needs — just describe what you&apos;re looking for.
-                            </p>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full gap-2 text-xs border-secondary/30 text-secondary hover:bg-secondary/10"
-                                onClick={() => {
-                                    // Open the MedAgent chat widget
-                                    const fab = document.querySelector<HTMLButtonElement>("[data-medagent-fab]");
-                                    if (fab) {
-                                        fab.click();
-                                    } else {
-                                        // Fallback: find the floating action button in the bottom-right
-                                        const buttons = document.querySelectorAll<HTMLButtonElement>("button.rounded-full");
-                                        const chatBtn = Array.from(buttons).find(btn => btn.closest(".fixed.bottom-6.right-6"));
-                                        if (chatBtn) chatBtn.click();
-                                    }
-                                }}
-                            >
-                                <Sparkles className="h-3 w-3" /> Chat with MedAgent
-                            </Button>
-                        </div>
-                    </aside>
-
-                    {/* ── Product Grid ─────────────────────────── */}
-                    <div className="flex-1 min-w-0">
+                {/* ── Product Grid ─────────────────────────── */}
+                <div>
                         {/* Personalized Recommendations */}
                         {personalizedRecs.length > 0 && activeCategory === "All" && !searchQuery && (
                             <RecommendationCarousel
@@ -731,14 +584,14 @@ export default function ShopClient() {
                         )}
 
                         {/* Product Grid */}
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="Products">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5" role="list" aria-label="Products">
                             {visibleProducts.map((product) => (
                                 <div key={product.id} role="listitem" className="group bg-white dark:bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300">
                                     <Link href={`/shop/${product.slug}`}>
                                         <ProductImage
                                             src={product.image}
                                             alt={product.altText || product.name}
-                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                         >
                                             <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5">
                                                 <div className="bg-white/90 dark:bg-black/50 backdrop-blur px-2 py-1 rounded text-xs font-medium text-forest dark:text-cream">
@@ -884,7 +737,6 @@ export default function ShopClient() {
                                 </Button>
                             </div>
                         )}
-                    </div>
                 </div>
             </div>
         </div>

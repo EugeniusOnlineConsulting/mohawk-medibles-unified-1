@@ -8,7 +8,7 @@
 
 import { getAllCities } from "./city-delivery-data";
 
-const BASE_URL = "https://mohawkmedibles.ca";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://mohawkmedibles.ca";
 
 // ─── Brand Constants ────────────────────────────────────────
 

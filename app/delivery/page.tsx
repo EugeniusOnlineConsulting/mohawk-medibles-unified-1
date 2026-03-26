@@ -9,6 +9,7 @@
  */
 
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Truck, Shield, FlaskRound, Gift } from "lucide-react";
@@ -94,15 +95,27 @@ export default function DeliveryPage() {
       <main className="min-h-screen pt-32 pb-20 page-glass text-foreground">
         <div className="container mx-auto px-6">
           {/* ── Hero Section ──────────────────────────────────────── */}
-          <section className="mb-20">
-            <div className="max-w-4xl mx-auto text-center">
-              <p className="text-[10px] font-bold tracking-widest uppercase text-forest dark:text-lime mb-4">
+          <section className="mb-20 relative overflow-hidden rounded-2xl">
+            {/* Background image */}
+            <div className="absolute inset-0">
+              <Image
+                src="/assets/hero/hero-flower-premium.webp"
+                alt="Premium cannabis flower"
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+            </div>
+
+            <div className="relative max-w-4xl mx-auto text-center py-20 px-6">
+              <p className="text-[10px] font-bold tracking-widest uppercase text-lime mb-4">
                 Nationwide Delivery
               </p>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-foreground uppercase mb-6">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white uppercase mb-6">
                 Cannabis Delivery Across Canada
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+              <p className="text-lg text-white/80 leading-relaxed mb-8">
                 Mohawk Medibles ships premium, lab-tested cannabis to every province and
                 territory in Canada. Fast, discreet delivery with full tracking and guaranteed
                 freshness.

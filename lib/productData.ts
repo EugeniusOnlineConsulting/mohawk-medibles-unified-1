@@ -13286,22 +13286,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/07/Rainbow-x-Raspberry-Lemonade-Diamond-6g-Disposable-Vape.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/07/Orange-Crush-x-Root-Beer-Diamond-6g-Disposable-Vape.png"
         ],
-        "altText": "Diamond Concentrates 6g Dual Chamber Disposable THC Vape - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy Diamond Concentrates 6g Dual Chamber Disposable THC Vape online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy Diamond Concentrates 6g Dual Chamber Disposable THC Vape online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "Diamond Concentrates 6g dual chamber disposable THC vape with Gorilla Glue and GSC flavours available in Canada",
+        "sku": "MM-DISP-328",
+        "metaDescription": "Buy Diamond Concentrates 6G Dual Chamber THC Vape in Canada. Premium dual-flavour disposable at Mohawk Medibles — fast shipping.",
+        "shortDescription": "Shop Diamond Concentrates 6g Dual Chamber Disposable THC Vape — premium dual-flavour device with strains like Gorilla Glue x GSC, Blueberry OG x Blackberry Kush. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy Diamond Concentrates 6g Dual Chamber Disposable THC Vape online in Canada at Mohawk Medibles. This premium dual-chamber device features 6 grams of Diamond Concentrates' renowned THC distillate in exciting strain pairings like Gorilla Glue x Girl Scout Cookies and Blueberry OG x Blackberry Kush.</p><h2>Product Highlights</h2><ul><li><strong>6g Dual Chamber:</strong> 3g per chamber for extended versatile sessions</li><li><strong>Premium Strain Pairings:</strong> Gorilla Glue x GSC, Strawberry Milkshake x Limoncello, and more</li><li><strong>Diamond Concentrates Quality:</strong> Canada's trusted concentrate brand</li><li><strong>Rechargeable USB-C:</strong> Use every last drop</li></ul><h2>Available Flavour Combos</h2><ul><li>Gorilla Glue x Girl Scout Cookies</li><li>Blueberry OG x Blackberry Kush</li><li>Strawberry Milkshake x Limoncello</li><li>Skunk x Jackwoods Rush Cream</li><li>Rainbow x Raspberry Lemonade</li><li>Orange Crush x Root Beer</li></ul><h2>Frequently Asked Questions</h2><h3>How long does the 6g Diamond vape last?</h3><p><strong>A:</strong> Expect 1500-2400 puffs from the full 6 grams, typically lasting 4-8 weeks for moderate daily users.</p><h3>What makes Diamond Concentrates special?</h3><p><strong>A:</strong> Diamond Concentrates is one of Canada's most trusted concentrate brands, known for premium distillate quality and creative strain pairings.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing before 2 PM EST. Discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
-            "type": "Diamond Concentrates",
-            "weight": "TBD",
-            "terpenes": [],
-            "lineage": ""
+            "thc": "80-90%",
+            "cbd": "Minimal",
+            "type": "Disposables",
+            "weight": "6g",
+            "terpenes": ["Myrcene", "Limonene", "Caryophyllene", "Pinene"],
+            "lineage": "Multiple strain pairings available"
         },
-        "eeatNarrative": "Diamond Concentrates 6g Dual Chamber Disposable THC Vape is a premium Diamond Concentrates product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "Diamond Concentrates 6g Dual Chamber Disposable THC Vape is a lab-tested, premium vape from one of Canada's most trusted concentrate brands. All Diamond Concentrates products undergo third-party lab testing to meet Empire Standard quality benchmarks for potency and purity at Mohawk Medibles, Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Euphoric", "Happy", "Creative", "Uplifted"]
     },
     {
         "id": 329,

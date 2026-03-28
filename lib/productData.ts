@@ -14374,22 +14374,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/05/Bite-Size-Brownie-with-logo-scaled-1.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/05/Bite-Size-Brownie-with-logo-scaled-1.png"
         ],
-        "altText": "C and D Bite Size THC Brownie - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy C and D Bite Size THC Brownie online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy C and D Bite Size THC Brownie online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "C and D Bite Size THC Brownie edible cannabis treat individually wrapped for micro-dosing in Canada",
+        "sku": "MM-EDIB-356",
+        "metaDescription": "Buy C and D Bite Size THC Brownie in Canada. Individually dosed cannabis edible at Mohawk Medibles — fast Canada-wide shipping.",
+        "shortDescription": "Shop the C and D Bite Size THC Brownie — a perfectly portioned cannabis edible for easy micro-dosing. Rich chocolate flavour with consistent THC. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy C and D Bite Size THC Brownie online in Canada at Mohawk Medibles. This individually portioned cannabis brownie delivers a rich chocolate experience with consistent, lab-tested THC dosing — perfect for micro-dosing or as a controlled edible treat.</p><h2>Product Highlights</h2><ul><li><strong>Bite Size Portion:</strong> Pre-dosed for consistent effects every time</li><li><strong>Rich Chocolate Flavour:</strong> Decadent brownie taste that masks cannabis flavour</li><li><strong>Affordable:</strong> Just $5 per serving for accessible cannabis edibles</li><li><strong>Discreet Consumption:</strong> Looks and tastes like a regular brownie treat</li></ul><h2>Dosing Guide</h2><ol><li>Start with half a brownie if you are new to edibles</li><li>Wait at least 60-90 minutes before considering more</li><li>Effects peak at 2-3 hours and last 4-8 hours</li><li>Store in a cool, dry place away from children and pets</li></ol><h2>Frequently Asked Questions</h2><h3>How strong is the C and D Bite Size Brownie?</h3><p><strong>A:</strong> Each bite-size brownie contains a moderate THC dose suitable for occasional users. Beginners should start with half and wait 90 minutes. Check packaging for exact mg per serving.</p><h3>How long do the effects last?</h3><p><strong>A:</strong> Cannabis edibles typically take 30-90 minutes to kick in and effects can last 4-8 hours. The bite-size format helps control your dose precisely.</p><h3>Does Mohawk Medibles ship edibles across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing on orders before 2 PM EST. All edibles ship in temperature-appropriate, discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
+            "thc": "Varies by batch",
+            "cbd": "Minimal",
             "type": "Baked Goods",
-            "weight": "TBD",
+            "weight": "Single serving",
             "terpenes": [],
-            "lineage": ""
+            "lineage": "N/A"
         },
-        "eeatNarrative": "C and D Bite Size THC Brownie is a premium Baked Goods product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "The C and D Bite Size THC Brownie is a lab-tested cannabis edible available at Mohawk Medibles. All C and D edibles undergo third-party lab testing to meet Empire Standard quality benchmarks for accurate THC dosing and food safety, ensuring a consistent and enjoyable experience from Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Happy", "Euphoric", "Sleepy", "Hungry"]
     },
     {
         "id": 357,

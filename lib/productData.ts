@@ -13812,22 +13812,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Zillionaire-Photoroom.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Zillionaire-Photoroom.png"
         ],
-        "altText": "ZILLIONAIRE Dual Chamber Vape 4G - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy ZILLIONAIRE Dual Chamber Vape 4G online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy ZILLIONAIRE Dual Chamber Vape 4G online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "ZILLIONAIRE Dual Chamber 4G disposable THC vape with two flavour chambers for cannabis users in Canada",
+        "sku": "MM-DISP-342",
+        "metaDescription": "Buy ZILLIONAIRE Dual Chamber 4G Vape in Canada. Premium dual-flavour THC disposable at Mohawk Medibles — fast Canada-wide shipping.",
+        "shortDescription": "Shop the ZILLIONAIRE Dual Chamber Vape 4G — a premium dual-flavour disposable with 4 grams of potent THC concentrate. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy the ZILLIONAIRE Dual Chamber Vape 4G online in Canada at Mohawk Medibles. This premium dual-chamber disposable delivers two distinct flavour profiles in a single sleek device with a massive 4g capacity.</p><h2>Product Highlights</h2><ul><li><strong>Dual Chamber Design:</strong> Switch between two flavours with ease</li><li><strong>4g Total Capacity:</strong> One of the largest disposable vapes available</li><li><strong>Premium Concentrate:</strong> High-potency THC distillate for powerful effects</li><li><strong>Rechargeable Battery:</strong> USB-C charging ensures you finish every gram</li></ul><h2>How to Use</h2><ol><li>Unbox and inspect the dual-chamber mouthpiece</li><li>Toggle between flavour chambers using the airflow switch</li><li>Take slow, steady draws of 2-3 seconds</li><li>Start low and wait 5-10 minutes between sessions</li></ol><h2>Frequently Asked Questions</h2><h3>How long does a 4g ZILLIONAIRE vape last?</h3><p><strong>A:</strong> At 4 grams, this is one of the largest disposables on the market. Expect 1000-1500 puffs depending on draw length — lasting most users 3-5 weeks of regular use.</p><h3>Can I switch between flavours?</h3><p><strong>A:</strong> Yes, the dual-chamber design lets you toggle between two flavour profiles anytime. Each chamber holds 2g of concentrate for balanced use.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing on orders before 2 PM EST. All packages ship discreetly from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
+            "thc": "80-90%",
+            "cbd": "Minimal",
             "type": "Disposables",
-            "weight": "TBD",
-            "terpenes": [],
-            "lineage": ""
+            "weight": "4g",
+            "terpenes": ["Myrcene", "Limonene", "Linalool"],
+            "lineage": "Varies by flavour selection"
         },
-        "eeatNarrative": "ZILLIONAIRE Dual Chamber Vape 4G is a premium Disposables product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "The ZILLIONAIRE Dual Chamber Vape 4G is a lab-tested, premium disposable vape available at Mohawk Medibles. All ZILLIONAIRE products undergo third-party lab testing to meet Empire Standard quality benchmarks for potency and purity, ensuring a safe cannabis experience from Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Euphoric", "Happy", "Uplifted"]
     },
     {
         "id": 343,

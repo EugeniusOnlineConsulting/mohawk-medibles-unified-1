@@ -13946,22 +13946,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/3-bar-box-with-logo.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/3-bar-together-with-logo.png"
         ],
-        "altText": "Her Highness from the 6ix &#8211; Artisanal Psilocybin Chocolate Bar - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy Her Highness from the 6ix &#8211; Artisanal Psilocybin Chocolate Bar online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy Her Highness from the 6ix &#8211; Artisanal Psilocybin Chocolate Bar online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "Her Highness from the 6ix artisanal psilocybin chocolate bar with premium cocoa and magic mushrooms available in Canada",
+        "sku": "MM-MUSH-345",
+        "metaDescription": "Buy Her Highness from the 6ix Psilocybin Chocolate Bar in Canada. Artisanal mushroom edible at Mohawk Medibles — fast shipping.",
+        "shortDescription": "Shop Her Highness from the 6ix Artisanal Psilocybin Chocolate Bar — a beautifully crafted mushroom chocolate made with premium cocoa and precisely dosed psilocybin. Buy now at Mohawk Medibles with discreet Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy Her Highness from the 6ix Artisanal Psilocybin Chocolate Bar online in Canada at Mohawk Medibles. This handcrafted mushroom chocolate combines premium Belgian-style cocoa with precisely dosed psilocybin for a luxurious and controlled psychedelic experience.</p><h2>Product Highlights</h2><ul><li><strong>Artisanal Quality:</strong> Handcrafted with premium cocoa for rich chocolate flavour</li><li><strong>Precise Dosing:</strong> Each bar is accurately dosed for consistent psilocybin content</li><li><strong>Easy Micro-dosing:</strong> Score lines allow you to break into smaller portions</li><li><strong>Beautiful Packaging:</strong> Gift-worthy presentation from the 6ix</li></ul><h2>Dosing Guide</h2><ol><li><strong>Micro-dose:</strong> 1-2 squares for subtle mood elevation and focus</li><li><strong>Light dose:</strong> 3-4 squares for mild visuals and enhanced creativity</li><li><strong>Full experience:</strong> Entire bar for a complete psychedelic journey</li><li>Wait 45-90 minutes for full onset before consuming more</li></ol><h2>Frequently Asked Questions</h2><h3>What does the psilocybin chocolate taste like?</h3><p><strong>A:</strong> The artisanal chocolate is crafted to mask the earthy mushroom flavour. You will primarily taste rich, smooth chocolate with only subtle earthy undertones.</p><h3>How long do effects last?</h3><p><strong>A:</strong> Psilocybin edibles typically take 30-90 minutes to onset, with peak effects at 2-3 hours and total duration of 4-6 hours depending on dose and individual metabolism.</p><h3>Does Mohawk Medibles ship psilocybin products across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing. All packages ship discreetly in plain, unmarked packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": true,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
-            "type": "Her Highness from the 6ix",
-            "weight": "TBD",
+            "thc": "N/A",
+            "cbd": "N/A",
+            "type": "Psilocybin Edible",
+            "weight": "Varies by bar",
             "terpenes": [],
-            "lineage": ""
+            "lineage": "Psilocybin mushroom blend"
         },
-        "eeatNarrative": "Her Highness from the 6ix &#8211; Artisanal Psilocybin Chocolate Bar is a premium Her Highness from the 6ix product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "Her Highness from the 6ix Artisanal Psilocybin Chocolate Bar is a precisely dosed mushroom edible available at Mohawk Medibles. Each bar undergoes quality testing to meet Empire Standard benchmarks for accurate psilocybin content and food safety, ensuring a reliable experience from Tyendinaga Mohawk Territory's trusted dispensary.",
+        "effects": ["Euphoric", "Creative", "Uplifted", "Happy", "Giggly"]
     },
     {
         "id": 346,

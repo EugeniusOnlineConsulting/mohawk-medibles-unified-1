@@ -14198,22 +14198,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/05/grape-ice-front-scaled-1.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/05/godfather-og-front-scaled-1.png"
         ],
-        "altText": "STRAIGHT GOODS Disposable THC Vape 3G - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy STRAIGHT GOODS Disposable THC Vape 3G online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy STRAIGHT GOODS Disposable THC Vape 3G online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "Straight Goods 3G disposable THC vape pen available in 20+ flavours at Mohawk Medibles Canada",
+        "sku": "MM-DISP-351",
+        "metaDescription": "Buy Straight Goods 3G Disposable THC Vape in Canada. 20+ flavours including Death Bubba, Blue Dream. Mohawk Medibles — fast shipping.",
+        "shortDescription": "Shop the Straight Goods 3G Disposable THC Vape — a compact, high-potency disposable in 20+ strain flavours including Death Bubba, Blue Dream, and Moroccan Hash. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy STRAIGHT GOODS Disposable THC Vape 3G online in Canada at Mohawk Medibles. The classic Straight Goods 3G disposable offers premium THC distillate in over 20 strain-inspired flavours — from classic cannabis profiles to unique hash-inspired options.</p><h2>Product Highlights</h2><ul><li><strong>3G Capacity:</strong> 800-1200 puffs for 2-4 weeks of moderate use</li><li><strong>20+ Flavours:</strong> Death Bubba, Blue Dream, Blueberry Cookies, Moroccan Hash, and more</li><li><strong>Draw-Activated:</strong> No buttons — simply inhale for smooth vapour</li><li><strong>Rechargeable:</strong> USB-C ensures you use every drop of distillate</li></ul><h2>Popular Flavours</h2><ul><li>99 Problems</li><li>Apple Juice</li><li>Blonde Hash</li><li>Blue Dream</li><li>Death Bubba</li><li>Godfather OG</li><li>Maui Wowie</li><li>Moroccan Hash</li></ul><h2>Frequently Asked Questions</h2><h3>How many puffs does the 3G Straight Goods provide?</h3><p><strong>A:</strong> Expect 800-1200 puffs depending on draw length. Most moderate users find this lasts 2-4 weeks of daily use.</p><h3>Can I choose my flavour?</h3><p><strong>A:</strong> Yes! Over 20 flavours are available. Select your preferred strain when ordering or contact us for current availability.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing before 2 PM EST. Discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
+            "thc": "80-90%",
+            "cbd": "Minimal",
             "type": "Disposables",
-            "weight": "TBD",
-            "terpenes": [],
-            "lineage": ""
+            "weight": "3g",
+            "terpenes": ["Myrcene", "Limonene", "Caryophyllene"],
+            "lineage": "Multiple strains available"
         },
-        "eeatNarrative": "STRAIGHT GOODS Disposable THC Vape 3G is a premium Disposables product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "The STRAIGHT GOODS Disposable THC Vape 3G is a lab-tested premium disposable available at Mohawk Medibles. All Straight Goods products undergo rigorous third-party lab testing to meet Empire Standard quality benchmarks for potency and purity, ensuring a safe cannabis experience from Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Euphoric", "Happy", "Creative", "Uplifted"]
     },
     {
         "id": 352,

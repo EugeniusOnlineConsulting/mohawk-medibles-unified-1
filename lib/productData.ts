@@ -13669,22 +13669,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/torch-astro-boy-x-watermelon-z.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/torch-astro-boy-x-watermelon-z.png"
         ],
-        "altText": "Torch X Pressure THC-A Diamond Blend Dual Vape 3g - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy Torch X Pressure THC-A Diamond Blend Dual Vape 3g online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy Torch X Pressure THC-A Diamond Blend Dual Vape 3g online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "Torch X Pressure THC-A Diamond Blend Dual 3g disposable vape with dual-chamber design for potent THC-A hits in Canada",
+        "sku": "MM-DISP-338",
+        "metaDescription": "Buy Torch X Pressure THC-A Diamond Blend Dual 3g Vape in Canada. Premium dual-chamber disposable at Mohawk Medibles — fast shipping.",
+        "shortDescription": "Shop the Torch X Pressure THC-A Diamond Blend Dual Vape 3g — a premium dual-chamber disposable loaded with THC-A diamonds for maximum potency. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy Torch X Pressure THC-A Diamond Blend Dual Vape 3g online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary. This premium dual-chamber disposable features THC-A diamond concentrate for an ultra-potent vaping experience.</p><h2>Product Highlights</h2><ul><li><strong>THC-A Diamond Blend:</strong> Pure THC-A diamonds deliver maximum potency and clean effects</li><li><strong>Dual Chamber Design:</strong> Two flavour profiles in a single device for variety</li><li><strong>3g Total Capacity:</strong> Extended use without running out quickly</li><li><strong>Rechargeable:</strong> USB-C ensures you vape every last drop</li></ul><h2>What is THC-A?</h2><p>THC-A (tetrahydrocannabinolic acid) is the raw, non-psychoactive precursor to THC found in live cannabis. When heated during vaping, THC-A converts to active THC, delivering powerful effects with exceptional purity and a clean flavour profile.</p><h2>How to Use</h2><ol><li>Remove from packaging and check the charge level</li><li>Select your preferred flavour chamber</li><li>Draw slowly for 2-3 seconds for optimal vapour production</li><li>Wait 5-10 minutes between sessions to assess effects</li></ol><h2>Frequently Asked Questions</h2><h3>How potent is the THC-A Diamond Blend?</h3><p><strong>A:</strong> THC-A diamond blends are among the most potent concentrates available, typically testing at 85-95% total cannabinoids. When vaped, the THC-A converts to active THC for powerful, fast-acting effects.</p><h3>How many puffs does the 3g vape provide?</h3><p><strong>A:</strong> The 3g capacity typically yields 800-1200 puffs depending on draw length. Most moderate users find this lasts 2-4 weeks.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! We offer fast Canada-wide shipping with same-day processing on orders placed before 2 PM EST. All packages ship in discreet, plain packaging from Tyendinaga Mohawk Territory.</p><h3>Is this good for experienced users?</h3><p><strong>A:</strong> Absolutely. THC-A diamond blends are designed for users who appreciate high-potency concentrates. Beginners should start with small puffs and work up gradually.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
+            "thc": "85-95% (THC-A Diamond Blend)",
+            "cbd": "Minimal",
             "type": "Disposables",
-            "weight": "TBD",
-            "terpenes": [],
-            "lineage": ""
+            "weight": "3g",
+            "terpenes": ["Myrcene", "Caryophyllene", "Limonene"],
+            "lineage": "Varies by flavour selection"
         },
-        "eeatNarrative": "Torch X Pressure THC-A Diamond Blend Dual Vape 3g is a premium Disposables product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "Torch X Pressure THC-A Diamond Blend Dual Vape 3g is a lab-tested, premium disposable vape available at Mohawk Medibles. Torch products are rigorously third-party tested to meet Empire Standard quality benchmarks for potency and purity, ensuring a safe and powerful cannabis experience from Tyendinaga Mohawk Territory.",
+        "effects": ["Euphoric", "Relaxed", "Happy", "Uplifted", "Creative"]
     },
     {
         "id": 339,

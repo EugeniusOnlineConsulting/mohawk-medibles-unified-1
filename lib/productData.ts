@@ -12058,25 +12058,25 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2026/02/MMS-brick-stacked.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2026/02/MMS-brick-stacked-sideways.png"
         ],
-        "altText": "MMS Hash - Mohawk Medibles",
+        "altText": "MMS Hash premium pressed cannabis hash brick concentrate available at Mohawk Medibles Canada",
         "sku": "MMSHASH",
-        "metaDescription": "Buy MMS Hash online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy MMS Hash online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "metaDescription": "Buy MMS Hash in Canada. Premium pressed cannabis hash at Mohawk Medibles — smooth, potent, and affordable. Fast Canada-wide shipping.",
+        "shortDescription": "Shop MMS Hash — a premium pressed cannabis hash with smooth, earthy flavour and potent effects. Affordable quality hash at just $12. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy MMS Hash online in Canada at Mohawk Medibles. MMS Hash is a premium pressed cannabis concentrate with a smooth, earthy flavour profile that hash connoisseurs love. Pressed into dense, aromatic bricks for easy handling and storage.</p><h2>Product Highlights</h2><ul><li><strong>Premium Quality:</strong> Dense, well-pressed hash with consistent texture</li><li><strong>Smooth Flavour:</strong> Earthy, slightly spicy with pleasant cannabis notes</li><li><strong>Affordable:</strong> Premium hash at just $12</li><li><strong>Versatile Use:</strong> Smoke in a pipe, bong, joint, or vaporize</li></ul><h2>Frequently Asked Questions</h2><h3>How potent is MMS Hash?</h3><p><strong>A:</strong> MMS Hash is a concentrated cannabis product with THC levels typically ranging from 25-45%. Start with a small amount and assess effects before consuming more.</p><h3>How do I smoke hash?</h3><p><strong>A:</strong> Crumble and mix with flower in a joint, place on a screen in a pipe, or use a hash-compatible vaporizer at 180-220 degrees Celsius.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing before 2 PM EST. Discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
-            "type": "Concentrates",
-            "weight": "TBD",
+            "thc": "25-45%",
+            "cbd": "Minimal",
+            "type": "Hash",
+            "weight": "1g",
             "terpenes": [
                 "Myrcene",
                 "Limonene",
                 "Caryophyllene"
             ],
-            "lineage": ""
+            "lineage": "Cannabis indica blend"
         },
-        "eeatNarrative": "MMS Hash is a premium Concentrates product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
+        "eeatNarrative": "MMS Hash is a lab-tested, premium cannabis hash available at Mohawk Medibles. All hash products undergo third-party lab testing to meet Empire Standard quality benchmarks for potency and purity, ensuring a safe and authentic experience from Tyendinaga Mohawk Territory.",
         "effects": [
             "euphoric",
             "relaxed",

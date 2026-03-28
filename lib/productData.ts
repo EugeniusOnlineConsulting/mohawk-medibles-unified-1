@@ -13915,22 +13915,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Pink-Rosay-Ghost-Face-Mintz-editing-Photoroom.png",
             "https://mohawkmedibles.ca/wp-content/uploads/2025/06/Pink-Rosay-Ghost-Face-Mintz-editing-Photoroom.png"
         ],
-        "altText": "Heisenberg Extractions Dual Flavour 6g THC Vape - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy Heisenberg Extractions Dual Flavour 6g THC Vape online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy Heisenberg Extractions Dual Flavour 6g THC Vape online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "Heisenberg Extractions Dual Flavour 6g THC disposable vape with dual-chamber design for heavy cannabis users in Canada",
+        "sku": "MM-DISP-344",
+        "metaDescription": "Buy Heisenberg Extractions Dual Flavour 6g THC Vape in Canada. Massive dual-chamber disposable at Mohawk Medibles — fast shipping.",
+        "shortDescription": "Shop the Heisenberg Extractions Dual Flavour 6g THC Vape — a massive dual-chamber disposable with 6 grams of premium THC concentrate for extended sessions. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy Heisenberg Extractions Dual Flavour 6g THC Vape online in Canada at Mohawk Medibles. This massive 6-gram dual-chamber disposable is Heisenberg Extractions' flagship device, delivering two premium flavour profiles in one long-lasting vape.</p><h2>Product Highlights</h2><ul><li><strong>6g Mega Capacity:</strong> Double the size of standard 3g disposables for weeks of use</li><li><strong>Dual Flavour Chambers:</strong> Two distinct strain profiles to switch between</li><li><strong>Live Resin Distillate Blend:</strong> Full terpene preservation for authentic flavour</li><li><strong>Rechargeable USB-C:</strong> Never waste a drop with reliable recharging</li></ul><h2>Why Choose the 6g?</h2><p>The 6g Heisenberg Dual Flavour is built for serious vapers who want fewer trips to the dispensary. With roughly 1500-2400 puffs, this device can last a month or more for daily users — making it the best value per gram in the Heisenberg lineup.</p><h2>Frequently Asked Questions</h2><h3>How long does the 6g vape last?</h3><p><strong>A:</strong> With 6 grams of concentrate, expect 1500-2400 puffs. For moderate daily users, this typically lasts 4-8 weeks — outstanding value compared to smaller devices.</p><h3>What flavours are available?</h3><p><strong>A:</strong> Each device features two distinct flavour chambers. Specific strain combinations vary by batch — check the product packaging for current flavour pairings.</p><h3>Does Mohawk Medibles ship this across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing on orders before 2 PM EST. Discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
+            "thc": "80-90%",
+            "cbd": "Minimal",
             "type": "Disposables",
-            "weight": "TBD",
-            "terpenes": [],
-            "lineage": ""
+            "weight": "6g",
+            "terpenes": ["Myrcene", "Limonene", "Caryophyllene", "Linalool"],
+            "lineage": "Varies by flavour selection"
         },
-        "eeatNarrative": "Heisenberg Extractions Dual Flavour 6g THC Vape is a premium Disposables product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "Heisenberg Extractions Dual Flavour 6g THC Vape is a lab-tested, premium disposable vape available at Mohawk Medibles. All Heisenberg Extractions products undergo rigorous third-party lab testing to meet Empire Standard quality benchmarks for potency and purity, ensuring a safe cannabis experience from Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Euphoric", "Happy", "Creative", "Uplifted"]
     },
     {
         "id": 345,

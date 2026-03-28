@@ -11687,22 +11687,22 @@ const _RAW_PRODUCTS: Product[] = [
             "https://mohawkmedibles.ca/wp-content/uploads/2026/02/Aki-Pain-Spray-1000mg-cbd-1000mg-thc.webp",
             "https://mohawkmedibles.ca/wp-content/uploads/2026/02/Aki-Pain-Spray-1000mg-cbd-1000mg-thc-back-of-package.webp"
         ],
-        "altText": "Aki Ultra Strength Pain Spray 1:1 - Mohawk Medibles",
-        "sku": "",
-        "metaDescription": "Buy Aki Ultra Strength Pain Spray 1:1 online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "shortDescription": "Buy Aki Ultra Strength Pain Spray 1:1 online in Canada at Mohawk Medibles, your trusted Indigenous-owned cannabis dispensary.",
-        "descriptionHTML": "",
+        "altText": "AKI Ultra Strength Pain Spray 1:1 CBD THC topical spray for muscle and joint pain relief in Canada",
+        "sku": "MM-CBD-290",
+        "metaDescription": "Buy AKI Ultra Strength Pain Spray 1:1 in Canada. 1000mg CBD + 1000mg THC topical at Mohawk Medibles — fast Canada-wide shipping.",
+        "shortDescription": "Shop AKI Ultra Strength Pain Spray 1:1 — a powerful topical spray with 1000mg CBD and 1000mg THC for targeted muscle and joint pain relief. Buy now at Mohawk Medibles with fast Canada-wide delivery.",
+        "descriptionHTML": "<div class=\"product-description\"><p>Buy AKI Ultra Strength Pain Spray 1:1 online in Canada at Mohawk Medibles. This powerful topical spray delivers 1000mg CBD and 1000mg THC directly to sore muscles and joints for fast-acting, targeted pain relief without the psychoactive effects of ingested cannabis.</p><h2>Product Highlights</h2><ul><li><strong>1:1 Ratio:</strong> 1000mg CBD + 1000mg THC for balanced therapeutic relief</li><li><strong>Topical Application:</strong> Spray directly on affected area for targeted relief</li><li><strong>Fast Absorption:</strong> Quick-drying formula absorbs rapidly through skin</li><li><strong>Non-Intoxicating:</strong> Topical application means minimal psychoactive effects</li></ul><h2>How to Use</h2><ol><li>Shake well before each use</li><li>Spray directly on affected area (muscles, joints, back)</li><li>Massage gently into skin until absorbed</li><li>Apply 2-3 times daily as needed for pain relief</li><li>Wash hands after application</li></ol><h2>Frequently Asked Questions</h2><h3>Will this pain spray make me high?</h3><p><strong>A:</strong> No. Topical cannabis products are absorbed through the skin and provide localized relief without significant psychoactive effects. The THC works synergistically with CBD for enhanced pain relief at the application site.</p><h3>What types of pain does it help with?</h3><p><strong>A:</strong> AKI Pain Spray is effective for muscle soreness, joint pain, arthritis discomfort, back pain, sports injuries, and general inflammation. The 1:1 CBD:THC ratio maximizes therapeutic potential.</p><h3>Does Mohawk Medibles ship across Canada?</h3><p><strong>A:</strong> Yes! Fast Canada-wide shipping with same-day processing before 2 PM EST. Discreet packaging from Tyendinaga Mohawk Territory.</p></div>",
         "featured": false,
         "specs": {
-            "thc": "TBD",
-            "cbd": "TBD",
-            "type": "AKI",
-            "weight": "TBD",
+            "thc": "1000mg",
+            "cbd": "1000mg",
+            "type": "Topical Spray",
+            "weight": "Spray bottle",
             "terpenes": [],
-            "lineage": ""
+            "lineage": "N/A"
         },
-        "eeatNarrative": "Aki Ultra Strength Pain Spray 1:1 is a premium AKI product available at Mohawk Medibles, Tyendinaga's trusted cannabis dispensary.",
-        "effects": []
+        "eeatNarrative": "AKI Ultra Strength Pain Spray 1:1 is a lab-tested topical cannabis product available at Mohawk Medibles. Handcrafted by AKI Wellness, each batch undergoes third-party lab testing to meet Empire Standard quality benchmarks for accurate CBD and THC potency, ensuring reliable pain relief from Tyendinaga Mohawk Territory.",
+        "effects": ["Relaxed", "Tingly", "Focused"]
     },
     {
         "id": 291,

@@ -24,6 +24,7 @@ export interface BlogPost {
 
 import { EXPANDED_BLOG_POSTS } from "./posts-expanded";
 import { PAA_BLOG_POSTS } from "./posts-paa";
+import { SEO_ASSET_BLOG_POSTS } from "./posts-seo-assets";
 
 const BASE_BLOG_POSTS: BlogPost[] = [
     {
@@ -672,7 +673,7 @@ Browse our full catalog of 344+ premium, lab-tested cannabis products at mohawkm
 ];
 
 // Merge base + expanded + PAA posts
-export const BLOG_POSTS: BlogPost[] = [...BASE_BLOG_POSTS, ...EXPANDED_BLOG_POSTS, ...PAA_BLOG_POSTS];
+export const BLOG_POSTS: BlogPost[] = [...BASE_BLOG_POSTS, ...EXPANDED_BLOG_POSTS, ...PAA_BLOG_POSTS, ...SEO_ASSET_BLOG_POSTS];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
     return BLOG_POSTS.find((p) => p.slug === slug);

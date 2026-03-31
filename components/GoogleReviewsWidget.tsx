@@ -43,12 +43,13 @@ export function GoogleReviewsBadge() {
     fetch("/api/trpc/googleReviews.getSummary?input={}")
       .then((r) => r.json())
       .then((res) => {
-        if (res?.result?.data) setData(res.result.data);
+        const d = res?.result?.data?.json ?? res?.result?.data;
+        if (d && d.averageRating) setData(d);
       })
       .catch(() => {});
   }, []);
 
-  if (!data || data.totalReviews === 0) return null;
+  if (!data || !data.averageRating || data.totalReviews === 0) return null;
 
   const mapsUrl = data.placeId
     ? `https://www.google.com/maps/place/?q=place_id:${data.placeId}`
@@ -88,7 +89,8 @@ export default function GoogleReviewsWidget() {
     fetch("/api/trpc/googleReviews.getSummary?input={}")
       .then((r) => r.json())
       .then((res) => {
-        if (res?.result?.data) setData(res.result.data);
+        const d = res?.result?.data?.json ?? res?.result?.data;
+        if (d && d.averageRating) setData(d);
       })
       .catch(() => {});
   }, []);

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
     MapPin, Clock, Phone, Navigation, Store, Shield,
-    ShoppingBag, Car, Leaf, Star, CheckCircle, ArrowRight,
+    ShoppingBag, Car, Leaf, Star, CheckCircle, ArrowRight, Camera,
 } from "lucide-react";
 
 const STORE = {
@@ -186,6 +187,65 @@ export default function LocationsClient() {
                         </div>
                     </div>
                 </motion.div>
+
+                {/* Store Photos */}
+                <section className="mb-16">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <div className="flex items-center gap-2 mb-2">
+                            <Camera className="h-5 w-5 text-forest dark:text-lime" />
+                            <h2 className="text-2xl font-bold text-forest dark:text-cream">
+                                Our Store
+                            </h2>
+                        </div>
+                        <p className="text-muted-foreground mb-6">
+                            Take a look inside Mohawk Medibles — Tyendinaga Mohawk Territory&apos;s premier cannabis dispensary.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                        >
+                            <Image
+                                src="/assets/store/exterior-night.jpg"
+                                alt="Mohawk Medibles storefront at night with illuminated MEDIBLES sign in Deseronto, Ontario"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                                <p className="text-white font-bold text-sm">Storefront — Tyendinaga Mohawk Territory</p>
+                                <p className="text-white/70 text-xs">Open daily 9 AM – 9 PM</p>
+                            </div>
+                        </motion.div>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                            className="relative aspect-[4/3] rounded-xl overflow-hidden group"
+                        >
+                            <Image
+                                src="/assets/store/interior.jpg"
+                                alt="Inside Mohawk Medibles — full product selection of cannabis flower, edibles, vapes, and accessories"
+                                fill
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                                <p className="text-white font-bold text-sm">Inside — 344+ Products</p>
+                                <p className="text-white/70 text-xs">Flower, edibles, concentrates, vapes &amp; more</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </section>
 
                 {/* What to Expect */}
                 <section className="mb-16">

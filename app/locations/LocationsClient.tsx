@@ -22,8 +22,8 @@ const STORE = {
         { day: "Saturday", time: "9:00 AM - 9:00 PM" },
         { day: "Sunday", time: "9:00 AM - 9:00 PM" },
     ],
-    googleMapsUrl: "https://www.google.com/maps/dir/?api=1&destination=1738+York+Road+Tyendinaga+Mohawk+Territory+ON+K0K+3A0",
-    embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2862.5!2d-77.0833!3d44.2167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDTCsDEzJzAwLjAiTiA3N8KwMDUnMDAuMCJX!5e0!3m2!1sen!2sca!4v1700000000000!5m2!1sen!2sca",
+    googleMapsUrl: "https://www.google.com/maps/dir/?api=1&destination=Mohawk+Medibles&destination_place_id=ChIJUa3RTdDW14kRUbQUjhh1AWg",
+    embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2862.5!2d-77.0635744!3d44.1967697!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89d7d6d04dd1ad51%3A0x680175188e14b451!2sMohawk%20Medibles!5e0!3m2!1sen!2sca!4v1700000000000!5m2!1sen!2sca",
 };
 
 const WHAT_TO_EXPECT = [
